@@ -1,0 +1,19 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:NotepadSharp">
+    <DataTemplate DataType="{x:Type local:MainViewModel}">
+        <local:MainView />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type local:DocumentViewModel}">
+        <local:DocumentView />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type local:RichTextViewModel}">
+        <local:RichTextView />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type local:KeyBindingsViewModel}">
+        <local:KeyBindingsView />
+    </DataTemplate>
+</ResourceDictionary>
