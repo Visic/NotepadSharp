@@ -6,45 +6,35 @@
              xmlns:local="clr-namespace:NotepadSharp"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <DataGrid x:Name="DataGrid"
-              AutoGenerateColumns="False"
-              IsReadOnly="True"
-              CanUserReorderColumns="False"
-              GridLinesVisibility="None"
-              SelectionMode="Single"
-              RowHeaderWidth="0"
-              SelectedValue="{Binding SelectedKeyBinding.Value}"
-              ItemsSource="{Binding KeyBindings.Value}">
-        <DataGrid.CellStyle>
-            <Style TargetType="{x:Type DataGridCell}">
-                <Setter Property="local:CommandBindingBehavior.DoubleClickCommand" Value="{Binding ElementName=DataGrid, Path=DataContext.EditBindingCommand}"/>
-                <Setter Property="BorderThickness" Value="0"/>
-                <Style.Triggers>
-                    <Trigger Property="IsSelected" Value="True">
-                        <Setter Property="Background" Value="LightBlue" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-        </DataGrid.CellStyle>
-        <DataGrid.Columns>
-            <DataGridTemplateColumn Width="*" Header="Key Binding">
-                <DataGridTemplateColumn.CellTemplate>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions> <!-- These are set to match the with of columns in KeyBindingView.xaml -->
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="1.5*" />
+            <ColumnDefinition Width="3*" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="0" TextAlignment="Center" FontSize="13" Text="Key Binding" />
+        <TextBlock Grid.Row="0" Grid.Column="1" TextAlignment="Center" FontSize="13" Text="Label" />
+        <TextBlock Grid.Row="0" Grid.Column="2" TextAlignment="Center" FontSize="13" Text="Script File Path" />
+
+        <ScrollViewer Grid.Row="1" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding KeyBindings}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border BorderThickness="0,0,1,1" BorderBrush="Gray">
-                            <TextBlock Text="{Binding Keys, Converter={StaticResource PrettyPrintKeyBindingConverter}}" />
-                        </Border>
+                        <ContentControl local:CommandBindingBehavior.GotFocusCommand="{Binding StartEditBindingCommand}" 
+                                        local:CommandBindingBehavior.LostFocusCommand="{Binding EndEditBindingCommand}"
+                                        Content="{Binding}"/>
                     </DataTemplate>
-                </DataGridTemplateColumn.CellTemplate>
-            </DataGridTemplateColumn>
-            <DataGridTemplateColumn Width="3*" Header="Script File Path">
-                <DataGridTemplateColumn.CellTemplate>
-                    <DataTemplate>
-                        <Border BorderThickness="0,0,0,1" BorderBrush="Gray">
-                            <TextBlock Text="{Binding Label}"/>
-                        </Border>
-                    </DataTemplate>
-                </DataGridTemplateColumn.CellTemplate>
-            </DataGridTemplateColumn>
-        </DataGrid.Columns>
-    </DataGrid>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
 </UserControl>

@@ -14,9 +14,6 @@ namespace NotepadSharp {
             Tabs = new ObservableCollection<ViewModelBase>();
             Tabs.Add(new DocumentViewModel("Placeholder"));
             Tabs.Add(new KeyBindingsViewModel());
-
-            ArgsAndSettings.KeyBindings.SetBinding(new KeyBinding(() => { }, "Testing 1", Key.LeftCtrl, Key.A));
-            ArgsAndSettings.KeyBindings.SetBinding(new KeyBinding(() => { }, "Testing 2", Key.LeftCtrl, Key.B));
         }
 
         public ObservableCollection<ViewModelBase> Tabs { get; private set; }

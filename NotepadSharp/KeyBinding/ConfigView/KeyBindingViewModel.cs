@@ -8,14 +8,16 @@ using System.Windows.Input;
 using WPFUtility;
 
 namespace NotepadSharp {
-    public class SetKeyBindingViewModel : ViewModelBase {
+    public class KeyBindingViewModel : ViewModelBase {
         KeyBinding _currentBinding;
+        Action<KeyBinding, KeyBinding> _bindingChangedCallback;
 
-        public SetKeyBindingViewModel(KeyBinding binding) {
+        public KeyBindingViewModel(KeyBinding binding, Action<KeyBinding, KeyBinding> bindingChangedCallback) {
             _currentBinding = binding;
+            _bindingChangedCallback = bindingChangedCallback;
             Keys = new NotifyingProperty<HashSet<Key>>(_currentBinding.Keys);
-            Label = new NotifyingProperty<string>(_currentBinding.Label);
-            ScriptFilePath = new NotifyingProperty<string>((binding as LuaKeyBinding)?.ScriptPath?.Value);
+            Label = new NotifyingPropertyWithChangedAction<string>(x => CommitChanges(), _currentBinding.Label);
+            ScriptFilePath = new NotifyingPropertyWithChangedAction<string>(x => CommitChanges(), (binding as LuaKeyBinding)?.ScriptPath?.Value);
             IsEditingBinding = new NotifyingProperty<bool>();
             StartEditingCommand = new RelayCommand(x => StartEditBinding((RoutedEventArgs)x));
             EndEditingCommand = new RelayCommand(x => EndEditBinding((RoutedEventArgs)x));
@@ -24,8 +26,8 @@ namespace NotepadSharp {
         }
 
         public NotifyingProperty<HashSet<Key>> Keys { get; private set; }
-        public NotifyingProperty<string> Label { get; }
-        public NotifyingProperty<string> ScriptFilePath { get; }
+        public NotifyingPropertyWithChangedAction<string> Label { get; }
+        public NotifyingPropertyWithChangedAction<string> ScriptFilePath { get; }
         public NotifyingProperty<bool> IsEditingBinding { get; }
         public ICommand KeyDownCommand { get; }
         public ICommand KeyUpCommand { get; }
@@ -33,9 +35,15 @@ namespace NotepadSharp {
         public ICommand EndEditingCommand { get; }
 
         public KeyBinding GetBinding() {
-            return string.IsNullOrEmpty(ScriptFilePath.Value) ? 
-                new KeyBinding(_currentBinding.Action, Label.Value, Keys.Value.ToArray()) : 
+            return string.IsNullOrEmpty(ScriptFilePath.Value) ?
+                new KeyBinding(_currentBinding.Action, Label.Value, Keys.Value.ToArray()) :
                 new LuaKeyBinding(ScriptFilePath.Value, Label.Value, Keys.Value.ToArray());
+        }
+
+        private void CommitChanges() {
+            var newBinding = GetBinding();
+            _bindingChangedCallback(_currentBinding, newBinding);
+            _currentBinding = newBinding;
         }
 
         private void StartEditBinding(RoutedEventArgs obj) {
@@ -44,6 +52,7 @@ namespace NotepadSharp {
 
         private void EndEditBinding(RoutedEventArgs obj) {
             IsEditingBinding.Value = false;
+            CommitChanges();
         }
 
         private void KeyUp(KeyEventArgs e) {
@@ -51,8 +60,13 @@ namespace NotepadSharp {
         }
 
         private void KeyDown(KeyEventArgs e) {
-            e.Handled = ArgsAndSettings.KeyBindings.KeyPressed(GetRelevantKey(e), false);
-            Keys.Value = new HashSet<Key>(ArgsAndSettings.KeyBindings.PressedKeys);
+            var key = GetRelevantKey(e);
+            e.Handled = ArgsAndSettings.KeyBindings.KeyPressed(key, false);
+            if(!e.Handled && key == Key.Escape) {
+                Keys.Value = _currentBinding.Keys;
+            } else {
+                Keys.Value = new HashSet<Key>(ArgsAndSettings.KeyBindings.PressedKeys);
+            }
         }
 
         private Key GetRelevantKey(KeyEventArgs e) {
