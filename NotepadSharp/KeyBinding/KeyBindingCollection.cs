@@ -11,6 +11,8 @@ namespace NotepadSharp {
         HashSet<KeyBinding> _keyBindings = new HashSet<KeyBinding>();
         HashSet<Key> _pressedKeys = new HashSet<Key>();
 
+        public IReadOnlyCollection<Key> PressedKeys { get { return _pressedKeys; } }
+
         public bool SetBinding(KeyBinding keyBinding) {
             if (!keyBinding.Keys.Overlaps(C_AllowedFirstKeys)) return false;
 
@@ -29,13 +31,14 @@ namespace NotepadSharp {
         }
 
         //returns whether or not a binding was executed
-        public bool KeyPressed(Key key) {
+        public bool KeyPressed(Key key, bool executeBinding) {
             if(_pressedKeys.Count == 0 && !C_AllowedFirstKeys.Contains(key)) return false;
             _pressedKeys.Add(key);
+            if (!executeBinding) return true;
 
             //if any keybinding matches this set of keys, execute it
             var maybeBinding = _keyBindings.FirstOrDefault(x => x.Keys.SetEquals(_pressedKeys));
-            maybeBinding?.Execute();
+            maybeBinding?.Action();
             return maybeBinding != null;
         }
 

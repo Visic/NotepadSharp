@@ -13,12 +13,15 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace NotepadSharp {
+namespace NotepadSharp.KeyBinding.ConfigView
+{
     /// <summary>
-    /// Interaction logic for RichTextView.xaml
+    /// Interaction logic for SetKeyBindingView.xaml
     /// </summary>
-    public partial class RichTextView : UserControl {
-        public RichTextView() {
+    public partial class SetKeyBindingView : UserControl
+    {
+        public SetKeyBindingView()
+        {
             InitializeComponent();
         }
     }

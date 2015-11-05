@@ -17,7 +17,7 @@
               ItemsSource="{Binding KeyBindings.Value}">
         <DataGrid.CellStyle>
             <Style TargetType="{x:Type DataGridCell}">
-                <Setter Property="local:DoubleClickBehavior.DoubleClickCommand" Value="{Binding ElementName=DataGrid, Path=DataContext.EditBindingCommand}"/>
+                <Setter Property="local:CommandBindingBehavior.DoubleClickCommand" Value="{Binding ElementName=DataGrid, Path=DataContext.EditBindingCommand}"/>
                 <Setter Property="BorderThickness" Value="0"/>
                 <Style.Triggers>
                     <Trigger Property="IsSelected" Value="True">
@@ -40,7 +40,7 @@
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <Border BorderThickness="0,0,0,1" BorderBrush="Gray">
-                            <TextBlock Text="{Binding Function}"/>
+                            <TextBlock Text="{Binding Label}"/>
                         </Border>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>

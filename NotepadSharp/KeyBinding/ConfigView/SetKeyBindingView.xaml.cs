@@ -15,10 +15,10 @@ using System.Windows.Shapes;
 
 namespace NotepadSharp {
     /// <summary>
-    /// Interaction logic for RichTextView.xaml
+    /// Interaction logic for SetKeyBindingView.xaml
     /// </summary>
-    public partial class RichTextView : UserControl {
-        public RichTextView() {
+    public partial class SetKeyBindingView : UserControl {
+        public SetKeyBindingView() {
             InitializeComponent();
         }
     }

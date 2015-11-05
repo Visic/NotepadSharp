@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="NotepadSharp.SetKeyBindingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:NotepadSharp"
+             mc:Ignorable="d" 
+             MinWidth="300"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <local:BoolToPropValueConverter x:Key="IsEditingBindingColorConverter" ValueForTrue="Red" ValueForFalse="Transparent" />
+    </UserControl.Resources>
+    <Grid Margin="10,5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Column="0" Grid.Row="0" Margin="0,0,10,0" VerticalAlignment="Center" TextAlignment="Left" Text="Keys"/>
+
+        <Border Grid.Column="1" Grid.Row="0"
+                BorderThickness="1"
+                BorderBrush="{Binding IsEditingBinding.Value, Converter={StaticResource IsEditingBindingColorConverter}}">
+            <Grid>
+                <TextBox TextAlignment="Left" 
+                         Background="LightGray" 
+                         Text="{Binding Keys.Value, Converter={StaticResource PrettyPrintKeyBindingConverter}, Mode=OneWay}" />
+                <!--disable the textbox without using IsEnabled (I don't want the ugly gray)-->
+                <TextBox Cursor="Arrow" 
+                         IsReadOnly="True" 
+                         Background="Transparent"
+                         local:CommandBindingBehavior.GotFocusCommand="{Binding StartEditingCommand}" 
+                         local:CommandBindingBehavior.LostFocusCommand="{Binding EndEditingCommand}"
+                         local:CommandBindingBehavior.PreviewKeyDownCommand="{Binding KeyDownCommand}"
+                         local:CommandBindingBehavior.PreviewKeyUpCommand="{Binding KeyUpCommand}"/>
+            </Grid>
+        </Border>
+
+        <TextBlock Grid.Column="0" Grid.Row="1" Margin="0,0,10,0" VerticalAlignment="Center" TextAlignment="Left" Text="Label"/>
+        <TextBox Grid.Column="1" Grid.Row="1" TextAlignment="Left" Text="{Binding Label.Value}" />
+
+        <TextBlock Grid.Column="0" Grid.Row="2" Margin="0,0,10,0" VerticalAlignment="Center" TextAlignment="Left" Text="Script File Path"/>
+        <TextBox Grid.Column="1" Grid.Row="2" TextAlignment="Left" Text="{Binding ScriptFilePath.Value}" />
+    </Grid>
+</UserControl>
