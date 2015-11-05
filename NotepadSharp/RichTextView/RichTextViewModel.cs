@@ -12,7 +12,10 @@ namespace NotepadSharp {
             Content = new NotifyingProperty<string>(content);
             KeyDownCommand = new RelayCommand(x => KeyDown((KeyEventArgs)x));
             KeyUpCommand = new RelayCommand(x => KeyUp((KeyEventArgs)x));
+
             ArgsAndSettings.KeyBindings.SetBinding(new KeyBinding(() => Content.Value = Content.Value + "!", "Testing 1", Key.LeftCtrl, Key.E));
+            ArgsAndSettings.KeyBindings.SetBinding(new KeyBinding(() => { }, "Testing 1", Key.LeftCtrl, Key.A));
+            ArgsAndSettings.KeyBindings.SetBinding(new KeyBinding(() => { }, "Testing 2", Key.LeftCtrl, Key.B));
         }
         
         public NotifyingProperty<string> Content { get; set; }

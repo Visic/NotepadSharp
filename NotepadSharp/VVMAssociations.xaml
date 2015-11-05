@@ -17,7 +17,7 @@
         <local:KeyBindingsView />
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type local:SetKeyBindingViewModel}">
-        <local:SetKeyBindingView />
+    <DataTemplate DataType="{x:Type local:KeyBindingViewModel}">
+        <local:KeyBindingView />
     </DataTemplate>
 </ResourceDictionary>

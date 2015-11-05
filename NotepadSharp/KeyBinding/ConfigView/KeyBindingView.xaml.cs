@@ -17,8 +17,8 @@ namespace NotepadSharp {
     /// <summary>
     /// Interaction logic for SetKeyBindingView.xaml
     /// </summary>
-    public partial class SetKeyBindingView : UserControl {
-        public SetKeyBindingView() {
+    public partial class KeyBindingView : UserControl {
+        public KeyBindingView() {
             InitializeComponent();
         }
     }

@@ -10,52 +10,17 @@ using WPFUtility;
 namespace NotepadSharp {
     public class KeyBindingsViewModel : ViewModelBase {
         public KeyBindingsViewModel() {
-            KeyBindings = new NotifyingProperty<KeyBindingCollection>(ArgsAndSettings.KeyBindings);
-            SelectedKeyBinding = new NotifyingProperty<KeyBinding>();
-            EditBindingCommand = new RelayCommand(EditBinding);
-        }
-
-        public string Title { get; } = "Key Bindings";
-        public NotifyingProperty<KeyBindingCollection> KeyBindings { get; private set; }
-        public NotifyingProperty<KeyBinding> SelectedKeyBinding { get; private set; }
-        public ICommand EditBindingCommand { get; }
-
-        private void EditBinding(object obj) {
-            var currentBinding = SelectedKeyBinding.Value;
-            var setVM = new SetKeyBindingViewModel(currentBinding);
-
-            WindowGenerator.CreateAndShow(
-                x => new HostWithDialogButtonsViewModel(
-                    setVM,
-                    new ButtonViewModel(
-                        "Ok", 
-                        new RelayCommand(
-                            y => {
-                                UpdateKeyBinding(currentBinding, setVM.GetBinding());
-                                x();
-                            }
-                        ), 
-                        isDefault:true
-                    ),
-                    new ButtonViewModel(
-                        "Cancel", 
-                        new RelayCommand(
-                            y => x()
-                        ), 
-                        true
-                    )
-                ),
-                false
+            KeyBindings = new ObservableCollection<KeyBindingViewModel>(
+                ArgsAndSettings.KeyBindings.Select(x => new KeyBindingViewModel(x, EditBinding))
             );
         }
 
-        private void UpdateKeyBinding(KeyBinding oldBinding, KeyBinding newBinding) {
-            KeyBindings.Value.ClearBinding(oldBinding);
-            KeyBindings.Value.SetBinding(newBinding);
+        public string Title { get; } = "Key Bindings";
+        public ObservableCollection<KeyBindingViewModel> KeyBindings { get; }
 
-            KeyBindings.Value = null;
-            KeyBindings.Value = ArgsAndSettings.KeyBindings;
-            SelectedKeyBinding.Value = newBinding;
+        private void EditBinding(KeyBinding oldBinding, KeyBinding newBinding) {
+            ArgsAndSettings.KeyBindings.ClearBinding(oldBinding);
+            ArgsAndSettings.KeyBindings.SetBinding(newBinding);
         }
     }
 }

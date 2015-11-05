@@ -67,7 +67,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="KeyBinding\ConfigView\SetKeyBindingView.xaml">
+    <Page Include="KeyBinding\ConfigView\KeyBindingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -103,10 +103,10 @@
       <DependentUpon>KeyBindingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="KeyBinding\ConfigView\KeyBindingsViewModel.cs" />
-    <Compile Include="KeyBinding\ConfigView\SetKeyBindingView.xaml.cs">
-      <DependentUpon>SetKeyBindingView.xaml</DependentUpon>
+    <Compile Include="KeyBinding\ConfigView\KeyBindingView.xaml.cs">
+      <DependentUpon>KeyBindingView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="KeyBinding\ConfigView\SetKeyBindingViewModel.cs" />
+    <Compile Include="KeyBinding\ConfigView\KeyBindingViewModel.cs" />
     <Compile Include="KeyBinding\KeyBinding.cs" />
     <Compile Include="KeyBinding\KeyBindingCollection.cs" />
     <Compile Include="KeyBinding\LuaKeyBinding.cs" />
@@ -160,7 +160,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="TODO.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
