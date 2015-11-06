@@ -23,12 +23,29 @@
     
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="14" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="1.5*" />
             <ColumnDefinition Width="3*" />
         </Grid.ColumnDefinitions>
-        
-        <Border Grid.Column="0"
+
+        <Button Height="13"
+                Margin="1"
+                Command="{Binding DeleteBindingCommand}" 
+                Visibility="{Binding DeleteBindingCommand, Converter={StaticResource NullToHiddenConverter}}">
+            <Button.Template>
+                <ControlTemplate>
+                    <TextBlock Text="X" 
+                               FontWeight="Medium"
+                               VerticalAlignment="Center" 
+                               TextAlignment="Center" 
+                               Background="#CC2222"
+                               Padding="0 0 0 -1"/>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+
+        <Border Grid.Column="1"
                 Margin="1" 
                 Background="LightGray"
                 BorderThickness=".75"
@@ -44,16 +61,16 @@
                          Text="{Binding Keys.Value, Converter={StaticResource PrettyPrintKeyBindingConverter}, Mode=OneWay}"/>
         </Border>
         
-        <Border Grid.Column="1"
+        <Border Grid.Column="2"
                 BorderBrush="Gray"
                 Margin="1" 
-                BorderThickness=".75">
+                BorderThickness="1">
             <TextBox TextAlignment="Left" 
                      Padding="2"
                      Text="{Binding Label.Value}"/>
         </Border>
 
-        <Border Grid.Column="2"
+        <Border Grid.Column="3"
                 BorderBrush="Gray"
                 Margin="1" 
                 BorderThickness=".75">

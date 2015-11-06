@@ -11,7 +11,10 @@
                 <ResourceDictionary Source="VVMAssociations.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <local:PrettyPrintKeyBindingConverter x:Key="PrettyPrintKeyBindingConverter"/>
+            <local:BoolToPropValueConverter x:Key="TrueToHiddenConverter" ValueForTrue="Hidden" ValueForFalse="Visible"/>
             <local:InvertBoolConverter x:Key="InvertBoolConverter"/>
+            <local:NullToBoolConverter x:Key="NullToTrueConverter" ValueIfNull="True"/>
+            <local:ChainConverter x:Key="NullToHiddenConverter" In="{StaticResource NullToTrueConverter}" Out="{StaticResource TrueToHiddenConverter}"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

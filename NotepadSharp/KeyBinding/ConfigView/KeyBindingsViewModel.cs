@@ -11,7 +11,7 @@ namespace NotepadSharp {
     public class KeyBindingsViewModel : ViewModelBase {
         public KeyBindingsViewModel() {
             KeyBindings = new ObservableCollection<KeyBindingViewModel>(
-                ArgsAndSettings.KeyBindings.Select(x => new KeyBindingViewModel(x, EditBinding))
+                ArgsAndSettings.KeyBindings.Select(x => new KeyBindingViewModel(x, EditBinding, DeleteBinding))
             );
             EmptyBinding = new NotifyingProperty<KeyBindingViewModel>(MakeEmptyBinding());
         }
@@ -26,10 +26,15 @@ namespace NotepadSharp {
             ArgsAndSettings.KeyBindings.SetBinding(newBinding);
         }
 
+        private void DeleteBinding(KeyBindingViewModel obj) {
+            KeyBindings.Remove(obj);
+            ArgsAndSettings.KeyBindings.ClearBinding(obj.GetBinding());
+        }
+
         private void NewBinding(KeyBinding oldBinding, KeyBinding newBinding) {
             if (!BindingsAreDifferent(oldBinding, newBinding)) return;
             ArgsAndSettings.KeyBindings.SetBinding(newBinding);
-            KeyBindings.Add(new KeyBindingViewModel(newBinding, EditBinding));
+            KeyBindings.Add(new KeyBindingViewModel(newBinding, EditBinding, DeleteBinding));
 
             EmptyBinding.Value = null; //have to null this first or the content template bindings don't update
             EmptyBinding.Value = MakeEmptyBinding();
@@ -42,7 +47,7 @@ namespace NotepadSharp {
         }
 
         private KeyBindingViewModel MakeEmptyBinding() {
-            return new KeyBindingViewModel(new KeyBinding(() => { }), NewBinding);
+            return new KeyBindingViewModel(new KeyBinding(() => { }), NewBinding, null);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace NotepadSharp {
         KeyBinding _currentBinding;
         Action<KeyBinding, KeyBinding> _bindingChangedCallback;
 
-        public KeyBindingViewModel(KeyBinding binding, Action<KeyBinding, KeyBinding> bindingChangedCallback) {
+        public KeyBindingViewModel(KeyBinding binding, Action<KeyBinding, KeyBinding> bindingChangedCallback, Action<KeyBindingViewModel> deleteBindingCallback) {
             _currentBinding = binding;
             _bindingChangedCallback = bindingChangedCallback;
             Keys = new NotifyingProperty<HashSet<Key>>(_currentBinding.Keys);
@@ -23,6 +23,7 @@ namespace NotepadSharp {
             EndEditingCommand = new RelayCommand(x => EndEditBinding((RoutedEventArgs)x));
             KeyDownCommand = new RelayCommand(x => KeyDown((KeyEventArgs)x), x => IsEditingBinding.Value);
             KeyUpCommand = new RelayCommand(x => KeyUp((KeyEventArgs)x), x => IsEditingBinding.Value);
+            if (deleteBindingCallback != null) DeleteBindingCommand = new RelayCommand(x => deleteBindingCallback(this));
         }
 
         public NotifyingProperty<HashSet<Key>> Keys { get; private set; }
@@ -33,6 +34,7 @@ namespace NotepadSharp {
         public ICommand KeyUpCommand { get; }
         public ICommand StartEditingCommand { get; }
         public ICommand EndEditingCommand { get; }
+        public ICommand DeleteBindingCommand { get; }
 
         public KeyBinding GetBinding() {
             return string.IsNullOrEmpty(ScriptFilePath.Value) ?
