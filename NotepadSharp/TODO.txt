@@ -1,5 +1,4 @@
-﻿-The ability to add key bindings
--The ability to remove key bindings
--The ability to disable/unbind key bindings
+﻿-The ability to remove key bindings
+-The ability to disable/unbind key bindings (unbind partially implemented)
 -Persistent bindings
 -Lua script execution

@@ -39,6 +39,21 @@ namespace NotepadSharp {
             return (ICommand)element.GetValue(LeftClickCommandProperty);
         }
 
+        public static DependencyProperty PreviewLeftClickCommandProperty = DependencyProperty.RegisterAttached(
+            "PreviewLeftClickCommand", 
+            typeof(ICommand), 
+            typeof(CommandBindingBehavior),
+            new PropertyMetadata(PreviewLeftClick_PropertyChanged)
+        );
+
+        public static void SetPreviewLeftClickCommand(UIElement element, ICommand value) {
+            element.SetValue(PreviewLeftClickCommandProperty, value);
+        }
+
+        public static ICommand GetPreviewLeftClickCommand(UIElement element) {
+            return (ICommand)element.GetValue(PreviewLeftClickCommandProperty);
+        }
+
         public static DependencyProperty GotFocusCommandProperty = DependencyProperty.RegisterAttached(
             "GotFocusCommand", 
             typeof(ICommand), 
@@ -156,6 +171,21 @@ namespace NotepadSharp {
         private static void MouseLeftClick(object sender, RoutedEventArgs e) {
             var ele = (UIElement)sender;
             var cmd = GetLeftClickCommand(ele);
+            if(cmd.CanExecute(e)) cmd.Execute(e);
+        }
+
+        private static void PreviewLeftClick_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var ele = (UIElement)d;
+            if(e.NewValue != null) {
+                ele.AddHandler(UIElement.PreviewMouseLeftButtonDownEvent, new RoutedEventHandler(MousePreviewLeftClick));
+            } else {
+                ele.RemoveHandler(UIElement.PreviewMouseLeftButtonDownEvent, new RoutedEventHandler(MousePreviewLeftClick));
+            }
+        }
+
+        private static void MousePreviewLeftClick(object sender, RoutedEventArgs e) {
+            var ele = (UIElement)sender;
+            var cmd = GetPreviewLeftClickCommand(ele);
             if(cmd.CanExecute(e)) cmd.Execute(e);
         }
 

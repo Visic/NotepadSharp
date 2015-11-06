@@ -12,7 +12,7 @@ namespace NotepadSharp
     public class PrettyPrintKeyBindingConverter : IValueConverter {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
             var keys = (IEnumerable<Key>)value;
-            return string.Join(" + ", keys.ToArray());
+            return keys.Count() == 0 ? "{ Unbound }" : string.Join(" + ", keys.ToArray());
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {

@@ -48,11 +48,12 @@ namespace NotepadSharp {
 
         private void StartEditBinding(RoutedEventArgs obj) {
             IsEditingBinding.Value = true;
+            Keys.Value = new HashSet<Key>();
         }
 
         private void EndEditBinding(RoutedEventArgs obj) {
             IsEditingBinding.Value = false;
-            CommitChanges();
+            if(GetBinding() != _currentBinding) CommitChanges();
         }
 
         private void KeyUp(KeyEventArgs e) {
@@ -62,8 +63,17 @@ namespace NotepadSharp {
         private void KeyDown(KeyEventArgs e) {
             var key = GetRelevantKey(e);
             e.Handled = ArgsAndSettings.KeyBindings.KeyPressed(key, false);
-            if(!e.Handled && key == Key.Escape) {
-                Keys.Value = _currentBinding.Keys;
+            if(!e.Handled) {
+                switch(key) {
+                    case Key.Escape:
+                        Keys.Value = _currentBinding.Keys;
+                        EndEditBinding(null);
+                        break;
+                    case Key.Enter:
+                        EndEditBinding(null);
+                        break;
+                }
+                
             } else {
                 Keys.Value = new HashSet<Key>(ArgsAndSettings.KeyBindings.PressedKeys);
             }

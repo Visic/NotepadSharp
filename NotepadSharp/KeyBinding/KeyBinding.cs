@@ -8,13 +8,14 @@ using Utility;
 
 namespace NotepadSharp {
     public class KeyBinding {
-        readonly int _hashCode;
+        public const int C_Unassigned = -1;
+        readonly int _hashCode = -1;
 
         public KeyBinding(Action action, string label = "", params Key[] keys) {
             Action = action;
             Label = label;
             Keys = new HashSet<Key>(keys);
-            _hashCode = int.Parse(keys.Select(x => (int)x).ToDelimitedString(""));
+            if (keys.Length > 0) _hashCode = int.Parse(keys.Select(x => (int)x).ToDelimitedString(""));
         }
 
         public Action Action { get; }
@@ -28,6 +29,14 @@ namespace NotepadSharp {
         public override bool Equals(object obj) {
             var maybeHashcode = (obj as KeyBinding)?.GetHashCode();
             return maybeHashcode.HasValue && maybeHashcode == _hashCode;
+        }
+
+        public static bool operator ==(KeyBinding a, KeyBinding b) {
+            return a?.Equals(b) ?? false;
+        }
+
+        public static bool operator !=(KeyBinding a, KeyBinding b) {
+            return !(a == b);
         }
     }
 }

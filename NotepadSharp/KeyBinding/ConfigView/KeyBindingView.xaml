@@ -8,32 +8,58 @@
              MinWidth="300"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-        <local:BoolToPropValueConverter x:Key="IsEditingBindingColorConverter" ValueForTrue="Red" ValueForFalse="Transparent" />
+        <local:BoolToPropValueConverter x:Key="IsEditingBindingColorConverter" ValueForTrue="Red" ValueForFalse="Gray" />
+
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <ScrollViewer Margin="0" x:Name="PART_ContentHost"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="1.5*" />
             <ColumnDefinition Width="3*" />
         </Grid.ColumnDefinitions>
+        
         <Border Grid.Column="0"
-                BorderThickness="1"
+                Margin="1" 
+                Background="LightGray"
+                BorderThickness=".75"
                 BorderBrush="{Binding IsEditingBinding.Value, Converter={StaticResource IsEditingBindingColorConverter}}">
-            <Grid>
-                <TextBox TextAlignment="Center" 
-                         Background="LightGray" 
-                         Text="{Binding Keys.Value, Converter={StaticResource PrettyPrintKeyBindingConverter}, Mode=OneWay}" />
-                <!--disable the textbox without using IsEnabled (I don't want the ugly gray)-->
-                <TextBox Cursor="Arrow" 
-                         IsReadOnly="True" 
-                         Background="Transparent"
-                         local:CommandBindingBehavior.GotFocusCommand="{Binding StartEditingCommand}" 
+                <TextBox TextAlignment="Center"
+                         IsReadOnly="True"
+                         Cursor="Arrow"
+                         VerticalAlignment="Center"
+                         local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding StartEditingCommand}" 
                          local:CommandBindingBehavior.LostFocusCommand="{Binding EndEditingCommand}"
                          local:CommandBindingBehavior.PreviewKeyDownCommand="{Binding KeyDownCommand}"
-                         local:CommandBindingBehavior.PreviewKeyUpCommand="{Binding KeyUpCommand}"/>
-            </Grid>
+                         local:CommandBindingBehavior.PreviewKeyUpCommand="{Binding KeyUpCommand}"
+                         Text="{Binding Keys.Value, Converter={StaticResource PrettyPrintKeyBindingConverter}, Mode=OneWay}"/>
         </Border>
-        <TextBox  Grid.Column="1" TextAlignment="Left" Text="{Binding Label.Value}" />
-        <TextBox  Grid.Column="2" TextAlignment="Left" Text="{Binding ScriptFilePath.Value}" />
+        
+        <Border Grid.Column="1"
+                BorderBrush="Gray"
+                Margin="1" 
+                BorderThickness=".75">
+            <TextBox TextAlignment="Left" 
+                     Padding="2"
+                     Text="{Binding Label.Value}"/>
+        </Border>
+
+        <Border Grid.Column="2"
+                BorderBrush="Gray"
+                Margin="1" 
+                BorderThickness=".75">
+            <TextBox TextAlignment="Left" 
+                     Padding="2"
+                     Text="{Binding ScriptFilePath.Value}"/>
+        </Border>
     </Grid>
 </UserControl>

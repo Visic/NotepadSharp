@@ -95,6 +95,7 @@
     <Compile Include="Converters\BoolToPropValueConverter.cs" />
     <Compile Include="Behaviors\CommandBindingBehavior.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Converters\InvertBoolConverter.cs" />
     <Compile Include="Converters\PrettyPrintKeyBindingConverter.cs" />
     <Compile Include="DataStructures\ConditionalNotifyingSetting.cs" />
     <Compile Include="DataStructures\NotifyingSetting.cs" />

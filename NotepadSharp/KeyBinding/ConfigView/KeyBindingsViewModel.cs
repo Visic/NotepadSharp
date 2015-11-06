@@ -13,6 +13,7 @@ namespace NotepadSharp {
             KeyBindings = new ObservableCollection<KeyBindingViewModel>(
                 ArgsAndSettings.KeyBindings.Select(x => new KeyBindingViewModel(x, EditBinding))
             );
+            AddEmptyBinding();
         }
 
         public string Title { get; } = "Key Bindings";
@@ -21,6 +22,15 @@ namespace NotepadSharp {
         private void EditBinding(KeyBinding oldBinding, KeyBinding newBinding) {
             ArgsAndSettings.KeyBindings.ClearBinding(oldBinding);
             ArgsAndSettings.KeyBindings.SetBinding(newBinding);
+        }
+
+        private void NewBinding(KeyBinding oldBinding, KeyBinding newBinding) {
+            ArgsAndSettings.KeyBindings.SetBinding(newBinding);
+            AddEmptyBinding();
+        }
+
+        private void AddEmptyBinding() {
+            KeyBindings.Add(new KeyBindingViewModel(new KeyBinding(() => { }), NewBinding));
         }
     }
 }

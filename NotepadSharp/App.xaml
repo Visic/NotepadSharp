@@ -11,6 +11,7 @@
                 <ResourceDictionary Source="VVMAssociations.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <local:PrettyPrintKeyBindingConverter x:Key="PrettyPrintKeyBindingConverter"/>
+            <local:InvertBoolConverter x:Key="InvertBoolConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
