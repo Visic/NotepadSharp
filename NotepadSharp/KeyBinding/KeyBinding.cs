@@ -7,7 +7,7 @@ using System.Windows.Input;
 using Utility;
 
 namespace NotepadSharp {
-    public class KeyBinding {
+    public abstract class KeyBinding {
         public const int C_Unassigned = -1;
         readonly int _hashCode = -1;
 

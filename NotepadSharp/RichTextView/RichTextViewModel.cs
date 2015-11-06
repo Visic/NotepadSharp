@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using WPFUtility;
 
 namespace NotepadSharp {
@@ -13,9 +8,9 @@ namespace NotepadSharp {
             KeyDownCommand = new RelayCommand(x => KeyDown((KeyEventArgs)x));
             KeyUpCommand = new RelayCommand(x => KeyUp((KeyEventArgs)x));
 
-            ArgsAndSettings.KeyBindings.SetBinding(new KeyBinding(() => Content.Value = Content.Value + "!", "Testing 1", Key.LeftCtrl, Key.E));
-            ArgsAndSettings.KeyBindings.SetBinding(new KeyBinding(() => { }, "Testing 1", Key.LeftCtrl, Key.A));
-            ArgsAndSettings.KeyBindings.SetBinding(new KeyBinding(() => { }, "Testing 2", Key.LeftCtrl, Key.B));
+            ArgsAndSettings.KeyBindings.SetBinding(new LuaKeyBinding("", "Testing 1", Key.LeftCtrl, Key.E));
+            ArgsAndSettings.KeyBindings.SetBinding(new LuaKeyBinding("", "Testing 1", Key.LeftCtrl, Key.A));
+            ArgsAndSettings.KeyBindings.SetBinding(new LuaKeyBinding("", "Testing 2", Key.LeftCtrl, Key.B));
         }
         
         public NotifyingProperty<string> Content { get; set; }

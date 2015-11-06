@@ -40,7 +40,7 @@
                                VerticalAlignment="Center" 
                                TextAlignment="Center" 
                                Background="#CC2222"
-                               Padding="0 0 0 -1"/>
+                               Padding="0,0,0,-.5"/>
                 </ControlTemplate>
             </Button.Template>
         </Button>

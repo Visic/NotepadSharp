@@ -47,7 +47,7 @@ namespace NotepadSharp {
         }
 
         private KeyBindingViewModel MakeEmptyBinding() {
-            return new KeyBindingViewModel(new KeyBinding(() => { }), NewBinding, null);
+            return new KeyBindingViewModel(new LuaKeyBinding(""), NewBinding, null);
         }
     }
 }

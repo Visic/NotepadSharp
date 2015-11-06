@@ -26,10 +26,6 @@ namespace NotepadSharp {
             _keyBindings.Remove(keyBinding);
         }
 
-        public void ClearBinding(params Key[] keys) {
-            _keyBindings.Remove(new KeyBinding(() => { }, keys: keys));
-        }
-
         //returns whether or not a binding was executed
         public bool KeyPressed(Key key, bool executeBinding) {
             if(_pressedKeys.Count == 0 && !C_AllowedFirstKeys.Contains(key)) return false;

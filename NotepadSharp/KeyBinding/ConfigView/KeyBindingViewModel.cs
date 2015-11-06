@@ -37,9 +37,7 @@ namespace NotepadSharp {
         public ICommand DeleteBindingCommand { get; }
 
         public KeyBinding GetBinding() {
-            return string.IsNullOrEmpty(ScriptFilePath.Value) ?
-                new KeyBinding(_currentBinding.Action, Label.Value, Keys.Value.ToArray()) :
-                new LuaKeyBinding(ScriptFilePath.Value, Label.Value, Keys.Value.ToArray());
+            return new LuaKeyBinding(ScriptFilePath.Value, Label.Value, Keys.Value.ToArray());
         }
 
         private void CommitChanges() {
