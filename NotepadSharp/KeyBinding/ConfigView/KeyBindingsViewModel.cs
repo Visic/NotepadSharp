@@ -13,24 +13,36 @@ namespace NotepadSharp {
             KeyBindings = new ObservableCollection<KeyBindingViewModel>(
                 ArgsAndSettings.KeyBindings.Select(x => new KeyBindingViewModel(x, EditBinding))
             );
-            AddEmptyBinding();
+            EmptyBinding = new NotifyingProperty<KeyBindingViewModel>(MakeEmptyBinding());
         }
 
         public string Title { get; } = "Key Bindings";
         public ObservableCollection<KeyBindingViewModel> KeyBindings { get; }
+        public NotifyingProperty<KeyBindingViewModel> EmptyBinding { get; }
 
         private void EditBinding(KeyBinding oldBinding, KeyBinding newBinding) {
+            if (!BindingsAreDifferent(oldBinding, newBinding)) return;
             ArgsAndSettings.KeyBindings.ClearBinding(oldBinding);
             ArgsAndSettings.KeyBindings.SetBinding(newBinding);
         }
 
         private void NewBinding(KeyBinding oldBinding, KeyBinding newBinding) {
+            if (!BindingsAreDifferent(oldBinding, newBinding)) return;
             ArgsAndSettings.KeyBindings.SetBinding(newBinding);
-            AddEmptyBinding();
+            KeyBindings.Add(new KeyBindingViewModel(newBinding, EditBinding));
+
+            EmptyBinding.Value = null; //have to null this first or the content template bindings don't update
+            EmptyBinding.Value = MakeEmptyBinding();
         }
 
-        private void AddEmptyBinding() {
-            KeyBindings.Add(new KeyBindingViewModel(new KeyBinding(() => { }), NewBinding));
+        private bool BindingsAreDifferent(KeyBinding oldBinding, KeyBinding newBinding) {
+            return newBinding != oldBinding || 
+                   newBinding.Label != oldBinding.Label || 
+                   (oldBinding as LuaKeyBinding)?.ScriptPath?.Value != (newBinding as LuaKeyBinding)?.ScriptPath?.Value;
+        }
+
+        private KeyBindingViewModel MakeEmptyBinding() {
+            return new KeyBindingViewModel(new KeyBinding(() => { }), NewBinding);
         }
     }
 }
