@@ -1,26 +1,42 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Utility;
 
 namespace NotepadSharp {
     public abstract class KeyBinding {
         public const int C_Unassigned = -1;
-        readonly int _hashCode = -1;
+        int _hashCode = -1;
 
-        public KeyBinding(Action action, string label = "", params Key[] keys) {
-            Action = action;
-            Label = label;
+        public KeyBinding(params Key[] keys) {
             Keys = new HashSet<Key>(keys);
-            if (keys.Length > 0) _hashCode = int.Parse(keys.Select(x => (int)x).ToDelimitedString(""));
         }
 
-        public Action Action { get; }
-        public HashSet<Key> Keys { get; }
-        public string Label { get; }
+        public KeyBinding(KeyBinding otherBinding, params Key[] keys) :
+            this(keys)
+        {
+            UID = otherBinding.UID;
+            Label = otherBinding.Label;
+        }
+
+        [JsonIgnore]
+        public string UID { get; } = Guid.NewGuid().ToString();
+        
+        public string Label { get; protected set; } = "";
+
+        HashSet<Key> _keys;
+        public HashSet<Key> Keys {
+            get { return _keys; }
+            protected set 
+            {
+                _keys = value;
+                _hashCode = _keys.Count > 0 ? int.Parse(_keys.Select(x => (int)x).ToDelimitedString("")) : C_Unassigned;
+            }
+        }
+
+        public abstract void Execute();
 
         public override int GetHashCode() {
             return _hashCode;

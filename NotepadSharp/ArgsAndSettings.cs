@@ -1,4 +1,5 @@
-﻿using NotepadSharp.Properties;
+﻿using Newtonsoft.Json;
+using NotepadSharp.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +33,7 @@ namespace NotepadSharp
 
         private static void SetDefaults() {
             LogPath = "";
-            KeyBindings = new KeyBindingCollection();
+            KeyBindings = new KeyBindingCollection(new PersistentCollection<LuaKeyBinding>(Constants.KeyBindingCollectionSettingName));
         }
 
         private static void LoadSettings() {

@@ -1,14 +1,27 @@
-﻿using System.Windows.Input;
-using WPFUtility;
+﻿using Newtonsoft.Json;
+using System.Windows.Input;
 
 namespace NotepadSharp {
     public class LuaKeyBinding : KeyBinding {
-        public LuaKeyBinding(string scriptPath, string label = "", params Key[] keys)
-            : base(() => LuaScriptRunner.Execute(scriptPath), label, keys)
+        public LuaKeyBinding(KeyBinding otherBinding, string scriptPath, string label, params Key[] keys)
+            : base(otherBinding, keys)
         {
-            ScriptPath = new NotifyingProperty<string>(scriptPath);
+            ScriptPath = scriptPath;
+            Label = label;
         }
 
-        public NotifyingProperty<string> ScriptPath { get; }
+        [JsonConstructor]
+        public LuaKeyBinding(string scriptPath, string label = "", params Key[] keys)
+            : base(keys)
+        {
+            ScriptPath = scriptPath;
+            Label = label;
+        }
+
+        public string ScriptPath { get; }
+
+        public override void Execute() {
+            LuaScriptRunner.Execute(ScriptPath);
+        }
     }
 }

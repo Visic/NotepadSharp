@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using WPFUtility;
 
 namespace NotepadSharp {
@@ -43,7 +38,7 @@ namespace NotepadSharp {
         private bool BindingsAreDifferent(KeyBinding oldBinding, KeyBinding newBinding) {
             return newBinding != oldBinding || 
                    newBinding.Label != oldBinding.Label || 
-                   (oldBinding as LuaKeyBinding)?.ScriptPath?.Value != (newBinding as LuaKeyBinding)?.ScriptPath?.Value;
+                   (oldBinding as LuaKeyBinding)?.ScriptPath != (newBinding as LuaKeyBinding)?.ScriptPath;
         }
 
         private KeyBindingViewModel MakeEmptyBinding() {

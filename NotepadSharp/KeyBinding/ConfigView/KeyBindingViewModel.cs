@@ -17,7 +17,7 @@ namespace NotepadSharp {
             _bindingChangedCallback = bindingChangedCallback;
             Keys = new NotifyingProperty<HashSet<Key>>(_currentBinding.Keys);
             Label = new NotifyingPropertyWithChangedAction<string>(x => CommitChanges(), _currentBinding.Label);
-            ScriptFilePath = new NotifyingPropertyWithChangedAction<string>(x => CommitChanges(), (binding as LuaKeyBinding)?.ScriptPath?.Value);
+            ScriptFilePath = new NotifyingPropertyWithChangedAction<string>(x => CommitChanges(), (binding as LuaKeyBinding)?.ScriptPath);
             IsEditingBinding = new NotifyingProperty<bool>();
             StartEditingCommand = new RelayCommand(x => StartEditBinding((RoutedEventArgs)x));
             EndEditingCommand = new RelayCommand(x => EndEditBinding((RoutedEventArgs)x));
@@ -37,7 +37,7 @@ namespace NotepadSharp {
         public ICommand DeleteBindingCommand { get; }
 
         public KeyBinding GetBinding() {
-            return new LuaKeyBinding(ScriptFilePath.Value, Label.Value, Keys.Value.ToArray());
+            return new LuaKeyBinding(_currentBinding, ScriptFilePath.Value, Label.Value, Keys.Value.ToArray());
         }
 
         private void CommitChanges() {
