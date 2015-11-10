@@ -65,18 +65,44 @@
                 BorderBrush="Gray"
                 Margin="1" 
                 BorderThickness="1">
-            <TextBox TextAlignment="Left" 
+            <TextBox x:Name="Label"
+                     TextAlignment="Left" 
                      Padding="2"
-                     Text="{Binding Label.Value}"/>
+                     local:CommandBindingBehavior.LostFocusCommand="{Binding LabelLostFocusCommand}"
+                     local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding LabelGotFocusCommand}"
+                     Text="{Binding Label.Value}">
+                <TextBox.Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding LabelIsFocused.Value}" Value="true">
+                                <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=Label}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
         </Border>
 
         <Border Grid.Column="3"
                 BorderBrush="Gray"
                 Margin="1" 
                 BorderThickness=".75">
-            <TextBox TextAlignment="Left" 
+            <TextBox x:Name="ScriptFilePath"
+                     TextAlignment="Left" 
                      Padding="2"
-                     Text="{Binding ScriptFilePath.Value}"/>
+                     local:CommandBindingBehavior.LostFocusCommand="{Binding ScriptFilePathLostFocusCommand}"
+                     local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding ScriptFilePathGotFocusCommand}"
+                     Text="{Binding ScriptFilePath.Value}">
+                <TextBox.Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ScriptFilePathIsFocused.Value}" Value="true">
+                                <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=ScriptFilePath}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
         </Border>
     </Grid>
 </UserControl>

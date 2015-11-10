@@ -24,8 +24,15 @@ namespace NotepadSharp {
             KeyDownCommand = new RelayCommand(x => KeyDown((KeyEventArgs)x), x => IsEditingBinding.Value);
             KeyUpCommand = new RelayCommand(x => KeyUp((KeyEventArgs)x), x => IsEditingBinding.Value);
             if (deleteBindingCallback != null) DeleteBindingCommand = new RelayCommand(x => deleteBindingCallback(this));
+
+            LabelGotFocusCommand = new RelayCommand(x => LabelIsFocused.Value = true);
+            LabelLostFocusCommand = new RelayCommand(x => LabelIsFocused.Value = false);
+            ScriptFilePathGotFocusCommand = new RelayCommand(x => ScriptFilePathIsFocused.Value = true);
+            ScriptFilePathLostFocusCommand = new RelayCommand(x => ScriptFilePathIsFocused.Value = false);
         }
 
+        public NotifyingProperty<bool> LabelIsFocused { get; } = new NotifyingProperty<bool>();
+        public NotifyingProperty<bool> ScriptFilePathIsFocused { get; } = new NotifyingProperty<bool>();
         public NotifyingProperty<HashSet<Key>> Keys { get; private set; }
         public NotifyingPropertyWithChangedAction<string> Label { get; }
         public NotifyingPropertyWithChangedAction<string> ScriptFilePath { get; }
@@ -35,6 +42,10 @@ namespace NotepadSharp {
         public ICommand StartEditingCommand { get; }
         public ICommand EndEditingCommand { get; }
         public ICommand DeleteBindingCommand { get; }
+        public ICommand LabelGotFocusCommand { get; }
+        public ICommand ScriptFilePathGotFocusCommand { get; }
+        public ICommand LabelLostFocusCommand { get; }
+        public ICommand ScriptFilePathLostFocusCommand { get; }
 
         public KeyBinding GetBinding() {
             return new LuaKeyBinding(_currentBinding, ScriptFilePath.Value, Label.Value, Keys.Value.ToArray());

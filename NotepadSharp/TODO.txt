@@ -1,3 +1,3 @@
 ﻿-The ability to disable/unbind key bindings (unbind partially implemented)
 -Lua script execution
--Fix adding a new binding (set the bound keys, click the label to fill it out, then a new binding is added and your focus is still on the empty one)
+-Re-evaluate the persistent collection/keybindings implementation

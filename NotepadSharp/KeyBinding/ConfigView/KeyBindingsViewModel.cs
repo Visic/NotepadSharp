@@ -29,10 +29,16 @@ namespace NotepadSharp {
         private void NewBinding(KeyBinding oldBinding, KeyBinding newBinding) {
             if (!BindingsAreDifferent(oldBinding, newBinding)) return;
             ArgsAndSettings.KeyBindings.SetBinding(newBinding);
-            KeyBindings.Add(new KeyBindingViewModel(newBinding, EditBinding, DeleteBinding));
 
+            var newBindingVm = new KeyBindingViewModel(newBinding, EditBinding, DeleteBinding);
+            KeyBindings.Add(newBindingVm);
+
+            var oldEmptyBinding = EmptyBinding.Value;
             EmptyBinding.Value = null; //have to null this first or the content template bindings don't update
             EmptyBinding.Value = MakeEmptyBinding();
+
+            if (oldEmptyBinding.LabelIsFocused.Value) newBindingVm.LabelIsFocused.Value = true;
+            if (oldEmptyBinding.ScriptFilePathIsFocused.Value) newBindingVm.ScriptFilePathIsFocused.Value = true;
         }
 
         private bool BindingsAreDifferent(KeyBinding oldBinding, KeyBinding newBinding) {
