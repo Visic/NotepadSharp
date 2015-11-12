@@ -1,5 +1,8 @@
-﻿-Maintain binding list order
+﻿--Bugs
+-Maintain binding list order
+-Persist selected tab
+
+--Features
 -Lua script execution
 -Syntax highlighting
 -Auto-Completion
--Persist selected tab

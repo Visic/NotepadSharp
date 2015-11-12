@@ -7,11 +7,17 @@ namespace NotepadSharp {
             Content = new NotifyingProperty<string>(content);
             KeyDownCommand = new RelayCommand(x => KeyDown((KeyEventArgs)x));
             KeyUpCommand = new RelayCommand(x => KeyUp((KeyEventArgs)x));
+            LostFocusCommand = new RelayCommand(x => LostFocus());
         }
         
         public NotifyingProperty<string> Content { get; set; }
         public ICommand KeyDownCommand { get; }
         public ICommand KeyUpCommand { get; }
+        public ICommand LostFocusCommand { get; }
+
+        private void LostFocus() {
+            ArgsAndSettings.KeyBindings.ClearPressedKeys();
+        }
         
         private void KeyDown(KeyEventArgs e) {
             e.Handled = ArgsAndSettings.KeyBindings.KeyPressed(GetRelevantKey(e), true);

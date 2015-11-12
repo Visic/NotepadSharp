@@ -1,14 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace NotepadSharp {
     public static class CommandBindingBehavior {
+        public static DependencyProperty PreviewLostKeyboardFocusCommandProperty = DependencyProperty.RegisterAttached(
+            "PreviewLostKeyboardFocusCommand", 
+            typeof(ICommand), 
+            typeof(CommandBindingBehavior),
+            new PropertyMetadata(PreviewLostKeyboardFocus_PropertyChanged)
+        );
+
+        public static void SetPreviewLostKeyboardFocusCommand(UIElement element, ICommand value) {
+            element.SetValue(PreviewLostKeyboardFocusCommandProperty, value);
+        }
+
+        public static ICommand GetPreviewLostKeyboardFocusCommand(UIElement element) {
+            return (ICommand)element.GetValue(PreviewLostKeyboardFocusCommandProperty);
+        }
+
+        public static DependencyProperty LostKeyboardFocusCommandProperty = DependencyProperty.RegisterAttached(
+            "LostKeyboardFocusCommand", 
+            typeof(ICommand), 
+            typeof(CommandBindingBehavior),
+            new PropertyMetadata(LostKeyboardFocus_PropertyChanged)
+        );
+
+        public static void SetLostKeyboardFocusCommand(UIElement element, ICommand value) {
+            element.SetValue(LostKeyboardFocusCommandProperty, value);
+        }
+
+        public static ICommand GetLostKeyboardFocusCommand(UIElement element) {
+            return (ICommand)element.GetValue(LostKeyboardFocusCommandProperty);
+        }
+
         public static DependencyProperty DoubleClickCommandProperty = DependencyProperty.RegisterAttached(
             "DoubleClickCommand", 
             typeof(ICommand), 
@@ -142,6 +167,36 @@ namespace NotepadSharp {
 
         public static ICommand GetPreviewKeyUpCommand(UIElement element) {
             return (ICommand)element.GetValue(PreviewKeyUpCommandProperty);
+        }
+
+        private static void PreviewLostKeyboardFocus_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var ele = (UIElement)d;
+            if(e.NewValue != null) {
+                ele.AddHandler(UIElement.PreviewLostKeyboardFocusEvent, new RoutedEventHandler(PreviewLostKeyboardFocus));
+            } else {
+                ele.RemoveHandler(UIElement.PreviewLostKeyboardFocusEvent, new RoutedEventHandler(PreviewLostKeyboardFocus));
+            }
+        }
+
+        private static void PreviewLostKeyboardFocus(object sender, RoutedEventArgs e) {
+            var ele = (UIElement)sender;
+            var cmd = GetPreviewLostKeyboardFocusCommand(ele);
+            if(cmd.CanExecute(e)) cmd.Execute(e);
+        }
+
+        private static void LostKeyboardFocus_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var ele = (UIElement)d;
+            if(e.NewValue != null) {
+                ele.AddHandler(UIElement.LostKeyboardFocusEvent, new RoutedEventHandler(LostKeyboardFocus));
+            } else {
+                ele.RemoveHandler(UIElement.LostKeyboardFocusEvent, new RoutedEventHandler(LostKeyboardFocus));
+            }
+        }
+
+        private static void LostKeyboardFocus(object sender, RoutedEventArgs e) {
+            var ele = (UIElement)sender;
+            var cmd = GetLostKeyboardFocusCommand(ele);
+            if(cmd.CanExecute(e)) cmd.Execute(e);
         }
 
         private static void DoubleClick_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {

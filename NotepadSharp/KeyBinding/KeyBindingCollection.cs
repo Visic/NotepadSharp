@@ -10,11 +10,16 @@ namespace NotepadSharp {
 
         PersistentCollection<LuaKeyBinding> _persistentLuaBindings;
         List<KeyBinding> _unbound = new List<KeyBinding>();
+
         HashSet<KeyBinding> _keyBindings = new HashSet<KeyBinding>();
         HashSet<Key> _pressedKeys = new HashSet<Key>();
         bool _initializing = true;
 
         public IReadOnlyCollection<Key> PressedKeys { get { return _pressedKeys; } }
+
+        public void ClearPressedKeys() {
+            _pressedKeys.Clear();
+        }
 
         public KeyBindingCollection(PersistentCollection<LuaKeyBinding> persistentLuaBindings) {
             _persistentLuaBindings = persistentLuaBindings;
