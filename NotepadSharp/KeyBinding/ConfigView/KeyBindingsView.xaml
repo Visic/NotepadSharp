@@ -8,25 +8,25 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions> <!-- These are set to match the with of columns in KeyBindingView.xaml -->
-            <ColumnDefinition Width="14" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="1.5*" />
-            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="14"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="1.5*"/>
+            <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="1" TextAlignment="Center" FontSize="13" Text="Key Binding" />
-        <TextBlock Grid.Row="0" Grid.Column="2" TextAlignment="Center" FontSize="13" Text="Label" />
-        <TextBlock Grid.Row="0" Grid.Column="3" TextAlignment="Center" FontSize="13" Text="Script File Path" />
+        <TextBlock Grid.Row="0" Grid.Column="1" TextAlignment="Center" FontSize="13" Text="Key Binding"/>
+        <TextBlock Grid.Row="0" Grid.Column="2" TextAlignment="Center" FontSize="13" Text="Label"/>
+        <TextBlock Grid.Row="0" Grid.Column="3" TextAlignment="Center" FontSize="13" Text="Script File Path"/>
 
         <ScrollViewer Grid.Row="1" Grid.ColumnSpan="4" VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <ItemsControl ItemsSource="{Binding KeyBindings}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel />
+                            <StackPanel/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>

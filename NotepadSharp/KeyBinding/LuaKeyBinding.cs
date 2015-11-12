@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json;
-using System.Windows.Input;
+﻿using System.Windows.Input;
+using System;
 
 namespace NotepadSharp {
+    [Serializable]
     public class LuaKeyBinding : KeyBinding {
         public LuaKeyBinding(KeyBinding otherBinding, string scriptPath, string label, params Key[] keys)
             : base(otherBinding, keys)
@@ -10,7 +11,6 @@ namespace NotepadSharp {
             Label = label;
         }
 
-        [JsonConstructor]
         public LuaKeyBinding(string scriptPath, string label = "", params Key[] keys)
             : base(keys)
         {

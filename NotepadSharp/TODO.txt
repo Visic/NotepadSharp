@@ -1,3 +1,5 @@
-﻿-The ability to disable/unbind key bindings (unbind partially implemented)
+﻿-Handle binding conflictions
 -Lua script execution
--Re-evaluate the persistent collection/keybindings implementation
+-Syntax highlighting
+-Auto-Completion
+-Persist selected tab

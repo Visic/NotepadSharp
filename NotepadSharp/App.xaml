@@ -8,7 +8,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/WPFUtility;component/VVMAssociations.xaml"/>
-                <ResourceDictionary Source="VVMAssociations.xaml" />
+                <ResourceDictionary Source="VVMAssociations.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <local:PrettyPrintKeyBindingConverter x:Key="PrettyPrintKeyBindingConverter"/>
             <local:BoolToPropValueConverter x:Key="TrueToHiddenConverter" ValueForTrue="Hidden" ValueForFalse="Visible"/>

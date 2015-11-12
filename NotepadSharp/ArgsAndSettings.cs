@@ -1,12 +1,10 @@
-﻿using Newtonsoft.Json;
-using NotepadSharp.Properties;
+﻿using NotepadSharp.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 
-namespace NotepadSharp
-{
+namespace NotepadSharp {
     public static class ArgsAndSettings
     {
         static Dictionary<string, Action<string[]>> _options = new Dictionary<string, Action<string[]>>() {

@@ -8,7 +8,7 @@
              MinWidth="300"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-        <local:BoolToPropValueConverter x:Key="IsEditingBindingColorConverter" ValueForTrue="Red" ValueForFalse="Gray" />
+        <local:BoolToPropValueConverter x:Key="IsEditingBindingColorConverter" ValueForTrue="Red" ValueForFalse="Gray"/>
 
         <Style TargetType="{x:Type TextBox}">
             <Setter Property="Template">
@@ -23,10 +23,10 @@
     
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="14" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="1.5*" />
-            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="14"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="1.5*"/>
+            <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
 
         <Button Height="13"

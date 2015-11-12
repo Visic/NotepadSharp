@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 using Utility;
 
 namespace NotepadSharp {
+    [Serializable]
     public abstract class KeyBinding {
         public const int C_Unassigned = -1;
         int _hashCode = -1;
@@ -21,7 +21,6 @@ namespace NotepadSharp {
             Label = otherBinding.Label;
         }
 
-        [JsonIgnore]
         public string UID { get; } = Guid.NewGuid().ToString();
         
         public string Label { get; protected set; } = "";

@@ -94,16 +94,5 @@ namespace NotepadSharp.Properties {
                 this["WindowState"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection KeyBindings {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["KeyBindings"]));
-            }
-            set {
-                this["KeyBindings"] = value;
-            }
-        }
     }
 }
