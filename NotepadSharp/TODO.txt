@@ -1,4 +1,4 @@
-﻿-Handle binding conflictions
+﻿-Maintain binding list order
 -Lua script execution
 -Syntax highlighting
 -Auto-Completion

@@ -28,6 +28,7 @@ namespace NotepadSharp {
 
         private void NewBinding(KeyBinding oldBinding, KeyBinding newBinding) {
             if (!BindingsAreDifferent(oldBinding, newBinding)) return;
+            KeyBindings.FirstOrDefault(x => x.Keys.Value.SetEquals(newBinding.Keys))?.ClearBinding(); //clear conflicted bindings
             ArgsAndSettings.KeyBindings.SetBinding(newBinding);
 
             var newBindingVm = new KeyBindingViewModel(newBinding, EditBinding, DeleteBinding);

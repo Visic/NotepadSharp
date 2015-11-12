@@ -51,6 +51,11 @@ namespace NotepadSharp {
             return new LuaKeyBinding(_currentBinding, ScriptFilePath.Value, Label.Value, Keys.Value.ToArray());
         }
 
+        public void ClearBinding() {
+            StartEditBinding(null);
+            EndEditBinding(null);
+        }
+
         private void CommitChanges() {
             var newBinding = GetBinding();
             _bindingChangedCallback(_currentBinding, newBinding);
