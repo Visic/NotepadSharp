@@ -3,7 +3,6 @@
 -Persist selected tab
 
 --Features
--When a binding is executed (key up, key down, repeat on key pressed)
 -Custom file explorer like liteide has
 -Syntax highlighting
 -Auto-Completion

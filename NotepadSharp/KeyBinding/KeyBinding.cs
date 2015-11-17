@@ -18,12 +18,15 @@ namespace NotepadSharp {
             this(keys)
         {
             UID = otherBinding.UID;
-            Label = otherBinding.Label;
+            ExecuteOnKeyDown = otherBinding.ExecuteOnKeyDown;
+            ExecuteOnKeyUp = otherBinding.ExecuteOnKeyUp;
+            RepeatOnKeyDown = otherBinding.RepeatOnKeyDown;
         }
 
         public string UID { get; } = Guid.NewGuid().ToString();
-        
-        public string Label { get; protected set; } = "";
+        public bool ExecuteOnKeyDown { get; set; }
+        public bool ExecuteOnKeyUp { get; set; }
+        public bool RepeatOnKeyDown { get; set; }
 
         HashSet<Key> _keys;
         public HashSet<Key> Keys {
@@ -47,7 +50,7 @@ namespace NotepadSharp {
         }
 
         public static bool operator ==(KeyBinding a, KeyBinding b) {
-            return a?.Equals(b) ?? false;
+            return a?.Equals(b) ?? (object)b == null;
         }
 
         public static bool operator !=(KeyBinding a, KeyBinding b) {
