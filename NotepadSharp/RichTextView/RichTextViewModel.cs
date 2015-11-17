@@ -10,6 +10,8 @@ namespace NotepadSharp {
             KeyDownCommand = new RelayCommand(x => _keyBindingExecutor.KeyDown((KeyEventArgs)x));
             KeyUpCommand = new RelayCommand(x => _keyBindingExecutor.KeyUp((KeyEventArgs)x));
             LostFocusCommand = new RelayCommand(x => _keyBindingExecutor.ClearPressedKeys());
+
+            _keyBindingExecutor.SetScriptArg("test", "val");
         }
         
         public NotifyingProperty<string> Content { get; set; }

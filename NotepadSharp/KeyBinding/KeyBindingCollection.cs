@@ -6,8 +6,6 @@ using System.Windows.Input;
 
 namespace NotepadSharp {
     public class KeyBindingCollection : IEnumerable<KeyBinding> {
-        public static readonly Key[] C_AllowedFirstKeys = new Key[] { Key.LeftCtrl, Key.RightCtrl, Key.LeftAlt, Key.RightAlt };
-
         PersistentCollection<LuaKeyBinding> _persistentLuaBindings;
         List<KeyBinding> _unbound = new List<KeyBinding>();
         HashSet<KeyBinding> _keyBindings = new HashSet<KeyBinding>();
@@ -24,7 +22,6 @@ namespace NotepadSharp {
 
         public void SetBinding(KeyBinding keyBinding) {
             if (keyBinding.GetHashCode() == KeyBinding.C_Unassigned) Add(keyBinding, _unbound);
-            if(!keyBinding.Keys.Overlaps(C_AllowedFirstKeys)) return;
 
             //if the binding already exists, remove it (essentially letting us overwriting the associated action)
             if (_keyBindings.Contains(keyBinding)) Remove(keyBinding, _keyBindings);

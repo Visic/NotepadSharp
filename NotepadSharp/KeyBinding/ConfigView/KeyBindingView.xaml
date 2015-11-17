@@ -71,7 +71,7 @@
                      Padding="2"
                      local:CommandBindingBehavior.LostFocusCommand="{Binding LabelLostFocusCommand}"
                      local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding LabelGotFocusCommand}"
-                     Text="{Binding Label.Value}">
+                     Text="{Binding Label.Value, UpdateSourceTrigger=PropertyChanged}">
                 <TextBox.Style>
                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                         <Style.Triggers>
@@ -96,7 +96,7 @@
                      local:CommandBindingBehavior.PreviewDropCommand="{Binding DropCommand}"
                      local:CommandBindingBehavior.LostFocusCommand="{Binding ScriptFilePathLostFocusCommand}"
                      local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding ScriptFilePathGotFocusCommand}"
-                     Text="{Binding ScriptFilePath.Value}">
+                     Text="{Binding ScriptFilePath.Value, UpdateSourceTrigger=PropertyChanged}">
                 <TextBox.Style>
                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                         <Style.Triggers>

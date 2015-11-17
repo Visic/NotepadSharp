@@ -91,21 +91,22 @@ namespace NotepadSharp {
         }
 
         private bool KeyPressed(IReadOnlyList<Key> arg) {
-            if (arg.Count == 1) {
+            if(arg.Count == 1) {
                 switch(arg[0]) {
                     case Key.Escape:
+                        _keyPressHandler.ClearPressedKeys();
                         Keys.Value = _currentBinding.Keys;
                         EndEditBinding(null);
-                        break;
+                        return true;
                     case Key.Enter:
+                        _keyPressHandler.ClearPressedKeys();
                         EndEditBinding(null);
-                        break;
+                        return true;
                 }
-                return true;
-            } else {
-                Keys.Value = new HashSet<Key>(arg);
-                return true;
             }
+            
+            Keys.Value = new HashSet<Key>(arg);
+            return true;
         }
     }
 }

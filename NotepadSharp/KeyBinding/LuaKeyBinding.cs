@@ -1,5 +1,6 @@
 ﻿using System.Windows.Input;
 using System;
+using System.Collections.Generic;
 
 namespace NotepadSharp {
     [Serializable]
@@ -20,8 +21,8 @@ namespace NotepadSharp {
 
         public string ScriptPath { get; }
 
-        public override void Execute() {
-            LuaScriptRunner.Execute(ScriptPath);
+        public override void Execute(Dictionary<string, object> args) {
+            LuaScriptRunner.Execute(ScriptPath, args);
         }
     }
 }

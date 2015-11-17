@@ -3,9 +3,11 @@
 -Persist selected tab
 
 --Features
+-When a binding is executed (key up, key down, repeat on key pressed)
 -Custom file explorer like liteide has
--Lua script execution
-    -Figure out how best to expose an interface for lua
-        **Probably through an object instance that we can pass to the lua script**
 -Syntax highlighting
 -Auto-Completion
+
+
+
+-api calls to execute from lua (need to flesh out the RichTextView stuff)
