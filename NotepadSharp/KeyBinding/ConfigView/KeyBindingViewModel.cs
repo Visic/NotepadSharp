@@ -11,24 +11,29 @@ namespace NotepadSharp {
     public class KeyBindingViewModel : ViewModelBase {
         KeyBinding _currentBinding;
         Action<KeyBinding, KeyBinding> _bindingChangedCallback;
+        KeyPressHandler _keyPressHandler;
 
         public KeyBindingViewModel(KeyBinding binding, Action<KeyBinding, KeyBinding> bindingChangedCallback, Action<KeyBindingViewModel> deleteBindingCallback) {
             _currentBinding = binding;
             _bindingChangedCallback = bindingChangedCallback;
+            _keyPressHandler = new KeyPressHandler(KeyPressed);
             Keys = new NotifyingProperty<HashSet<Key>>(_currentBinding.Keys);
             Label = new NotifyingPropertyWithChangedAction<string>(x => CommitChanges(), _currentBinding.Label);
             ScriptFilePath = new NotifyingPropertyWithChangedAction<string>(x => CommitChanges(), (binding as LuaKeyBinding)?.ScriptPath);
             IsEditingBinding = new NotifyingProperty<bool>();
             StartEditingCommand = new RelayCommand(x => StartEditBinding((RoutedEventArgs)x));
             EndEditingCommand = new RelayCommand(x => EndEditBinding((RoutedEventArgs)x));
-            KeyDownCommand = new RelayCommand(x => KeyDown((KeyEventArgs)x), x => IsEditingBinding.Value);
-            KeyUpCommand = new RelayCommand(x => KeyUp((KeyEventArgs)x), x => IsEditingBinding.Value);
+            KeyDownCommand = new RelayCommand(x => _keyPressHandler.KeyDown((KeyEventArgs)x), x => IsEditingBinding.Value);
+            KeyUpCommand = new RelayCommand(x => _keyPressHandler.KeyUp((KeyEventArgs)x), x => IsEditingBinding.Value);
             if (deleteBindingCallback != null) DeleteBindingCommand = new RelayCommand(x => deleteBindingCallback(this));
 
             LabelGotFocusCommand = new RelayCommand(x => LabelIsFocused.Value = true);
             LabelLostFocusCommand = new RelayCommand(x => LabelIsFocused.Value = false);
             ScriptFilePathGotFocusCommand = new RelayCommand(x => ScriptFilePathIsFocused.Value = true);
             ScriptFilePathLostFocusCommand = new RelayCommand(x => ScriptFilePathIsFocused.Value = false);
+            DropCommand = new RelayCommand(x => Drop((DragEventArgs)x));
+            DragOverCommand = new RelayCommand(x => DragOver((DragEventArgs)x));
+            LostKeyboardFocusCommand = new RelayCommand(x => _keyPressHandler.ClearPressedKeys());
         }
 
         public NotifyingProperty<bool> LabelIsFocused { get; } = new NotifyingProperty<bool>();
@@ -46,6 +51,9 @@ namespace NotepadSharp {
         public ICommand ScriptFilePathGotFocusCommand { get; }
         public ICommand LabelLostFocusCommand { get; }
         public ICommand ScriptFilePathLostFocusCommand { get; }
+        public ICommand DropCommand { get; }
+        public ICommand DragOverCommand { get; }
+        public ICommand LostKeyboardFocusCommand { get; }
 
         public KeyBinding GetBinding() {
             return new LuaKeyBinding(_currentBinding, ScriptFilePath.Value, Label.Value, Keys.Value.ToArray());
@@ -61,6 +69,16 @@ namespace NotepadSharp {
             _bindingChangedCallback(_currentBinding, newBinding);
             _currentBinding = newBinding;
         }
+        
+        private void DragOver(DragEventArgs x) {
+            x.Effects = DragDropEffects.Copy;
+            x.Handled = true;
+        }
+
+        private void Drop(DragEventArgs e) {
+            var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            ScriptFilePath.Value = (files?.Length ?? 0) == 0 ? "" : files[0];
+        }
 
         private void StartEditBinding(RoutedEventArgs obj) {
             IsEditingBinding.Value = true;
@@ -72,15 +90,9 @@ namespace NotepadSharp {
             if(GetBinding() != _currentBinding) CommitChanges();
         }
 
-        private void KeyUp(KeyEventArgs e) {
-            ArgsAndSettings.KeyBindings.KeyReleased(GetRelevantKey(e));
-        }
-
-        private void KeyDown(KeyEventArgs e) {
-            var key = GetRelevantKey(e);
-            e.Handled = ArgsAndSettings.KeyBindings.KeyPressed(key, false);
-            if(!e.Handled) {
-                switch(key) {
+        private bool KeyPressed(IReadOnlyList<Key> arg) {
+            if (arg.Count == 1) {
+                switch(arg[0]) {
                     case Key.Escape:
                         Keys.Value = _currentBinding.Keys;
                         EndEditBinding(null);
@@ -89,14 +101,11 @@ namespace NotepadSharp {
                         EndEditBinding(null);
                         break;
                 }
-                
+                return true;
             } else {
-                Keys.Value = new HashSet<Key>(ArgsAndSettings.KeyBindings.PressedKeys);
+                Keys.Value = new HashSet<Key>(arg);
+                return true;
             }
-        }
-
-        private Key GetRelevantKey(KeyEventArgs e) {
-            return e.Key == Key.System ? e.SystemKey : e.Key;
         }
     }
 }

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             local:CommandBindingBehavior.LostKeyboardFocusCommand="{Binding LostKeyboardFocusCommand}"
              xmlns:local="clr-namespace:NotepadSharp"
              mc:Ignorable="d" 
              MinWidth="300"
@@ -90,6 +91,9 @@
             <TextBox x:Name="ScriptFilePath"
                      TextAlignment="Left" 
                      Padding="2"
+                     AllowDrop="True"
+                     local:CommandBindingBehavior.PreviewDragOverCommand="{Binding DragOverCommand}"
+                     local:CommandBindingBehavior.PreviewDropCommand="{Binding DropCommand}"
                      local:CommandBindingBehavior.LostFocusCommand="{Binding ScriptFilePathLostFocusCommand}"
                      local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding ScriptFilePathGotFocusCommand}"
                      Text="{Binding ScriptFilePath.Value}">

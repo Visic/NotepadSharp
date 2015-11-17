@@ -122,6 +122,8 @@
     <Compile Include="KeyBinding\ConfigView\KeyBindingViewModel.cs" />
     <Compile Include="KeyBinding\KeyBinding.cs" />
     <Compile Include="KeyBinding\KeyBindingCollection.cs" />
+    <Compile Include="KeyBinding\KeyBindingExecution.cs" />
+    <Compile Include="KeyBinding\KeyPressHandler.cs" />
     <Compile Include="KeyBinding\LuaKeyBinding.cs" />
     <Compile Include="LuaScriptRunner.cs" />
     <Compile Include="RichTextView\RichTextView.xaml.cs">
@@ -180,7 +182,8 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
-xcopy /s /y "C:\Users\andrew\Dropbox\Projects\NotepadSharp\packages\NLua.1.3.2.1\lib\native\*.*" "$(TargetDir)"</PostBuildEvent>
+xcopy /s /y "C:\Users\andrew\Dropbox\Projects\NotepadSharp\packages\NLua.1.3.2.1\lib\native\*.*" "$(TargetDir)"
+xcopy /s /y "C:\Users\AFrai_000\Dropbox\Projects\NotepadSharp\packages\NLua.1.3.2.1\lib\native\*.*" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

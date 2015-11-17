@@ -3,6 +3,9 @@
 -Persist selected tab
 
 --Features
+-Custom file explorer like liteide has
 -Lua script execution
+    -Figure out how best to expose an interface for lua
+        **Probably through an object instance that we can pass to the lua script**
 -Syntax highlighting
 -Auto-Completion

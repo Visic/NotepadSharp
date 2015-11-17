@@ -19,6 +19,36 @@ namespace NotepadSharp {
             return (ICommand)element.GetValue(PreviewLostKeyboardFocusCommandProperty);
         }
 
+        public static DependencyProperty PreviewDropCommandProperty = DependencyProperty.RegisterAttached(
+            "PreviewDropCommand", 
+            typeof(ICommand), 
+            typeof(CommandBindingBehavior),
+            new PropertyMetadata(PreviewDrop_PropertyChanged)
+        );
+
+        public static void SetPreviewDropCommand(UIElement element, ICommand value) {
+            element.SetValue(PreviewDropCommandProperty, value);
+        }
+
+        public static ICommand GetPreviewDropCommand(UIElement element) {
+            return (ICommand)element.GetValue(PreviewDropCommandProperty);
+        }
+
+        public static DependencyProperty PreviewDragOverCommandProperty = DependencyProperty.RegisterAttached(
+            "PreviewDragOverCommand", 
+            typeof(ICommand), 
+            typeof(CommandBindingBehavior),
+            new PropertyMetadata(PreviewDragOver_PropertyChanged)
+        );
+
+        public static void SetPreviewDragOverCommand(UIElement element, ICommand value) {
+            element.SetValue(PreviewDragOverCommandProperty, value);
+        }
+
+        public static ICommand GetPreviewDragOverCommand(UIElement element) {
+            return (ICommand)element.GetValue(PreviewDragOverCommandProperty);
+        }
+
         public static DependencyProperty LostKeyboardFocusCommandProperty = DependencyProperty.RegisterAttached(
             "LostKeyboardFocusCommand", 
             typeof(ICommand), 
@@ -181,6 +211,36 @@ namespace NotepadSharp {
         private static void PreviewLostKeyboardFocus(object sender, RoutedEventArgs e) {
             var ele = (UIElement)sender;
             var cmd = GetPreviewLostKeyboardFocusCommand(ele);
+            if(cmd.CanExecute(e)) cmd.Execute(e);
+        }
+
+        private static void PreviewDrop_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var ele = (UIElement)d;
+            if(e.NewValue != null) {
+                ele.AddHandler(UIElement.PreviewDropEvent, new RoutedEventHandler(PreviewDrop));
+            } else {
+                ele.RemoveHandler(UIElement.PreviewDropEvent, new RoutedEventHandler(PreviewDrop));
+            }
+        }
+
+        private static void PreviewDrop(object sender, RoutedEventArgs e) {
+            var ele = (UIElement)sender;
+            var cmd = GetPreviewDropCommand(ele);
+            if(cmd.CanExecute(e)) cmd.Execute(e);
+        }
+
+        private static void PreviewDragOver_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var ele = (UIElement)d;
+            if(e.NewValue != null) {
+                ele.AddHandler(UIElement.PreviewDragOverEvent, new RoutedEventHandler(PreviewDragOver));
+            } else {
+                ele.RemoveHandler(UIElement.PreviewDragOverEvent, new RoutedEventHandler(PreviewDragOver));
+            }
+        }
+
+        private static void PreviewDragOver(object sender, RoutedEventArgs e) {
+            var ele = (UIElement)sender;
+            var cmd = GetPreviewDragOverCommand(ele);
             if(cmd.CanExecute(e)) cmd.Execute(e);
         }
 
