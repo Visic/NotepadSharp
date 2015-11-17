@@ -71,6 +71,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\NullOrEmptyToNullConverter.cs" />
     <Compile Include="CustomSettings.cs" />
     <Page Include="KeyBinding\ConfigView\KeyBindingsView.xaml">
       <SubType>Designer</SubType>

@@ -14,14 +14,18 @@
         <Grid.ColumnDefinitions> <!-- These are set to match the with of columns in KeyBindingView.xaml -->
             <ColumnDefinition Width="14"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="1.5*"/>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width=".5*"/>
+            <ColumnDefinition Width=".5*"/>
+            <ColumnDefinition Width=".5*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Row="0" Grid.Column="1" TextAlignment="Center" FontSize="13" Text="Key Binding"/>
-        <TextBlock Grid.Row="0" Grid.Column="2" TextAlignment="Center" FontSize="13" Text="Label"/>
-        <TextBlock Grid.Row="0" Grid.Column="3" TextAlignment="Center" FontSize="13" Text="Script File Path"/>
+        <TextBlock Grid.Row="0" Grid.Column="2" TextAlignment="Center" FontSize="13" Text="On Press"/>
+        <TextBlock Grid.Row="0" Grid.Column="3" TextAlignment="Center" FontSize="13" Text="Repeat If Held"/>
+        <TextBlock Grid.Row="0" Grid.Column="4" TextAlignment="Center" FontSize="13" Text="On Release"/>
+        <TextBlock Grid.Row="0" Grid.Column="5" TextAlignment="Center" FontSize="13" Text="Script File Path"/>
 
-        <ScrollViewer Grid.Row="1" Grid.ColumnSpan="4" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="1" Grid.ColumnSpan="6" VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <ItemsControl ItemsSource="{Binding KeyBindings}">
                     <ItemsControl.ItemsPanel>

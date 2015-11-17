@@ -26,8 +26,10 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="14"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="1.5*"/>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width=".5*"/>
+            <ColumnDefinition Width=".5*"/>
+            <ColumnDefinition Width=".5*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
         <Button Height="13"
@@ -61,30 +63,12 @@
                          local:CommandBindingBehavior.PreviewKeyUpCommand="{Binding KeyUpCommand}"
                          Text="{Binding Keys.Value, Converter={StaticResource PrettyPrintKeyBindingConverter}, Mode=OneWay}"/>
         </Border>
-        
-        <Border Grid.Column="2"
-                BorderBrush="Gray"
-                Margin="1" 
-                BorderThickness="1">
-            <TextBox x:Name="Label"
-                     TextAlignment="Left" 
-                     Padding="2"
-                     local:CommandBindingBehavior.LostFocusCommand="{Binding LabelLostFocusCommand}"
-                     local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding LabelGotFocusCommand}"
-                     Text="{Binding Label.Value, UpdateSourceTrigger=PropertyChanged}">
-                <TextBox.Style>
-                    <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding LabelIsFocused.Value}" Value="true">
-                                <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=Label}"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBox.Style>
-            </TextBox>
-        </Border>
 
-        <Border Grid.Column="3"
+        <CheckBox Grid.Column="2" HorizontalAlignment="Center" IsChecked="{Binding ExecuteOnKeyDown.Value}"/>
+        <CheckBox Grid.Column="3" HorizontalAlignment="Center" IsChecked="{Binding RepeatOnKeyDown.Value}"/>
+        <CheckBox Grid.Column="4" HorizontalAlignment="Center" IsChecked="{Binding ExecuteOnKeyUp.Value}"/>
+
+        <Border Grid.Column="5"
                 BorderBrush="Gray"
                 Margin="1" 
                 BorderThickness=".75">
@@ -92,6 +76,8 @@
                      TextAlignment="Left" 
                      Padding="2"
                      AllowDrop="True"
+                     ToolTipService.ToolTip="{Binding ScriptFilePath.Value}"
+                     ToolTipService.IsEnabled="{Binding ScriptFilePath.Value, Converter={StaticResource NullOrEmptyToFalseConverter}}"
                      local:CommandBindingBehavior.PreviewDragOverCommand="{Binding DragOverCommand}"
                      local:CommandBindingBehavior.PreviewDropCommand="{Binding DropCommand}"
                      local:CommandBindingBehavior.LostFocusCommand="{Binding ScriptFilePathLostFocusCommand}"

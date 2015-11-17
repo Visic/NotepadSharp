@@ -6,11 +6,11 @@ using System;
 namespace NotepadSharp {
     public class KeyPressHandler {
         HashSet<Key> _pressedKeys = new HashSet<Key>();
-        protected Func<IReadOnlyList<Key>, bool> _keyPressedCallback;
-        protected KeyPressHandler() { }
+        protected Func<IReadOnlyList<Key>, bool> _keyPressedCallback, _keyReleasedCallback;
 
-        public KeyPressHandler(Func<IReadOnlyList<Key>, bool> keyPressedCallback) {
-            _keyPressedCallback = keyPressedCallback;
+        public KeyPressHandler(Func<IReadOnlyList<Key>, bool> keyPressedCallback = null, Func<IReadOnlyList<Key>, bool> keyReleasedCallback = null) {
+            _keyPressedCallback = keyPressedCallback ?? new Func<IReadOnlyList<Key>, bool>(x => false);
+            _keyReleasedCallback = keyReleasedCallback ?? new Func<IReadOnlyList<Key>, bool>(x => false);
         }
 
         public void ClearPressedKeys() {
@@ -19,6 +19,7 @@ namespace NotepadSharp {
 
         public void KeyUp(KeyEventArgs e) {
             _pressedKeys.Remove(GetRelevantKey(e));
+            e.Handled = _keyReleasedCallback(_pressedKeys.ToList());
         }
         
         public void KeyDown(KeyEventArgs e) {
