@@ -15,6 +15,7 @@ namespace NotepadSharp {
 
         public void ClearPressedKeys() {
             _pressedKeys.Clear();
+            _keyReleasedCallback(_pressedKeys.ToList());
         }
 
         public void KeyUp(KeyEventArgs e) {
