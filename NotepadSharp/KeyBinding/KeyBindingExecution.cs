@@ -14,6 +14,12 @@ namespace NotepadSharp {
             _keyReleasedCallback = KeyReleased;
         }
 
+        public void SetScriptArgs(Dictionary<string, object> args) {
+            foreach(var arg in args) {
+                _scriptArgs[arg.Key] = arg.Value;
+            }
+        }
+
         public void SetScriptArg(string name, object arg) {
             _scriptArgs[name] = arg;
         }
@@ -44,7 +50,7 @@ namespace NotepadSharp {
                 _repeat = _currentBinding?.RepeatOnKeyDown ?? false;
             }
 
-            if(_currentBinding != null &&_currentBinding.ExecuteOnKeyDown) _currentBinding.Execute(_scriptArgs);
+            if(_currentBinding != null && _currentBinding.ExecuteOnKeyDown) _currentBinding.Execute(_scriptArgs);
             return _currentBinding != null;
         }
     }

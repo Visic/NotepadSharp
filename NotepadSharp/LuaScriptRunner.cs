@@ -16,7 +16,7 @@ namespace NotepadSharp {
 
             try {
                 var result = state.DoFile(filepath)[0];
-                WindowGenerator.Popup(result.ToString());
+                //WindowGenerator.Popup(result.ToString());
             }
             catch(Exception ex) {
                 WindowGenerator.Popup(ex.Message);

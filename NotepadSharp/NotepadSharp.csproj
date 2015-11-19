@@ -127,6 +127,8 @@
     <Compile Include="KeyBinding\KeyPressHandler.cs" />
     <Compile Include="KeyBinding\LuaKeyBinding.cs" />
     <Compile Include="LuaScriptRunner.cs" />
+    <Compile Include="RichTextView\BindableRichTextBox.cs" />
+    <Compile Include="RichTextView\RichTextBox_LuaApiProvider.cs" />
     <Compile Include="RichTextView\RichTextView.xaml.cs">
       <DependentUpon>RichTextView.xaml</DependentUpon>
     </Compile>

@@ -9,13 +9,13 @@
              local:CommandBindingBehavior.LostKeyboardFocusCommand="{Binding LostFocusCommand}"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-        <RichTextBox>
+    <DockPanel>
+        <local:BindableRichTextBox x:Name="TextBox" DockPanel.Dock="Bottom" Api="{Binding Api.Value}">
             <FlowDocument>
                 <Paragraph Margin="0">
                     <Run Text="{Binding Content.Value}"/>
                 </Paragraph>
             </FlowDocument>
-        </RichTextBox>
-    </Grid>
+        </local:BindableRichTextBox>
+    </DockPanel>
 </UserControl>
