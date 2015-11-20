@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NotepadSharp {
-    public class RichTextBox_LuaApiProvider {
-        public Action<string> SetMessageAreaText { get; set; }
-        public Action<string> SetMessageAreaTextColor { get; set; }
+    public class RichTextBoxApiProvider {
         public Action AlignCenter { get; set; }
         public Action AlignJustify { get; set; }
         public Action AlignLeft { get; set; }

@@ -7,7 +7,7 @@ namespace NotepadSharp {
         KeyBindingExecution _keyBindingExecutor;
 
         public RichTextViewModel(string content) {
-            ApiProvider = new NotifyingProperty<RichTextBox_LuaApiProvider>(new RichTextBox_LuaApiProvider());
+            ApiProvider = new NotifyingProperty<RichTextBoxApiProvider>(new RichTextBoxApiProvider());
             Content = new NotifyingProperty<string>(content);
             KeyDownCommand = new RelayCommand(x => _keyBindingExecutor.KeyDown((KeyEventArgs)x));
             KeyUpCommand = new RelayCommand(x => _keyBindingExecutor.KeyUp((KeyEventArgs)x));
@@ -16,13 +16,12 @@ namespace NotepadSharp {
                 ApplicationState.SetMessageAreaTextColor("DarkRed");
                 ApplicationState.SetMessageAreaText(ex.Message);
             });
-
-            ApiProvider.Value.SetMessageAreaText = ApplicationState.SetMessageAreaText;
-            ApiProvider.Value.SetMessageAreaTextColor = ApplicationState.SetMessageAreaTextColor;
+            
             _keyBindingExecutor.SetScriptArg("textbox", ApiProvider.Value);
+            _keyBindingExecutor.SetScriptArg("app", new ApplicationApiProvider());
         }
         
-        public NotifyingProperty<RichTextBox_LuaApiProvider> ApiProvider { get; }
+        public NotifyingProperty<RichTextBoxApiProvider> ApiProvider { get; }
         public NotifyingProperty<string> Content { get; }
         public ICommand KeyDownCommand { get; }
         public ICommand KeyUpCommand { get; }
