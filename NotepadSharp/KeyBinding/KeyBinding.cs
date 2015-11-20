@@ -38,7 +38,7 @@ namespace NotepadSharp {
             }
         }
 
-        public abstract void Execute(Dictionary<string, object> args);
+        public abstract Option<Exception> Execute(Dictionary<string, object> args);
 
         public override int GetHashCode() {
             return _hashCode;

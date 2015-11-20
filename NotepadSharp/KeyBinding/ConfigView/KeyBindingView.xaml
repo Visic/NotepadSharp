@@ -10,16 +10,6 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <local:BoolToPropValueConverter x:Key="IsEditingBindingColorConverter" ValueForTrue="Red" ValueForFalse="Gray"/>
-
-        <Style TargetType="{x:Type TextBox}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate>
-                        <ScrollViewer Margin="0" x:Name="PART_ContentHost"/>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
     </UserControl.Resources>
     
     <Grid>
@@ -57,6 +47,7 @@
                          IsReadOnly="True"
                          Cursor="Arrow"
                          VerticalAlignment="Center"
+                         Style="{StaticResource TextBox_NoBorder}"
                          local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding StartEditingCommand}" 
                          local:CommandBindingBehavior.LostFocusCommand="{Binding EndEditingCommand}"
                          local:CommandBindingBehavior.PreviewKeyDownCommand="{Binding KeyDownCommand}"
@@ -84,7 +75,7 @@
                      local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding ScriptFilePathGotFocusCommand}"
                      Text="{Binding ScriptFilePath.Value, UpdateSourceTrigger=PropertyChanged}">
                 <TextBox.Style>
-                    <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                    <Style TargetType="TextBox" BasedOn="{StaticResource TextBox_NoBorder}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding ScriptFilePathIsFocused.Value}" Value="true">
                                 <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=ScriptFilePath}"/>

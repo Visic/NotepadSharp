@@ -6,13 +6,19 @@
              xmlns:local="clr-namespace:NotepadSharp"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-        <TabControl ItemsSource="{Binding Tabs}" SelectedIndex="{Binding SelectedTabIndex.Value}">
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Bottom" 
+                   Padding="5,0,10,1.5" 
+                   HorizontalAlignment="Stretch" 
+                   Background="LightGray"
+                   Foreground="{Binding MessageAreaTextColor.Value}"
+                   Text="{Binding MessageAreaText.Value}"/>
+        <TabControl DockPanel.Dock="Top" ItemsSource="{Binding Tabs}" SelectedIndex="{Binding SelectedTabIndex.Value}">
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Title}"/>
                 </DataTemplate>
             </TabControl.ItemTemplate>
         </TabControl>
-    </Grid>
+    </DockPanel>
 </UserControl>

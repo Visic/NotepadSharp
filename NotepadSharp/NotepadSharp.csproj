@@ -67,12 +67,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
+    <ApplicationDefinition Include="App\App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\NullOrEmptyToNullConverter.cs" />
-    <Compile Include="CustomSettings.cs" />
+    <Compile Include="Misc\ApplicationState.cs" />
+    <Compile Include="Misc\CustomSettings.cs" />
     <Page Include="KeyBinding\ConfigView\KeyBindingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -97,14 +98,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="App.xaml.cs">
+    <Compile Include="App\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ArgsAndSettings.cs" />
+    <Compile Include="Misc\ArgsAndSettings.cs" />
     <Compile Include="Converters\BoolToPropValueConverter.cs" />
     <Compile Include="Behaviors\CommandBindingBehavior.cs" />
-    <Compile Include="Constants.cs" />
+    <Compile Include="Misc\Constants.cs" />
     <Compile Include="Converters\ChainConverter.cs" />
     <Compile Include="Converters\InvertBoolConverter.cs" />
     <Compile Include="Converters\NullToBoolConverter.cs" />
@@ -126,7 +127,7 @@
     <Compile Include="KeyBinding\KeyBindingExecution.cs" />
     <Compile Include="KeyBinding\KeyPressHandler.cs" />
     <Compile Include="KeyBinding\LuaKeyBinding.cs" />
-    <Compile Include="LuaScriptRunner.cs" />
+    <Compile Include="Misc\LuaScriptRunner.cs" />
     <Compile Include="RichTextView\BindableRichTextBox.cs" />
     <Compile Include="RichTextView\RichTextBox_LuaApiProvider.cs" />
     <Compile Include="RichTextView\RichTextView.xaml.cs">
@@ -145,7 +146,15 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="VVMAssociations.xaml">
+    <Page Include="ViewResources\Styles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ViewResources\Converters.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ViewResources\VVMAssociations.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -177,7 +186,7 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App\App.config" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="TODO.txt" />

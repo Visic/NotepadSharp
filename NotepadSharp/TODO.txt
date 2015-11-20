@@ -6,7 +6,3 @@
 -Custom file explorer like liteide has
 -Syntax highlighting
 -Auto-Completion
-
-
-
--api calls to execute from lua (need to flesh out the RichTextView stuff)

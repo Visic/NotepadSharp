@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 
@@ -6,12 +7,14 @@ namespace NotepadSharp {
     public class KeyBindingExecution : KeyPressHandler
     {
         Dictionary<string, object> _scriptArgs = new Dictionary<string, object>();
+        Action<Exception> _exceptionHandler;
         KeyBinding _currentBinding;
         bool _repeat;
 
-        public KeyBindingExecution() {
+        public KeyBindingExecution(Action<Exception> exceptionHandler) {
             _keyPressedCallback = KeyPressed;
             _keyReleasedCallback = KeyReleased;
+            _exceptionHandler = exceptionHandler;
         }
 
         public void SetScriptArgs(Dictionary<string, object> args) {
@@ -50,7 +53,7 @@ namespace NotepadSharp {
                 _repeat = _currentBinding?.RepeatOnKeyDown ?? false;
             }
 
-            if(_currentBinding != null && _currentBinding.ExecuteOnKeyDown) _currentBinding.Execute(_scriptArgs);
+            if(_currentBinding != null && _currentBinding.ExecuteOnKeyDown) _currentBinding.Execute(_scriptArgs).Apply(_exceptionHandler);
             return _currentBinding != null;
         }
     }

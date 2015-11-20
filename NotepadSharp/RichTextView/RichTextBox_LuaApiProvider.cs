@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace NotepadSharp {
     public class RichTextBox_LuaApiProvider {
+        public Action<string> SetMessageAreaText { get; set; }
+        public Action<string> SetMessageAreaTextColor { get; set; }
         public Action AlignCenter { get; set; }
         public Action AlignJustify { get; set; }
         public Action AlignLeft { get; set; }

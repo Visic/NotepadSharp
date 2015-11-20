@@ -1,0 +1,13 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:NotepadSharp">
+    <local:PrettyPrintKeyBindingConverter x:Key="PrettyPrintKeyBindingConverter"/>
+    <local:NullOrEmptyToNullConverter x:Key="NullOrEmptyToNullConverter"/>
+    <local:BoolToPropValueConverter x:Key="TrueToHiddenConverter" ValueForTrue="Hidden" ValueForFalse="Visible"/>
+    <local:InvertBoolConverter x:Key="InvertBoolConverter"/>
+    <local:NullToBoolConverter x:Key="NullToTrueConverter" ValueIfNull="True"/>
+    <local:ChainConverter x:Key="NullOrEmptyToTrueConverter" In="{StaticResource NullOrEmptyToNullConverter}" Out="{StaticResource NullToTrueConverter}"/>
+    <local:ChainConverter x:Key="NullOrEmptyToFalseConverter" In="{StaticResource NullOrEmptyToTrueConverter}" Out="{StaticResource InvertBoolConverter}"/>
+    <local:ChainConverter x:Key="NullToHiddenConverter" In="{StaticResource NullToTrueConverter}" Out="{StaticResource TrueToHiddenConverter}"/>
+    <local:ChainConverter x:Key="NullOrEmptyToHiddenConverter" In="{StaticResource NullOrEmptyToTrueConverter}" Out="{StaticResource TrueToHiddenConverter}"/>
+</ResourceDictionary>

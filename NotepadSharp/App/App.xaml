@@ -1,0 +1,17 @@
+﻿<Application x:Class="NotepadSharp.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:NotepadSharp"
+             Startup="App_Startup"
+             DispatcherUnhandledException="OnUnhandledException">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/WPFUtility;component/VVMAssociations.xaml"/>
+                <ResourceDictionary Source="../ViewResources/VVMAssociations.xaml"/>
+                <ResourceDictionary Source="../ViewResources/Styles.xaml"/>
+                <ResourceDictionary Source="../ViewResources/Converters.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

@@ -10,13 +10,15 @@ using WPFUtility;
 namespace NotepadSharp {
     public class MainViewModel : ViewModelBase {
         public MainViewModel() {
-            SelectedTabIndex = new NotifyingProperty<int>();
-            Tabs = new ObservableCollection<ViewModelBase>();
+            ApplicationState.SetMessageAreaText = msg => MessageAreaText.Value = msg;
+            ApplicationState.SetMessageAreaTextColor = color => MessageAreaTextColor.Value = color;
             Tabs.Add(new DocumentViewModel("Placeholder"));
             Tabs.Add(new KeyBindingsViewModel());
         }
 
-        public ObservableCollection<ViewModelBase> Tabs { get; private set; }
-        public NotifyingProperty<int> SelectedTabIndex { get; private set; }
+        public ObservableCollection<ViewModelBase> Tabs { get; } = new ObservableCollection<ViewModelBase>();
+        public NotifyingProperty<int> SelectedTabIndex { get; } = new NotifyingProperty<int>();
+        public NotifyingProperty<string> MessageAreaText { get; } = new NotifyingProperty<string>();
+        public NotifyingProperty<string> MessageAreaTextColor { get; } = new NotifyingProperty<string>();
     }
 }
