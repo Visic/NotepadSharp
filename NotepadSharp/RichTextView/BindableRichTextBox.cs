@@ -12,13 +12,13 @@ namespace NotepadSharp {
     public class BindableRichTextBox : RichTextBox {
         public static readonly DependencyProperty ApiProviderProperty = DependencyProperty.Register(
             "ApiProvider",
-            typeof(RichTextBox_LuaApiProvider),
+            typeof(RichTextBoxApiProvider),
             typeof(BindableRichTextBox),
             new FrameworkPropertyMetadata(ApiProviderChanged)
         );
 
-        public RichTextBox_LuaApiProvider ApiProvider {
-            get { return (RichTextBox_LuaApiProvider)GetValue(ApiProviderProperty); }
+        public RichTextBoxApiProvider ApiProvider {
+            get { return (RichTextBoxApiProvider)GetValue(ApiProviderProperty); }
             set { SetValue(ApiProviderProperty, value); }
         }
 
