@@ -14,7 +14,7 @@ namespace NotepadSharp {
             LostFocusCommand = new RelayCommand(x => _keyBindingExecutor.ClearPressedKeys());
 
             var appApiProvider = new ApplicationApiProvider();
-            _keyBindingExecutor = new KeyBindingExecution(ex => appApiProvider.SetMessageAreaText(ex.Message, "DarkRed"));            
+            _keyBindingExecutor = new KeyBindingExecution(ex => appApiProvider.SetMessageAreaText(ex.Message, "DarkRed"));
             _keyBindingExecutor.SetScriptArg("textbox", ApiProvider.Value);
             _keyBindingExecutor.SetScriptArg("app", appApiProvider);
         }

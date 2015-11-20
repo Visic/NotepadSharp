@@ -4,12 +4,10 @@ using System.Linq;
 using System.Windows.Input;
 
 namespace NotepadSharp {
-    public class KeyBindingExecution : KeyPressHandler
-    {
+    public class KeyBindingExecution : KeyPressHandler {
         Dictionary<string, object> _scriptArgs = new Dictionary<string, object>();
+        IReadOnlyList<Key> _lastPressedKeys = new Key[0];
         Action<Exception> _exceptionHandler;
-        KeyBinding _currentBinding;
-        bool _repeat;
 
         public KeyBindingExecution(Action<Exception> exceptionHandler) {
             _keyPressedCallback = KeyPressed;
@@ -33,28 +31,38 @@ namespace NotepadSharp {
 
         //returns whether or not we executed the binding
         private bool KeyReleased(IReadOnlyList<Key> keys) {
-            bool executed = false;
-            if (_currentBinding != null && _currentBinding.ExecuteOnKeyUp) {
-                _currentBinding.Execute(_scriptArgs);
+            var executed = false;
+            var bindings = KeysChanged(keys);
+
+            if (bindings.Item1 != null && bindings.Item1.ExecuteOnKeyUp) {
+                bindings.Item1.Execute(_scriptArgs);
                 executed = true;
             }
 
-            _currentBinding = null;
+            if (bindings.Item2 != null && bindings.Item2.RepeatOnKeyDown) {
+                bindings.Item2.Execute(_scriptArgs);
+                executed = true;
+            }
+
             return executed;
         }
 
         //returns whether or not a binding existed with these keys
         private bool KeyPressed(IReadOnlyList<Key> keys) {
-            if (_currentBinding != null && !_repeat) return true;
-
-            //if any keybinding matches this set of keys, make it the new current binding
-            if(_currentBinding == null) {
-                _currentBinding = ArgsAndSettings.KeyBindings.FirstOrDefault(x => x.Keys.SetEquals(keys));
-                _repeat = _currentBinding?.RepeatOnKeyDown ?? false;
+            var bindings = KeysChanged(keys);
+            if (bindings.Item2 != null && bindings.Item2.ExecuteOnKeyDown) { //if your suppose to execute it on key down
+                if (bindings.Item1 != null && bindings.Item1 == bindings.Item2 && !bindings.Item1.RepeatOnKeyDown) return true; //if it didn't change and your not suppose to execute it on repeat
+                bindings.Item2.Execute(_scriptArgs);
             }
 
-            if(_currentBinding != null && _currentBinding.ExecuteOnKeyDown) _currentBinding.Execute(_scriptArgs).Apply(_exceptionHandler);
-            return _currentBinding != null;
+            return bindings.Item2 != null;
+        }
+
+        private Tuple<KeyBinding, KeyBinding> KeysChanged(IReadOnlyList<Key> keys) {
+            var previousBinding = ArgsAndSettings.KeyBindings.FirstOrDefault(x => x.Keys.SetEquals(_lastPressedKeys));
+            var currentBinding = ArgsAndSettings.KeyBindings.FirstOrDefault(x => x.Keys.SetEquals(keys));
+            _lastPressedKeys = keys;
+            return Tuple.Create(previousBinding, currentBinding);
         }
     }
 }
