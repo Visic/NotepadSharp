@@ -73,6 +73,8 @@
     </ApplicationDefinition>
     <Compile Include="Converters\NullOrEmptyToNullConverter.cs" />
     <Compile Include="LuaApiProviders\ApplicationApiProvider.cs" />
+    <Compile Include="LuaApiProviders\DefaultProviderRegistry.cs" />
+    <Compile Include="LuaApiProviders\ThreadingApiProvider.cs" />
     <Compile Include="Misc\ApplicationState.cs" />
     <Compile Include="Misc\CustomSettings.cs" />
     <Page Include="KeyBinding\ConfigView\KeyBindingsView.xaml">

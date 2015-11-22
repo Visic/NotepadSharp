@@ -32,7 +32,6 @@ namespace NotepadSharp {
                 x => {
                     _currentBinding.RepeatOnKeyDown = x;
                     if (x) ExecuteOnKeyDown.Value = x;
-                    CommitChanges();
                 }, 
                 _currentBinding.RepeatOnKeyDown
             );

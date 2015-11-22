@@ -13,10 +13,13 @@ namespace NotepadSharp {
             KeyUpCommand = new RelayCommand(x => _keyBindingExecutor.KeyUp((KeyEventArgs)x));
             LostFocusCommand = new RelayCommand(x => _keyBindingExecutor.ClearPressedKeys());
 
-            var appApiProvider = new ApplicationApiProvider();
-            _keyBindingExecutor = new KeyBindingExecution(ex => appApiProvider.SetMessageAreaText(ex.Message, "DarkRed"));
+            _keyBindingExecutor = new KeyBindingExecution(ex => {
+                ApplicationState.SetMessageAreaText(ex.Message);
+                ApplicationState.SetMessageAreaTextColor("DarkRed");
+            });
+
             _keyBindingExecutor.SetScriptArg("textbox", ApiProvider.Value);
-            _keyBindingExecutor.SetScriptArg("app", appApiProvider);
+            _keyBindingExecutor.SetScriptArgs(new DefaultProviderRegistry());
         }
         
         public NotifyingProperty<RichTextBoxApiProvider> ApiProvider { get; }
