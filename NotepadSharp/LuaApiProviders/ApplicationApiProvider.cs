@@ -10,9 +10,9 @@ namespace NotepadSharp {
 
         public Action<string, string> SetMessageAreaText { get; }
 
-        private void SetMessageAreaText_Impl(string text, string color = "Black") {
+        private void SetMessageAreaText_Impl(object message, string color = "Black") {
             ApplicationState.SetMessageAreaTextColor(color);
-            ApplicationState.SetMessageAreaText(text);
+            ApplicationState.SetMessageAreaText(message.ToString());
         }
     }
 }

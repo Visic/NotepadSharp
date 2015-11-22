@@ -1,6 +1,7 @@
 ﻿--Bugs
 -Maintain binding list order
 -Persist selected tab
+-Running a lua script that uses DoAsync twice causes a memory corruption error and crashes the editor (need to add in some thread waiting and stuff for the scripts)
 
 --Features
 -Custom file explorer like liteide has

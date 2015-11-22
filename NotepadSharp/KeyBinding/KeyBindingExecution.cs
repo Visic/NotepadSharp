@@ -35,12 +35,12 @@ namespace NotepadSharp {
             var bindings = KeysChanged(keys);
 
             if (bindings.Item1 != null && bindings.Item1.ExecuteOnKeyUp) {
-                bindings.Item1.Execute(_scriptArgs);
+                bindings.Item1.Execute(_scriptArgs).ContinueWith(x => x.Result.Apply(_exceptionHandler));
                 executed = true;
             }
 
             if (bindings.Item2 != null && bindings.Item2.RepeatOnKeyDown) {
-                bindings.Item2.Execute(_scriptArgs);
+                bindings.Item2.Execute(_scriptArgs).ContinueWith(x => x.Result.Apply(_exceptionHandler));
                 executed = true;
             }
 
@@ -52,7 +52,7 @@ namespace NotepadSharp {
             var bindings = KeysChanged(keys);
             if (bindings.Item2 != null && bindings.Item2.ExecuteOnKeyDown) { //if your suppose to execute it on key down
                 if (bindings.Item1 != null && bindings.Item1 == bindings.Item2 && !bindings.Item1.RepeatOnKeyDown) return true; //if it didn't change and your not suppose to execute it on repeat
-                bindings.Item2.Execute(_scriptArgs);
+                bindings.Item2.Execute(_scriptArgs).ContinueWith(x => x.Result.Apply(_exceptionHandler));
             }
 
             return bindings.Item2 != null;

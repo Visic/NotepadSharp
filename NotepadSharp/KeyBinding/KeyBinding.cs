@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Utility;
 
@@ -38,7 +39,7 @@ namespace NotepadSharp {
             }
         }
 
-        public abstract Option<Exception> Execute(Dictionary<string, object> args);
+        public abstract Task<Option<Exception>> Execute(Dictionary<string, object> args);
 
         public override int GetHashCode() {
             return _hashCode;

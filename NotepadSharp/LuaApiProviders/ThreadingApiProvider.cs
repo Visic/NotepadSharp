@@ -12,6 +12,6 @@ namespace NotepadSharp {
         }
 
         public Action<int> Sleep { get; } = zzz => Thread.Sleep(zzz);
-        //public Func<Action, Action> DoAsync { get; } = work => { var task = Task.Run(work); return () => task.Wait(); };
+        public Func<Action, Action> DoAsync { get; } = work => { var task = Task.Run(work); return () => task.Wait(); };
     }
 }

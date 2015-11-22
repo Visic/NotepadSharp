@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Utility;
+using System.Threading.Tasks;
 
 namespace NotepadSharp {
     [Serializable]
@@ -20,7 +21,7 @@ namespace NotepadSharp {
 
         public string ScriptPath { get; }
 
-        public override Option<Exception> Execute(Dictionary<string, object> args) {
+        public override Task<Option<Exception>> Execute(Dictionary<string, object> args) {
             return LuaScriptRunner.Execute(ScriptPath, args);
         }
     }
