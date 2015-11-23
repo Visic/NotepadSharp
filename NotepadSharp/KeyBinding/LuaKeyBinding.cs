@@ -21,7 +21,7 @@ namespace NotepadSharp {
 
         public string ScriptPath { get; }
 
-        public override Task<Option<Exception>> Execute(Dictionary<string, object> args) {
+        public override Option<Exception> Execute(Dictionary<string, object> args) {
             return LuaScriptRunner.Execute(ScriptPath, args);
         }
     }
