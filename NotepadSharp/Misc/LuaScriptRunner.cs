@@ -12,6 +12,7 @@ namespace NotepadSharp {
                 using(var state = new Lua()) {
                     Exception internalEx = null;
                     state.HookException += (s, e) => internalEx = e.Exception;
+
                     foreach(var ele in args) {
                         state[ele.Key] = ele.Value;
                     }
