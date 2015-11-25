@@ -16,8 +16,8 @@ namespace NotepadSharp {
 
             AddDocumentTab("First.txt");
             AddDocumentTab("Second.txt");
+            AddTopPanelButton("Bindings", new KeyBindingsViewModel());
             AddLeftPanelToggleButton("Files", new FileExplorerViewModel());
-            AddLeftPanelToggleButton("Bindings", new KeyBindingsViewModel());
             TopTabs.First().Command.Execute(null);
         }
 
@@ -35,10 +35,13 @@ namespace NotepadSharp {
             LeftTabs.Add(toggleVm);
         }
 
+        private void AddTopPanelButton(string text, ViewModelBase vm) {
+            var cmd = new RelayCommand(x => TopPanelContent.Value = vm);
+            TopTabs.Add(new SelectableButtonViewModel(text, cmd));
+        }
+
         private void AddDocumentTab(string fileName) {
-            var docVm = new DocumentViewModel(fileName);
-            var cmd = new RelayCommand(x => TopPanelContent.Value = docVm);
-            TopTabs.Add(new SelectableButtonViewModel(Path.GetFileName(fileName), cmd));
+            AddTopPanelButton(Path.GetFileName(fileName), new DocumentViewModel(fileName));
         }
     }
 }
