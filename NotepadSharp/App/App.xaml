@@ -7,7 +7,8 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/WPFUtility;component/VVMAssociations.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/WPFUtility;component/ViewResources/VVMAssociations.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/WPFUtility;component/ViewResources/Styles.xaml"/>
                 <ResourceDictionary Source="../ViewResources/VVMAssociations.xaml"/>
                 <ResourceDictionary Source="../ViewResources/Styles.xaml"/>
                 <ResourceDictionary Source="../ViewResources/Converters.xaml"/>

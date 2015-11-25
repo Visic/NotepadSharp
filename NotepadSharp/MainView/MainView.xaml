@@ -4,21 +4,77 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NotepadSharp"
+             xmlns:WPFUtility="clr-namespace:WPFUtility;assembly=WPFUtility"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <DockPanel>
-        <TextBlock DockPanel.Dock="Bottom" 
+        <!--Message Bar-->
+        <TextBlock DockPanel.Dock="Bottom"
                    Padding="5,0,10,1.5" 
                    HorizontalAlignment="Stretch" 
                    Background="LightGray"
                    Foreground="{Binding MessageAreaTextColor.Value}"
                    Text="{Binding MessageAreaText.Value}"/>
-        <TabControl DockPanel.Dock="Top" ItemsSource="{Binding Tabs}" SelectedIndex="{Binding SelectedTabIndex.Value}">
-            <TabControl.ItemTemplate>
+
+        <!--Left Tabs-->
+        <ItemsControl DockPanel.Dock="Left"
+                      Background="#555555"
+                      ItemsSource="{Binding LeftTabs}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft">
+                        <StackPanel.LayoutTransform>
+                            <RotateTransform Angle="-90"/>
+                        </StackPanel.LayoutTransform>
+                    </StackPanel>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Title}"/>
+                    <ContentPresenter MinWidth="50" MinHeight="30" Margin="0,0,1,0" Content="{Binding}"/>
                 </DataTemplate>
-            </TabControl.ItemTemplate>
-        </TabControl>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <DockPanel DockPanel.Dock="Right">
+            <ContentControl DockPanel.Dock="Left"
+                            MinWidth="250"
+                            Content="{Binding LeftPanelContent.Value}"
+                            Visibility="{Binding LeftPanelContent.Value, Converter={StaticResource NullToCollapsedConverter}}"/>
+            
+            <WPFUtility:DockPanelSplitter DockPanel.Dock="Left" 
+                                          Width="3" 
+                                          Background="Gray"
+                                          Visibility="{Binding LeftPanelContent.Value, Converter={StaticResource NullToCollapsedConverter}}"/>
+            
+            <Grid DockPanel.Dock="Right">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="20*"/>
+                </Grid.RowDefinitions>
+
+                <!--Top Panel Content-->
+                <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness="1,5,1,0">
+                    <ContentControl Content="{Binding TopPanelContent.Value}"/>
+                </Border>
+
+                <!--Top Tabs-->
+                <ItemsControl Grid.Row="0"
+                              Background="#555555"
+                              Padding="2,0,0,0"
+                              ItemsSource="{Binding TopTabs}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ContentPresenter MinWidth="75" Margin="0,0,1,0" Content="{Binding}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+        </DockPanel>
     </DockPanel>
 </UserControl>

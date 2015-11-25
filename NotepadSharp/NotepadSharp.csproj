@@ -77,11 +77,19 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\NullOrEmptyToNullConverter.cs" />
+    <Compile Include="FileExplorer\FileExplorerView.xaml.cs">
+      <DependentUpon>FileExplorerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FileExplorer\FileExplorerViewModel.cs" />
     <Compile Include="LuaApiProviders\ApplicationApiProvider.cs" />
     <Compile Include="LuaApiProviders\DefaultProviderRegistry.cs" />
     <Compile Include="LuaApiProviders\ThreadingApiProvider.cs" />
     <Compile Include="Misc\ApplicationState.cs" />
     <Compile Include="Misc\CustomSettings.cs" />
+    <Page Include="FileExplorer\FileExplorerView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="KeyBinding\ConfigView\KeyBindingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -199,6 +207,7 @@
   <ItemGroup>
     <Resource Include="TODO.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /s /y "$(SolutionDir)\packages\NLua.1.3.2.1\lib\native\*.*" "$(TargetDir)"</PostBuildEvent>

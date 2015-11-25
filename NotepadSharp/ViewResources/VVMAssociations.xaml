@@ -20,4 +20,8 @@
     <DataTemplate DataType="{x:Type local:KeyBindingViewModel}">
         <local:KeyBindingView/>
     </DataTemplate>
+
+    <DataTemplate DataType="{x:Type local:FileExplorerViewModel}">
+        <local:FileExplorerView/>
+    </DataTemplate>
 </ResourceDictionary>

@@ -3,11 +3,18 @@
                     xmlns:local="clr-namespace:NotepadSharp">
     <local:PrettyPrintKeyBindingConverter x:Key="PrettyPrintKeyBindingConverter"/>
     <local:NullOrEmptyToNullConverter x:Key="NullOrEmptyToNullConverter"/>
+    <local:BoolToPropValueConverter x:Key="SelectableButtonTextColorConverter" ValueForTrue="#222222" ValueForFalse="#555555"/>
+    <local:BoolToPropValueConverter x:Key="SelectableButtonBackgroundColorConverter" ValueForTrue="#CCCCCC" ValueForFalse="Gray"/>
+    <local:BoolToPropValueConverter x:Key="ToggleButtonTextColorConverter" ValueForTrue="#222222" ValueForFalse="#555555"/>
+    <local:BoolToPropValueConverter x:Key="ToggleButtonBackgroundColorConverter" ValueForTrue="#CCCCCC" ValueForFalse="Gray"/>
     <local:BoolToPropValueConverter x:Key="TrueToHiddenConverter" ValueForTrue="Hidden" ValueForFalse="Visible"/>
+    <local:BoolToPropValueConverter x:Key="TrueToCollapsedConverter" ValueForTrue="Collapsed" ValueForFalse="Visible"/>
     <local:InvertBoolConverter x:Key="InvertBoolConverter"/>
     <local:NullToBoolConverter x:Key="NullToTrueConverter" ValueIfNull="True"/>
+    <local:NullToBoolConverter x:Key="NullToFalseConverter" ValueIfNull="False"/>
     <local:ChainConverter x:Key="NullOrEmptyToTrueConverter" In="{StaticResource NullOrEmptyToNullConverter}" Out="{StaticResource NullToTrueConverter}"/>
     <local:ChainConverter x:Key="NullOrEmptyToFalseConverter" In="{StaticResource NullOrEmptyToTrueConverter}" Out="{StaticResource InvertBoolConverter}"/>
     <local:ChainConverter x:Key="NullToHiddenConverter" In="{StaticResource NullToTrueConverter}" Out="{StaticResource TrueToHiddenConverter}"/>
+    <local:ChainConverter x:Key="NullToCollapsedConverter" In="{StaticResource NullToTrueConverter}" Out="{StaticResource TrueToCollapsedConverter}"/>
     <local:ChainConverter x:Key="NullOrEmptyToHiddenConverter" In="{StaticResource NullOrEmptyToTrueConverter}" Out="{StaticResource TrueToHiddenConverter}"/>
 </ResourceDictionary>
