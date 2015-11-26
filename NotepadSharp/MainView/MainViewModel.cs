@@ -17,7 +17,7 @@ namespace NotepadSharp {
             AddDocumentTab("First.txt");
             AddDocumentTab("Second.txt");
             AddTopPanelButton("Bindings", new KeyBindingsViewModel());
-            AddLeftPanelToggleButton("Files", new FileExplorerViewModel());
+            AddLeftPanelToggleButton("Files", new FileExplorerViewModel(Environment.GetFolderPath(Environment.SpecialFolder.Desktop)));
             TopTabs.First().Command.Execute(null);
         }
 

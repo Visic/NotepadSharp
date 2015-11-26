@@ -6,6 +6,16 @@
              xmlns:local="clr-namespace:NotepadSharp"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Background="Blue">
+    <UserControl.Resources>
+        <HierarchicalDataTemplate DataType="{x:Type local:DirectoryViewModel}" ItemsSource="{Binding Items}">
+            <TextBlock Text="{Binding Name}"/>
+        </HierarchicalDataTemplate>
+
+        <DataTemplate DataType="{x:Type local:FileViewModel}">
+            <TextBlock Text="{Binding Name}"/>
+        </DataTemplate>
+    </UserControl.Resources>
+    <Grid Background="WhiteSmoke">
+        <TreeView ItemsSource="{Binding Items}" BorderThickness="0"/>
     </Grid>
 </UserControl>

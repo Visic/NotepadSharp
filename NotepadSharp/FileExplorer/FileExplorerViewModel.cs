@@ -1,10 +1,8 @@
 ﻿using WPFUtility;
 
 namespace NotepadSharp {
-    public class FileExplorerViewModel : ViewModelBase {
-        public FileExplorerViewModel() {
+    public class FileExplorerViewModel : DirectoryViewModel {
+        public FileExplorerViewModel(string initialDirectory) : base(initialDirectory) {
         }
-
-        public string Title { get; } = "Files";
     }
 }

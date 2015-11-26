@@ -77,10 +77,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\NullOrEmptyToNullConverter.cs" />
+    <Compile Include="FileExplorer\DirectoryViewModel.cs" />
     <Compile Include="FileExplorer\FileExplorerView.xaml.cs">
       <DependentUpon>FileExplorerView.xaml</DependentUpon>
     </Compile>
     <Compile Include="FileExplorer\FileExplorerViewModel.cs" />
+    <Compile Include="FileExplorer\FileViewModel.cs" />
     <Compile Include="LuaApiProviders\ApplicationApiProvider.cs" />
     <Compile Include="LuaApiProviders\DefaultProviderRegistry.cs" />
     <Compile Include="LuaApiProviders\ThreadingApiProvider.cs" />

@@ -10,7 +10,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <local:BindableRichTextBox ApiProvider="{Binding ApiProvider.Value}">
+        <local:BindableRichTextBox ApiProvider="{Binding ApiProvider.Value}" 
+                                   Style="{StaticResource TextBox_NoBorder}">
             <FlowDocument>
                 <Paragraph Margin="0">
                     <Run Text="{Binding Content.Value}"/>
