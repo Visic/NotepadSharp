@@ -1,9 +1,9 @@
 ﻿--Bugs
 -Maintain binding list order
--Persist selected tab
 
 --Features
+-More persistance
+-Shadow copy of the edited file (like notepad++)
 -Async capabilities for lua scripts (coroutines or something, allowing use of C# tasks is causing unrecoverable exceptions from NLua)
--Custom file explorer like liteide has
 -Syntax highlighting
 -Auto-Completion

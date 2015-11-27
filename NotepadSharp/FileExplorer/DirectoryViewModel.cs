@@ -1,22 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WPFUtility;
 
 namespace NotepadSharp {
-    public class DirectoryViewModel : ViewModelBase {
-        public DirectoryViewModel(string path) {
-            Name = Path.GetFileName(path);
-            var directoryVms = Directory.GetDirectories(path).Select(x => new DirectoryViewModel(x));
-            var fileVms = Directory.GetFiles(path).Select(x => new FileViewModel(x));
-            Items = new ObservableCollection<ViewModelBase>(directoryVms.Cast<ViewModelBase>().Concat(fileVms));
+    public class DirectoryViewModel : FileSystemEntityViewModel {
+        public DirectoryViewModel(string path) : base(path) {
+            Icon = Constants.Image_FolderClosed;
+            ClearCollection();
+
+            bool isOpen = false;
+            InteractCommand = new RelayCommand(arg => {
+                isOpen = !isOpen;
+                Icon = isOpen ? Constants.Image_FolderOpen : Constants.Image_FolderClosed;
+
+                if(isOpen) {
+                    var directoryVms = Directory.GetDirectories(path).Select(x => new DirectoryViewModel(x));
+                    var fileVms = Directory.GetFiles(path).Select(x => new FileViewModel(x));
+                    Items.Value = new ObservableCollection<ViewModelBase>(directoryVms.Cast<ViewModelBase>().Concat(fileVms));
+                } else {
+                    ClearCollection();
+                }
+            });
         }
 
-        public string Name { get; }
-        public ObservableCollection<ViewModelBase> Items { get; }
+        public NotifyingProperty<ObservableCollection<ViewModelBase>> Items { get; } = new NotifyingProperty<ObservableCollection<ViewModelBase>>();
+
+        private void ClearCollection() {
+            Items.Value = new ObservableCollection<ViewModelBase>(new ViewModelBase[] { null });
+        }
     }
 }

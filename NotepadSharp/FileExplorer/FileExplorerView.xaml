@@ -7,15 +7,25 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-        <HierarchicalDataTemplate DataType="{x:Type local:DirectoryViewModel}" ItemsSource="{Binding Items}">
-            <TextBlock Text="{Binding Name}"/>
+        <Style TargetType="{x:Type TreeViewItem}">
+            <Setter Property="IsExpanded" Value="{Binding IsExpanded.Value, Mode=TwoWay}"/>
+        </Style>
+        
+        <HierarchicalDataTemplate DataType="{x:Type local:DirectoryViewModel}" ItemsSource="{Binding Items.Value}">
+            <DockPanel>
+                <Image DockPanel.Dock="Left" Source="{Binding Icon}"/>
+                <TextBlock DockPanel.Dock="Right" Text="{Binding Name}"/>
+            </DockPanel>
         </HierarchicalDataTemplate>
 
         <DataTemplate DataType="{x:Type local:FileViewModel}">
-            <TextBlock Text="{Binding Name}"/>
+            <DockPanel>
+                <Image DockPanel.Dock="Left"  Source="{Binding Icon}"/>
+                <TextBlock DockPanel.Dock="Right" Text="{Binding Name}"/>
+            </DockPanel>
         </DataTemplate>
     </UserControl.Resources>
     <Grid Background="WhiteSmoke">
-        <TreeView ItemsSource="{Binding Items}" BorderThickness="0"/>
+        <TreeView BorderThickness="0" ItemsSource="{Binding Items.Value}"/>
     </Grid>
 </UserControl>

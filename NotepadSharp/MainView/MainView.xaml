@@ -70,7 +70,7 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <ContentPresenter MinWidth="75" Content="{Binding}">
+                            <ContentPresenter Content="{Binding}">
                                 <ContentPresenter.Style>
                                     <Style TargetType="{x:Type ContentPresenter}">
                                         <Setter Property="Margin" Value="0,0,1,0"/>

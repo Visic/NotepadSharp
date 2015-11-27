@@ -6,9 +6,11 @@ namespace NotepadSharp {
     public class ApplicationApiProvider {
         public ApplicationApiProvider() {
             SetMessageAreaText = SetMessageAreaText_Impl;
+            OpenDocument = ApplicationState.OpenDocument;
         }
 
         public Action<string, string> SetMessageAreaText { get; }
+        public Action<string> OpenDocument { get; }
 
         private void SetMessageAreaText_Impl(object message, string color = "Black") {
             ApplicationState.SetMessageAreaTextColor(color);

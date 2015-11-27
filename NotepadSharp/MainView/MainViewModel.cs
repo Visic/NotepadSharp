@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using WPFUtility;
 
 namespace NotepadSharp {
@@ -13,11 +9,13 @@ namespace NotepadSharp {
         public MainViewModel() {
             ApplicationState.SetMessageAreaText = msg => MessageAreaText.Value = msg;
             ApplicationState.SetMessageAreaTextColor = color => MessageAreaTextColor.Value = color;
+            ApplicationState.OpenDocument = filePath => AddDocumentTab(filePath).Command.Execute(null);
 
-            AddDocumentTab("First.txt");
-            AddDocumentTab("Second.txt");
             AddTopPanelButton("Bindings", new KeyBindingsViewModel());
-            AddLeftPanelToggleButton("Files", new FileExplorerViewModel(Environment.GetFolderPath(Environment.SpecialFolder.Desktop)));
+            var fileExplorer = new FileExplorerViewModel(Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
+            AddLeftPanelToggleButton("Files", fileExplorer);
+
+            fileExplorer.InteractCommand.Execute(null); //initialize the root folder
             TopTabs.First().Command.Execute(null);
         }
 
@@ -28,20 +26,23 @@ namespace NotepadSharp {
         public NotifyingProperty<string> MessageAreaText { get; } = new NotifyingProperty<string>();
         public NotifyingProperty<string> MessageAreaTextColor { get; } = new NotifyingProperty<string>();
 
-        private void AddLeftPanelToggleButton(string text, ViewModelBase vm) {
+        private IButtonViewModel AddLeftPanelToggleButton(string text, ViewModelBase vm) {
             ToggleButtonViewModel toggleVm = null;
             var cmd = new RelayCommand(x => LeftPanelContent.Value = toggleVm.IsSelected.Value ? vm : null);
             toggleVm = new ToggleButtonViewModel(text, cmd);
             LeftTabs.Add(toggleVm);
+            return toggleVm;
         }
 
-        private void AddTopPanelButton(string text, ViewModelBase vm) {
+        private IButtonViewModel AddTopPanelButton(string text, ViewModelBase vm) {
             var cmd = new RelayCommand(x => TopPanelContent.Value = vm);
-            TopTabs.Add(new SelectableButtonViewModel(text, cmd));
+            var button = new SelectableButtonViewModel(text, cmd);
+            TopTabs.Add(button);
+            return button;
         }
 
-        private void AddDocumentTab(string fileName) {
-            AddTopPanelButton(Path.GetFileName(fileName), new DocumentViewModel(fileName));
+        private IButtonViewModel AddDocumentTab(string filePath) {
+            return AddTopPanelButton(Path.GetFileName(filePath), new DocumentViewModel(filePath));
         }
     }
 }

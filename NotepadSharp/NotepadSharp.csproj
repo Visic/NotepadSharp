@@ -82,6 +82,7 @@
       <DependentUpon>FileExplorerView.xaml</DependentUpon>
     </Compile>
     <Compile Include="FileExplorer\FileExplorerViewModel.cs" />
+    <Compile Include="FileExplorer\FileSystemEntityViewModel.cs" />
     <Compile Include="FileExplorer\FileViewModel.cs" />
     <Compile Include="LuaApiProviders\ApplicationApiProvider.cs" />
     <Compile Include="LuaApiProviders\DefaultProviderRegistry.cs" />
@@ -145,6 +146,7 @@
     <Compile Include="KeyBinding\KeyBindingExecution.cs" />
     <Compile Include="KeyBinding\KeyPressHandler.cs" />
     <Compile Include="KeyBinding\LuaKeyBinding.cs" />
+    <Compile Include="Misc\IconInfoExtensions.cs" />
     <Compile Include="Misc\LuaScriptRunner.cs" />
     <Compile Include="RichTextView\BindableRichTextBox.cs" />
     <Compile Include="LuaApiProviders\RichTextBoxApiProvider.cs" />

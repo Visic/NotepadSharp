@@ -8,10 +8,9 @@ using WPFUtility;
 
 namespace NotepadSharp {
     public class DocumentViewModel : ViewModelBase {
-        public DocumentViewModel(string filename) {
-            Title = Path.GetFileName(filename);
-            DocumentContent = new RichTextViewModel(Constants.LoremIpsum);
-            //DocumentContent = new RichTextViewModel(File.ReadAllText(filename));
+        public DocumentViewModel(string filePath) {
+            Title = Path.GetFileName(filePath);
+            DocumentContent = new RichTextViewModel(File.ReadAllText(filePath));
         }
 
         public string Title { get; private set; }
