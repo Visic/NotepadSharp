@@ -87,6 +87,9 @@
     <Compile Include="LuaApiProviders\ApplicationApiProvider.cs" />
     <Compile Include="LuaApiProviders\DefaultProviderRegistry.cs" />
     <Compile Include="LuaApiProviders\ThreadingApiProvider.cs" />
+    <Compile Include="MainView\ButtonBarView.xaml.cs">
+      <DependentUpon>ButtonBarView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Misc\ApplicationState.cs" />
     <Compile Include="Misc\CustomSettings.cs" />
     <Page Include="FileExplorer\FileExplorerView.xaml">
@@ -100,6 +103,10 @@
     <Page Include="KeyBinding\ConfigView\KeyBindingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MainView\ButtonBarView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="RichTextView\RichTextView.xaml">
       <SubType>Designer</SubType>

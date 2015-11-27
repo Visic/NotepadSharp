@@ -17,75 +17,25 @@
                    Text="{Binding MessageAreaText.Value}"/>
 
         <!--Left Tabs-->
-        <ItemsControl DockPanel.Dock="Left"
-                      Background="#555555"
-                      ItemsSource="{Binding LeftTabs}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft">
-                        <StackPanel.LayoutTransform>
-                            <RotateTransform Angle="-90"/>
-                        </StackPanel.LayoutTransform>
-                    </StackPanel>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <ContentPresenter MinWidth="50" MinHeight="30" Margin="0,0,1,0" Content="{Binding}"/>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        <local:ButtonBarView DockPanel.Dock="Left" ItemsSource="{Binding LeftTabs}" FlowDirection="RightToLeft">
+            <local:ButtonBarView.LayoutTransform>
+                <RotateTransform Angle="-90"/>
+            </local:ButtonBarView.LayoutTransform>
+        </local:ButtonBarView>
 
-        <DockPanel DockPanel.Dock="Right">
-            <ContentControl DockPanel.Dock="Left"
-                            MinWidth="250"
-                            Content="{Binding LeftPanelContent.Value}"
-                            Visibility="{Binding LeftPanelContent.Value, Converter={StaticResource NullToCollapsedConverter}}"/>
-            
-            <WPFUtility:DockPanelSplitter DockPanel.Dock="Left" 
-                                          Width="3" 
-                                          Background="Gray"
-                                          Visibility="{Binding LeftPanelContent.Value, Converter={StaticResource NullToCollapsedConverter}}"/>
-            
-            <Grid DockPanel.Dock="Right">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="20*"/>
-                </Grid.RowDefinitions>
+        <ContentControl DockPanel.Dock="Left"
+                        Content="{Binding LeftPanelContent.Value}"
+                        Visibility="{Binding LeftPanelContent.Value, Converter={StaticResource NullToCollapsedConverter}}"/>
 
-                <!--Top Panel Content-->
-                <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness="1,5,1,0">
-                    <ContentControl Content="{Binding TopPanelContent.Value}"/>
-                </Border>
+        <WPFUtility:DockPanelSplitter DockPanel.Dock="Left" 
+                                      Width="3" 
+                                      Background="Gray"
+                                      Visibility="{Binding LeftPanelContent.Value, Converter={StaticResource NullToCollapsedConverter}}"/>
 
-                <!--Top Tabs-->
-                <ItemsControl Grid.Row="0"
-                              Background="#555555"
-                              Padding="2,0,0,0"
-                              ItemsSource="{Binding TopTabs}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <ContentPresenter Content="{Binding}">
-                                <ContentPresenter.Style>
-                                    <Style TargetType="{x:Type ContentPresenter}">
-                                        <Setter Property="Margin" Value="0,0,1,0"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsSelected.Value}" Value="True">
-                                                <Setter Property="Margin" Value="0,0,1,-1"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ContentPresenter.Style>
-                            </ContentPresenter>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </Grid>
-        </DockPanel>
+        <!--Top Tabs-->
+        <local:ButtonBarView DockPanel.Dock="Top" ItemsSource="{Binding TopTabs}"/>
+
+        <!--Top Panel Content-->
+        <ContentControl Content="{Binding TopPanelContent.Value}"/>
     </DockPanel>
 </UserControl>
