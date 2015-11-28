@@ -1,4 +1,5 @@
 ﻿--Bugs
+-Folder icon doesn't change from closed to open
 -Maintain binding list order
 
 --Features

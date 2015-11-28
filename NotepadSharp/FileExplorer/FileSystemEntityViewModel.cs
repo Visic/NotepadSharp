@@ -14,8 +14,8 @@ namespace NotepadSharp {
 
         public string Path { get; }
         public string Name { get; }
-        public BitmapImage Icon { get; protected set; }
+        public NotifyingProperty<BitmapImage> Icon { get; } = new NotifyingProperty<BitmapImage>();
         public ICommand InteractCommand { get; protected set; }
-        public NotifyingProperty<bool> IsExpanded { get; protected set; }
+        public NotifyingProperty<bool> IsExpanded { get; }
     }
 }

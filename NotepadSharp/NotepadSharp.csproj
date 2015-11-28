@@ -76,6 +76,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\IdentityConverter.cs" />
     <Compile Include="Converters\NullOrEmptyToNullConverter.cs" />
     <Compile Include="FileExplorer\DirectoryViewModel.cs" />
     <Compile Include="FileExplorer\FileExplorerView.xaml.cs">

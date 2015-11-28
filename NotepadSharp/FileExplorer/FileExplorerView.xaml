@@ -13,14 +13,14 @@
         
         <HierarchicalDataTemplate DataType="{x:Type local:DirectoryViewModel}" ItemsSource="{Binding Items.Value}">
             <DockPanel>
-                <Image DockPanel.Dock="Left" Source="{Binding Icon}"/>
+                <Image DockPanel.Dock="Left" Source="{Binding Icon.Value}"/>
                 <TextBlock DockPanel.Dock="Right" Text="{Binding Name}"/>
             </DockPanel>
         </HierarchicalDataTemplate>
 
         <DataTemplate DataType="{x:Type local:FileViewModel}">
             <DockPanel>
-                <Image DockPanel.Dock="Left"  Source="{Binding Icon}"/>
+                <Image DockPanel.Dock="Left"  Source="{Binding Icon.Value}"/>
                 <TextBlock DockPanel.Dock="Right" Text="{Binding Name}"/>
             </DockPanel>
         </DataTemplate>

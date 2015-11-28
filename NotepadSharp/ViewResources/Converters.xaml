@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:NotepadSharp">
+    <local:IdentityConverter x:Key="IdentityConverter"/>
     <local:PrettyPrintKeyBindingConverter x:Key="PrettyPrintKeyBindingConverter"/>
     <local:NullOrEmptyToNullConverter x:Key="NullOrEmptyToNullConverter"/>
     <local:BoolToPropValueConverter x:Key="SelectableButtonTextColorConverter" ValueForTrue="#222222" ValueForFalse="#555555"/>

@@ -7,9 +7,8 @@ namespace NotepadSharp {
             InteractCommand = new RelayCommand(x => ApplicationState.OpenDocument(path));
 
             try {
-                Icon = IconReader.ExtractIconFromFileEx(path, IconSize.Small).ToBitmapImage();
-            }
-            catch {
+                Icon.Value = IconReader.ExtractIconFromFileEx(path, IconSize.Small).ToBitmapImage();
+            } catch {
                 //Getting the icon throws for strange file names (e.g. a file name which contains a comma)
             }
         }
