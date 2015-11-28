@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using WPFUtility;
@@ -6,13 +7,13 @@ using WPFUtility;
 namespace NotepadSharp {
     public class DirectoryViewModel : FileSystemEntityViewModel {
         public DirectoryViewModel(string path) : base(path) {
-            Icon.Value = Constants.Image_FolderClosed;
+            IconImage.Value = Constants.Image_FolderClosed;
             ClearCollection();
 
             bool isOpen = false;
             InteractCommand = new RelayCommand(arg => {
                 isOpen = !isOpen;
-                Icon.Value = isOpen ? Constants.Image_FolderOpen : Constants.Image_FolderClosed;
+                IconImage.Value = isOpen ? Constants.Image_FolderOpen : Constants.Image_FolderClosed;
 
                 if(isOpen) {
                     var directoryVms = Directory.GetDirectories(path).Select(x => new DirectoryViewModel(x));

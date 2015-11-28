@@ -43,10 +43,6 @@
       <HintPath>..\packages\NLua.1.3.2.1\lib\net45\NLua.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="OSIcon, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2d4a153a84ea7847, processorArchitecture=MSIL">
-      <HintPath>..\packages\OSIcon.3.0.0.0\lib\OSIcon.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -154,7 +150,7 @@
     <Compile Include="KeyBinding\KeyBindingExecution.cs" />
     <Compile Include="KeyBinding\KeyPressHandler.cs" />
     <Compile Include="KeyBinding\LuaKeyBinding.cs" />
-    <Compile Include="Misc\IconInfoExtensions.cs" />
+    <Compile Include="Misc\MiscExtensions.cs" />
     <Compile Include="Misc\LuaScriptRunner.cs" />
     <Compile Include="RichTextView\BindableRichTextBox.cs" />
     <Compile Include="LuaApiProviders\RichTextBoxApiProvider.cs" />
@@ -219,7 +215,12 @@
   <ItemGroup>
     <Resource Include="TODO.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\ClosedFolder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\OpenFolder.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /s /y "$(SolutionDir)\packages\NLua.1.3.2.1\lib\native\*.*" "$(TargetDir)"</PostBuildEvent>

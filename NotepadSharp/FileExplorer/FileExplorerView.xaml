@@ -12,16 +12,22 @@
         </Style>
         
         <HierarchicalDataTemplate DataType="{x:Type local:DirectoryViewModel}" ItemsSource="{Binding Items.Value}">
-            <DockPanel>
-                <Image DockPanel.Dock="Left" Source="{Binding Icon.Value}"/>
-                <TextBlock DockPanel.Dock="Right" Text="{Binding Name}"/>
+            <DockPanel Height="20">
+                <Image DockPanel.Dock="Left" Source="{Binding IconImage.Value}"/>
+                <TextBlock DockPanel.Dock="Right" 
+                           VerticalAlignment="Center" 
+                           Margin="3,0,0,0" 
+                           Text="{Binding Name}"/>
             </DockPanel>
         </HierarchicalDataTemplate>
 
         <DataTemplate DataType="{x:Type local:FileViewModel}">
-            <DockPanel>
-                <Image DockPanel.Dock="Left"  Source="{Binding Icon.Value}"/>
-                <TextBlock DockPanel.Dock="Right" Text="{Binding Name}"/>
+            <DockPanel Height="20">
+                <Image DockPanel.Dock="Left" Source="{Binding IconImage.Value}"/>
+                <TextBlock DockPanel.Dock="Right" 
+                           VerticalAlignment="Center" 
+                           Margin="3,0,0,0" 
+                           Text="{Binding Name}"/>
             </DockPanel>
         </DataTemplate>
     </UserControl.Resources>

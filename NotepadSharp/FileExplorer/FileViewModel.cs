@@ -1,4 +1,4 @@
-﻿using OSIcon;
+﻿using System.Drawing;
 using WPFUtility;
 
 namespace NotepadSharp {
@@ -7,7 +7,7 @@ namespace NotepadSharp {
             InteractCommand = new RelayCommand(x => ApplicationState.OpenDocument(path));
 
             try {
-                Icon.Value = IconReader.ExtractIconFromFileEx(path, IconSize.Small).ToBitmapImage();
+                IconImage.Value = Icon.ExtractAssociatedIcon(path).ToBitmapImage();
             } catch {
                 //Getting the icon throws for strange file names (e.g. a file name which contains a comma)
             }
