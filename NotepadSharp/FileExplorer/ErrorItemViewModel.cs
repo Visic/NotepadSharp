@@ -1,10 +1,7 @@
 ﻿namespace NotepadSharp {
     public class ErrorItemViewModel : FileSystemEntityViewModel {
-        public ErrorItemViewModel(string path, string errMsg) : base(path) {
-            ErrorMessage = errMsg;
-            Focusable = false;
+        public ErrorItemViewModel(string path, string message) : base(path) {
+            ErrorMessage.Value = message;
         }
-
-        public string ErrorMessage { get; }
     }
 }

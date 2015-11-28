@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using WPFUtility;
@@ -10,18 +11,27 @@ namespace NotepadSharp {
                 x => InteractCommand?.Execute(null)
             );
 
+            ErrorMessage = new NotifyingPropertyWithChangedAction<string>(
+                x => Focusable.Value = string.IsNullOrEmpty(x)
+            );
+
             SetPath(path);
         }
 
         public NotifyingProperty<string> Name { get; } = new NotifyingProperty<string>();
         public NotifyingProperty<BitmapImage> IconImage { get; } = new NotifyingProperty<BitmapImage>();
+        public NotifyingProperty<bool> Focusable { get; } = new NotifyingProperty<bool>(true);
+        public NotifyingProperty<string> ErrorMessage { get; }
         public NotifyingProperty<bool> IsExpanded { get; }
         public ICommand InteractCommand { get; protected set; }
-        public bool Focusable { get; protected set; } = true;
 
         protected virtual void SetPath(string path) {
-            Name.Value = Path.GetFileName(path);
-            if (string.IsNullOrEmpty(Name.Value) && !string.IsNullOrEmpty(path)) Name.Value = Path.GetPathRoot(path); //handle drive letters
+            try {
+                Name.Value = Path.GetFileName(path);
+                if(string.IsNullOrEmpty(Name.Value) && !string.IsNullOrEmpty(path)) Name.Value = Path.GetPathRoot(path); //handle drive letters
+            } catch(Exception ex) {
+                ErrorMessage.Value = ex.Message;
+            }
         }
     }
 }

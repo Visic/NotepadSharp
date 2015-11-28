@@ -18,4 +18,6 @@
     <local:ChainConverter x:Key="NullToHiddenConverter" In="{StaticResource NullToTrueConverter}" Out="{StaticResource TrueToHiddenConverter}"/>
     <local:ChainConverter x:Key="NullToCollapsedConverter" In="{StaticResource NullToTrueConverter}" Out="{StaticResource TrueToCollapsedConverter}"/>
     <local:ChainConverter x:Key="NullOrEmptyToHiddenConverter" In="{StaticResource NullOrEmptyToTrueConverter}" Out="{StaticResource TrueToHiddenConverter}"/>
+    <local:ChainConverter x:Key="NullOrEmptyToCollapsedConverter" In="{StaticResource NullOrEmptyToTrueConverter}" Out="{StaticResource TrueToCollapsedConverter}"/>
+    <local:ChainConverter x:Key="NullOrEmptyToVisibleConverter" In="{StaticResource NullOrEmptyToFalseConverter}" Out="{StaticResource TrueToCollapsedConverter}"/>
 </ResourceDictionary>
