@@ -1,5 +1,4 @@
 ﻿--Bugs
--Folder icon doesn't change from closed to open
 -Maintain binding list order
 
 --Features
@@ -8,3 +7,6 @@
 -Async capabilities for lua scripts (coroutines or something, allowing use of C# tasks is causing unrecoverable exceptions from NLua)
 -Syntax highlighting
 -Auto-Completion
+
+--Improvements
+-Better folder icons

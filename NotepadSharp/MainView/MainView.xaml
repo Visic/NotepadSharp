@@ -17,7 +17,10 @@
                    Text="{Binding MessageAreaText.Value}"/>
 
         <!--Left Tabs-->
-        <local:ButtonBarView DockPanel.Dock="Left" ItemsSource="{Binding LeftTabs}" FlowDirection="RightToLeft">
+        <local:ButtonBarView DockPanel.Dock="Left" 
+                             Background="#555555"
+                             ItemsSource="{Binding LeftTabs}" 
+                             FlowDirection="RightToLeft">
             <local:ButtonBarView.LayoutTransform>
                 <RotateTransform Angle="-90"/>
             </local:ButtonBarView.LayoutTransform>
@@ -33,7 +36,9 @@
                                       Visibility="{Binding LeftPanelContent.Value, Converter={StaticResource NullToCollapsedConverter}}"/>
 
         <!--Top Tabs-->
-        <local:ButtonBarView DockPanel.Dock="Top" ItemsSource="{Binding TopTabs}"/>
+        <local:ButtonBarView DockPanel.Dock="Top" 
+                             Background="#555555"
+                             ItemsSource="{Binding TopTabs}"/>
 
         <!--Top Panel Content-->
         <ContentControl Content="{Binding TopPanelContent.Value}"/>
