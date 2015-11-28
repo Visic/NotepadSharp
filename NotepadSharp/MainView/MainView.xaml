@@ -27,6 +27,7 @@
         </local:ButtonBarView>
 
         <ContentControl DockPanel.Dock="Left"
+                        Width="250"
                         Content="{Binding LeftPanelContent.Value}"
                         Visibility="{Binding LeftPanelContent.Value, Converter={StaticResource NullToCollapsedConverter}}"/>
 

@@ -9,6 +9,7 @@
     <UserControl.Resources>
         <Style TargetType="{x:Type TreeViewItem}">
             <Setter Property="IsExpanded" Value="{Binding IsExpanded.Value, Mode=TwoWay}"/>
+            <Setter Property="Focusable" Value="{Binding Focusable}"/>
         </Style>
         
         <HierarchicalDataTemplate DataType="{x:Type local:DirectoryViewModel}" ItemsSource="{Binding Items.Value}">
@@ -17,9 +18,15 @@
                 <TextBlock DockPanel.Dock="Right" 
                            VerticalAlignment="Center" 
                            Margin="3,0,0,0" 
-                           Text="{Binding Name}"/>
+                           Text="{Binding Name.Value}"/>
             </DockPanel>
         </HierarchicalDataTemplate>
+
+        <DataTemplate DataType="{x:Type local:ErrorItemViewModel}">
+            <TextBlock Height="20"
+                       Foreground="Red"
+                       Text="{Binding ErrorMessage}"/>
+        </DataTemplate>
 
         <DataTemplate DataType="{x:Type local:FileViewModel}">
             <DockPanel Height="20">
@@ -27,11 +34,20 @@
                 <TextBlock DockPanel.Dock="Right" 
                            VerticalAlignment="Center" 
                            Margin="3,0,0,0" 
-                           Text="{Binding Name}"/>
+                           Text="{Binding Name.Value}"/>
             </DockPanel>
         </DataTemplate>
     </UserControl.Resources>
-    <Grid Background="WhiteSmoke">
-        <TreeView BorderThickness="0" ItemsSource="{Binding Items.Value}"/>
-    </Grid>
+    
+    <DockPanel Background="WhiteSmoke">
+        <Border DockPanel.Dock="Top" 
+                BorderBrush="#AAAAAA"
+                BorderThickness="0,0,0,1">
+            <TextBox Padding="2"
+                     Background="#DDDDDD"
+                     Style="{StaticResource TextBox_NoBorder}"
+                     Text="{Binding RootPath.Value, UpdateSourceTrigger=PropertyChanged}"/>
+        </Border>
+        <TreeView DockPanel.Dock="Bottom" BorderThickness="0" ItemsSource="{Binding Items.Value}"/>
+    </DockPanel>
 </UserControl>

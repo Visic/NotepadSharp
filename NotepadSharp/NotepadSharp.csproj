@@ -75,6 +75,7 @@
     <Compile Include="Converters\IdentityConverter.cs" />
     <Compile Include="Converters\NullOrEmptyToNullConverter.cs" />
     <Compile Include="FileExplorer\DirectoryViewModel.cs" />
+    <Compile Include="FileExplorer\ErrorItemViewModel.cs" />
     <Compile Include="FileExplorer\FileExplorerView.xaml.cs">
       <DependentUpon>FileExplorerView.xaml</DependentUpon>
     </Compile>
