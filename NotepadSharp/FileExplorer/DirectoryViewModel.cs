@@ -2,6 +2,8 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Windows;
+using System.Windows.Input;
 using WPFUtility;
 
 namespace NotepadSharp {
@@ -10,20 +12,47 @@ namespace NotepadSharp {
 
         public DirectoryViewModel(string path) {
             SetPath(path);
-        }
-
-        public NotifyingProperty<ObservableCollection<ViewModelBase>> Items { get; } = new NotifyingProperty<ObservableCollection<ViewModelBase>>();
-
-        protected override void SetPath(string path) {
-            base.SetPath(path);
-            _path = path;
-
             InteractCommand = new RelayCommand(arg => {
                 _isOpen = !_isOpen;
                 UpdateState();
             });
+            DropCommand = new RelayCommand(x => Drop((DragEventArgs)x));
+            DragOverCommand = new RelayCommand(x => DragOver((DragEventArgs)x));
+        }
 
+        public NotifyingProperty<ObservableCollection<ViewModelBase>> Items { get; } = new NotifyingProperty<ObservableCollection<ViewModelBase>>();
+        public ICommand DropCommand { get; }
+        public ICommand DragOverCommand { get; }
+
+        protected override void SetPath(string path) {
+            base.SetPath(path);
             UpdateState();
+        }
+
+        protected virtual bool AllowDrop(string path) {
+            return _path != path;
+        }
+
+        protected virtual void Drop(DragEventArgs e) {
+            var path = GetDropPath(e);
+            if (_path == path) return;
+
+            var newPath = Path.Combine(_path, Path.GetFileName(path));
+            if (File.Exists(path)) File.Move(path, newPath);
+            else if (Directory.Exists(path)) Directory.Move(path, newPath);
+
+            e.Handled = true;
+        }
+
+        protected string GetDropPath(DragEventArgs args) {
+            var files = (string[])args.Data.GetData(DataFormats.FileDrop);
+            return (files?.Length ?? 0) == 0 ? "" : files[0];
+        }
+
+        private void DragOver(DragEventArgs e) {
+            var allow = AllowDrop(GetDropPath(e));
+            e.Effects = allow ? DragDropEffects.Copy : DragDropEffects.None;
+            e.Handled = allow;
         }
 
         private void UpdateState() {

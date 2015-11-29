@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -82,14 +83,18 @@ namespace NotepadSharp {
             _currentBinding = newBinding;
         }
         
-        private void DragOver(DragEventArgs x) {
-            x.Effects = DragDropEffects.Copy;
-            x.Handled = true;
+        private void DragOver(DragEventArgs e) {
+            e.Effects = File.Exists(GetDropPath(e)) ? DragDropEffects.Copy : DragDropEffects.None;
+            e.Handled = true;
         }
 
         private void Drop(DragEventArgs e) {
-            var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            ScriptFilePath.Value = (files?.Length ?? 0) == 0 ? "" : files[0];
+            ScriptFilePath.Value = GetDropPath(e);
+        }
+
+        private string GetDropPath(DragEventArgs args) {
+            var files = (string[])args.Data.GetData(DataFormats.FileDrop);
+            return (files?.Length ?? 0) == 0 ? "" : files[0];
         }
 
         private void StartEditBinding(RoutedEventArgs obj) {

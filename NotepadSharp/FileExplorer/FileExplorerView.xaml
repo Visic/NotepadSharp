@@ -19,7 +19,10 @@
                     <TextBlock DockPanel.Dock="Right"
                                VerticalAlignment="Center" 
                                Margin="3,0,0,0"
+                               AllowDrop="True"
                                Text="{Binding Name.Value}"
+                               local:CommandBindingBehavior.PreviewDragOverCommand="{Binding DragOverCommand}"
+                               local:CommandBindingBehavior.PreviewDropCommand="{Binding DropCommand}"
                                local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding MouseLeftButtonDownCommand}"
                                local:CommandBindingBehavior.PreviewMouseMoveCommand="{Binding MouseMoveCommand}"/>
                 </DockPanel>
