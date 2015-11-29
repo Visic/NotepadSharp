@@ -151,6 +151,7 @@
     <Compile Include="KeyBinding\KeyBindingExecution.cs" />
     <Compile Include="KeyBinding\KeyPressHandler.cs" />
     <Compile Include="KeyBinding\LuaKeyBinding.cs" />
+    <Compile Include="Misc\DragAndDropHandler.cs" />
     <Compile Include="Misc\MiscExtensions.cs" />
     <Compile Include="Misc\LuaScriptRunner.cs" />
     <Compile Include="RichTextView\BindableRichTextBox.cs" />

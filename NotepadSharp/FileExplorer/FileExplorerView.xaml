@@ -14,17 +14,18 @@
         
         <HierarchicalDataTemplate DataType="{x:Type local:DirectoryViewModel}" ItemsSource="{Binding Items.Value}">
             <Grid Height="20">
-                <DockPanel Visibility="{Binding ErrorMessage.Value, Converter={StaticResource NullOrEmptyToVisibleConverter}}">
-                    <Image DockPanel.Dock="Left" Source="{Binding IconImage.Value}"/>
+                <DockPanel AllowDrop="True"
+                           local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding DragItem.MouseLeftButtonDownCommand}"
+                           local:CommandBindingBehavior.PreviewMouseMoveCommand="{Binding DragItem.MouseMoveCommand}"
+                           local:CommandBindingBehavior.PreviewDragOverCommand="{Binding DragDrop.DragOverCommand}"
+                           local:CommandBindingBehavior.PreviewDropCommand="{Binding DragDrop.DropCommand}"
+                           Visibility="{Binding ErrorMessage.Value, Converter={StaticResource NullOrEmptyToVisibleConverter}}">
+                    <Image DockPanel.Dock="Left" 
+                           Source="{Binding IconImage.Value}"/>
                     <TextBlock DockPanel.Dock="Right"
                                VerticalAlignment="Center" 
                                Margin="3,0,0,0"
-                               AllowDrop="True"
-                               Text="{Binding Name.Value}"
-                               local:CommandBindingBehavior.PreviewDragOverCommand="{Binding DragOverCommand}"
-                               local:CommandBindingBehavior.PreviewDropCommand="{Binding DropCommand}"
-                               local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding MouseLeftButtonDownCommand}"
-                               local:CommandBindingBehavior.PreviewMouseMoveCommand="{Binding MouseMoveCommand}"/>
+                               Text="{Binding Name.Value}"/>
                 </DockPanel>
                 <TextBlock Foreground="Red"
                            Text="{Binding ErrorMessage.Value}"
@@ -38,14 +39,15 @@
 
         <DataTemplate DataType="{x:Type local:FileViewModel}">
             <Grid Height="20">
-                <DockPanel Visibility="{Binding ErrorMessage.Value, Converter={StaticResource NullOrEmptyToVisibleConverter}}">
-                    <Image DockPanel.Dock="Left" Source="{Binding IconImage.Value}"/>
-                    <TextBlock DockPanel.Dock="Right" 
+                <DockPanel local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding DragItem.MouseLeftButtonDownCommand}"
+                           local:CommandBindingBehavior.PreviewMouseMoveCommand="{Binding DragItem.MouseMoveCommand}"
+                           Visibility="{Binding ErrorMessage.Value, Converter={StaticResource NullOrEmptyToVisibleConverter}}">
+                    <Image DockPanel.Dock="Left" 
+                           Source="{Binding IconImage.Value}"/>
+                    <TextBlock DockPanel.Dock="Right"
                                VerticalAlignment="Center" 
-                               Margin="3,0,0,0" 
-                               Text="{Binding Name.Value}"
-                               local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding MouseLeftButtonDownCommand}"
-                               local:CommandBindingBehavior.PreviewMouseMoveCommand="{Binding MouseMoveCommand}"/>
+                               Margin="3,0,0,0"
+                               Text="{Binding Name.Value}"/>
                 </DockPanel>
                 <TextBlock Foreground="Red"
                            Text="{Binding ErrorMessage.Value}"
@@ -61,14 +63,14 @@
             <TextBox Padding="2"
                      Background="#DDDDDD"
                      AllowDrop="True"
-                     local:CommandBindingBehavior.PreviewDragOverCommand="{Binding DragOverCommand}"
-                     local:CommandBindingBehavior.PreviewDropCommand="{Binding DropCommand}"
+                     local:CommandBindingBehavior.PreviewDragOverCommand="{Binding DragDropRootPath.DragOverCommand}"
+                     local:CommandBindingBehavior.PreviewDropCommand="{Binding DragDropRootPath.DropCommand}"
                      Style="{StaticResource TextBox_NoBorder}"
                      Text="{Binding RootPath.Value, UpdateSourceTrigger=PropertyChanged}"/>
         </Border>
         <TreeView DockPanel.Dock="Bottom" 
                   BorderThickness="0" 
-                  Background="Transparent" 
+                  Background="Transparent"
                   ItemsSource="{Binding Items.Value}">
             <TreeView.Resources>
                 <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent"/>

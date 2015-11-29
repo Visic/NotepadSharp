@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using Utility;
 using WPFUtility;
 
 namespace NotepadSharp {
@@ -16,43 +17,44 @@ namespace NotepadSharp {
                 _isOpen = !_isOpen;
                 UpdateState();
             });
-            DropCommand = new RelayCommand(x => Drop((DragEventArgs)x));
-            DragOverCommand = new RelayCommand(x => DragOver((DragEventArgs)x));
+            DragDrop = new DragAndDropHandler(AllowDrop, Drop);
         }
 
         public NotifyingProperty<ObservableCollection<ViewModelBase>> Items { get; } = new NotifyingProperty<ObservableCollection<ViewModelBase>>();
-        public ICommand DropCommand { get; }
-        public ICommand DragOverCommand { get; }
+        public DragAndDropHandler DragDrop { get; }
 
         protected override void SetPath(string path) {
             base.SetPath(path);
             UpdateState();
         }
 
-        protected virtual bool AllowDrop(string path) {
-            return _path != path;
-        }
-
-        protected virtual void Drop(DragEventArgs e) {
-            var path = GetDropPath(e);
-            if (_path == path) return;
-
+        private bool AllowDrop(string path) {
             var newPath = Path.Combine(_path, Path.GetFileName(path));
-            if (File.Exists(path)) File.Move(path, newPath);
-            else if (Directory.Exists(path)) Directory.Move(path, newPath);
-
-            e.Handled = true;
+            return path != _path && path != newPath;
         }
 
-        protected string GetDropPath(DragEventArgs args) {
-            var files = (string[])args.Data.GetData(DataFormats.FileDrop);
-            return (files?.Length ?? 0) == 0 ? "" : files[0];
-        }
+        private void Drop(string path) {
+            var newPath = Path.Combine(_path, Path.GetFileName(path));
 
-        private void DragOver(DragEventArgs e) {
-            var allow = AllowDrop(GetDropPath(e));
-            e.Effects = allow ? DragDropEffects.Copy : DragDropEffects.None;
-            e.Handled = allow;
+            if(File.Exists(path)) {
+                if(File.Exists(newPath)) { //handle name conflictions
+                    var currentFiles = Directory.EnumerateFiles(_path);
+                    var currentName = Path.GetFileNameWithoutExtension(newPath);
+                    var newName = UniqueNameGenerator.NextNumbered(currentName, currentFiles);
+                    newPath = Path.Combine(_path, newName) + Path.GetExtension(path);
+                }
+
+                File.Move(path, newPath);
+            } else if(Directory.Exists(path)) {
+                if(Directory.Exists(newPath)) { //handle name conflictions
+                    var currentDirectories = Directory.EnumerateDirectories(_path);
+                    var currentName = Path.GetFileName(newPath);
+                    var newName = UniqueNameGenerator.NextNumbered(currentName, currentDirectories);
+                    newPath = Path.Combine(_path, newName);
+                }
+
+                Directory.Move(path, newPath);
+            }
         }
 
         private void UpdateState() {

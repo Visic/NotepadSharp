@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows;
+using System.Windows.Input;
 using WPFUtility;
 
 namespace NotepadSharp {
@@ -10,16 +11,18 @@ namespace NotepadSharp {
                 x => SetPath(x), 
                 initialDirectory
             );
+            DragDropRootPath = new DragAndDropHandler(AllowDropPath, DropPath);
         }
 
         public NotifyingProperty<string> RootPath { get; }
+        public DragAndDropHandler DragDropRootPath { get; }
 
-        protected override bool AllowDrop(string path) {
-            return !File.Exists(path);
+        private bool AllowDropPath(string path) {
+            return Directory.Exists(path);
         }
 
-        protected override void Drop(DragEventArgs e) {
-            RootPath.Value = GetDropPath(e);
+        private void DropPath(string path) {
+            RootPath.Value = path;
         }
     }
 }
