@@ -1,5 +1,6 @@
 ﻿--Bugs
 -Maintain binding list order
+-Refreshing file explorer (e.g. after drag/drop)
 
 --Features
 -More persistance
