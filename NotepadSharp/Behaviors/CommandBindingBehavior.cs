@@ -199,6 +199,36 @@ namespace NotepadSharp {
             return (ICommand)element.GetValue(PreviewKeyUpCommandProperty);
         }
 
+        public static DependencyProperty PreviewMouseMoveCommandProperty = DependencyProperty.RegisterAttached(
+            "PreviewMouseMoveCommand", 
+            typeof(ICommand), 
+            typeof(CommandBindingBehavior),
+            new PropertyMetadata(PreviewMouseMove_PropertyChanged)
+        );
+
+        public static void SetPreviewMouseMoveCommand(UIElement element, ICommand value) {
+            element.SetValue(PreviewMouseMoveCommandProperty, value);
+        }
+
+        public static ICommand GetPreviewMouseMoveCommand(UIElement element) {
+            return (ICommand)element.GetValue(PreviewMouseMoveCommandProperty);
+        }
+
+        private static void PreviewMouseMove_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var ele = (UIElement)d;
+            if(e.NewValue != null) {
+                ele.AddHandler(UIElement.PreviewMouseMoveEvent, new RoutedEventHandler(PreviewMouseMove));
+            } else {
+                ele.RemoveHandler(UIElement.PreviewMouseMoveEvent, new RoutedEventHandler(PreviewMouseMove));
+            }
+        }
+
+        private static void PreviewMouseMove(object sender, RoutedEventArgs e) {
+            var ele = (UIElement)sender;
+            var cmd = GetPreviewMouseMoveCommand(ele);
+            if(cmd.CanExecute(e)) cmd.Execute(e);
+        }
+
         private static void PreviewLostKeyboardFocus_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var ele = (UIElement)d;
             if(e.NewValue != null) {

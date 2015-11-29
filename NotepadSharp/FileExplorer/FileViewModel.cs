@@ -3,7 +3,7 @@ using WPFUtility;
 
 namespace NotepadSharp {
     public class FileViewModel : FileSystemEntityViewModel {
-        public FileViewModel(string path) : base(path) {
+        public FileViewModel(string path) {
             InteractCommand = new RelayCommand(x => ApplicationState.OpenDocument(path));
 
             try {
@@ -11,6 +11,8 @@ namespace NotepadSharp {
             } catch {
                 //Getting the icon throws for strange file names (e.g. a file name which contains a comma)
             }
+
+            SetPath(path);
         }
     }
 }

@@ -16,10 +16,12 @@
             <Grid Height="20">
                 <DockPanel Visibility="{Binding ErrorMessage.Value, Converter={StaticResource NullOrEmptyToVisibleConverter}}">
                     <Image DockPanel.Dock="Left" Source="{Binding IconImage.Value}"/>
-                    <TextBlock DockPanel.Dock="Right" 
+                    <TextBlock DockPanel.Dock="Right"
                                VerticalAlignment="Center" 
-                               Margin="3,0,0,0" 
-                               Text="{Binding Name.Value}"/>
+                               Margin="3,0,0,0"
+                               Text="{Binding Name.Value}"
+                               local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding MouseLeftButtonDownCommand}"
+                               local:CommandBindingBehavior.PreviewMouseMoveCommand="{Binding MouseMoveCommand}"/>
                 </DockPanel>
                 <TextBlock Foreground="Red"
                            Text="{Binding ErrorMessage.Value}"
@@ -38,7 +40,9 @@
                     <TextBlock DockPanel.Dock="Right" 
                                VerticalAlignment="Center" 
                                Margin="3,0,0,0" 
-                               Text="{Binding Name.Value}"/>
+                               Text="{Binding Name.Value}"
+                               local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding MouseLeftButtonDownCommand}"
+                               local:CommandBindingBehavior.PreviewMouseMoveCommand="{Binding MouseMoveCommand}"/>
                 </DockPanel>
                 <TextBlock Foreground="Red"
                            Text="{Binding ErrorMessage.Value}"
@@ -53,9 +57,20 @@
                 BorderThickness="0,0,0,1">
             <TextBox Padding="2"
                      Background="#DDDDDD"
+                     AllowDrop="True"
+                     local:CommandBindingBehavior.PreviewDragOverCommand="{Binding DragOverCommand}"
+                     local:CommandBindingBehavior.PreviewDropCommand="{Binding DropCommand}"
                      Style="{StaticResource TextBox_NoBorder}"
                      Text="{Binding RootPath.Value, UpdateSourceTrigger=PropertyChanged}"/>
         </Border>
-        <TreeView DockPanel.Dock="Bottom" BorderThickness="0" ItemsSource="{Binding Items.Value}"/>
+        <TreeView DockPanel.Dock="Bottom" 
+                  BorderThickness="0" 
+                  Background="Transparent" 
+                  ItemsSource="{Binding Items.Value}">
+            <TreeView.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent"/>
+                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="Black"/>
+            </TreeView.Resources>
+        </TreeView>
     </DockPanel>
 </UserControl>

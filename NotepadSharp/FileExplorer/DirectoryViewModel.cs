@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -8,9 +7,8 @@ using WPFUtility;
 namespace NotepadSharp {
     public class DirectoryViewModel : FileSystemEntityViewModel {
         bool _isOpen;
-        string _path;
 
-        public DirectoryViewModel(string path) : base(path) {
+        public DirectoryViewModel(string path) {
             SetPath(path);
         }
 
