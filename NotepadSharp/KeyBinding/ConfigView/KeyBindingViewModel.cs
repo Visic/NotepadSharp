@@ -45,8 +45,7 @@ namespace NotepadSharp {
 
             ScriptFilePathGotFocusCommand = new RelayCommand(x => ScriptFilePathIsFocused.Value = true);
             ScriptFilePathLostFocusCommand = new RelayCommand(x => ScriptFilePathIsFocused.Value = false);
-            DropCommand = new RelayCommand(x => Drop((DragEventArgs)x));
-            DragOverCommand = new RelayCommand(x => DragOver((DragEventArgs)x));
+            DragDrop = new DragAndDropHandler(AllowDrop, Drop);
             LostKeyboardFocusCommand = new RelayCommand(x => _keyPressHandler.ClearPressedKeys());
         }
 
@@ -57,6 +56,7 @@ namespace NotepadSharp {
         public NotifyingPropertyWithChangedAction<bool> ExecuteOnKeyUp { get; }
         public NotifyingPropertyWithChangedAction<bool> RepeatOnKeyDown { get; }
         public NotifyingProperty<bool> IsEditingBinding { get; }
+        public DragAndDropHandler DragDrop { get; }
         public ICommand KeyDownCommand { get; }
         public ICommand KeyUpCommand { get; }
         public ICommand StartEditingCommand { get; }
@@ -64,8 +64,6 @@ namespace NotepadSharp {
         public ICommand DeleteBindingCommand { get; }
         public ICommand ScriptFilePathGotFocusCommand { get; }
         public ICommand ScriptFilePathLostFocusCommand { get; }
-        public ICommand DropCommand { get; }
-        public ICommand DragOverCommand { get; }
         public ICommand LostKeyboardFocusCommand { get; }
 
         public KeyBinding GetBinding() {
@@ -82,19 +80,13 @@ namespace NotepadSharp {
             _bindingChangedCallback(_currentBinding, newBinding);
             _currentBinding = newBinding;
         }
-        
-        private void DragOver(DragEventArgs e) {
-            e.Effects = File.Exists(GetDropPath(e)) ? DragDropEffects.Copy : DragDropEffects.None;
-            e.Handled = true;
+
+        private bool AllowDrop(string path) {
+            return File.Exists(path);
         }
 
-        private void Drop(DragEventArgs e) {
-            ScriptFilePath.Value = GetDropPath(e);
-        }
-
-        private string GetDropPath(DragEventArgs args) {
-            var files = (string[])args.Data.GetData(DataFormats.FileDrop);
-            return (files?.Length ?? 0) == 0 ? "" : files[0];
+        private void Drop(string path) {
+            ScriptFilePath.Value = path;
         }
 
         private void StartEditBinding(RoutedEventArgs obj) {

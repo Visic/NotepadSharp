@@ -69,8 +69,8 @@
                      AllowDrop="True"
                      ToolTipService.ToolTip="{Binding ScriptFilePath.Value}"
                      ToolTipService.IsEnabled="{Binding ScriptFilePath.Value, Converter={StaticResource NullOrEmptyToFalseConverter}}"
-                     local:CommandBindingBehavior.PreviewDragOverCommand="{Binding DragOverCommand}"
-                     local:CommandBindingBehavior.PreviewDropCommand="{Binding DropCommand}"
+                     local:CommandBindingBehavior.PreviewDragOverCommand="{Binding DragDrop.DragOverCommand}"
+                     local:CommandBindingBehavior.PreviewDropCommand="{Binding DragDrop.DropCommand}"
                      local:CommandBindingBehavior.LostFocusCommand="{Binding ScriptFilePathLostFocusCommand}"
                      local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding ScriptFilePathGotFocusCommand}"
                      Text="{Binding ScriptFilePath.Value, UpdateSourceTrigger=PropertyChanged}">

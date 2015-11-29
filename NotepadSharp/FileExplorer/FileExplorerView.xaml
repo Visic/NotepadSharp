@@ -14,11 +14,8 @@
         
         <HierarchicalDataTemplate DataType="{x:Type local:DirectoryViewModel}" ItemsSource="{Binding Items.Value}">
             <Grid Height="20">
-                <DockPanel AllowDrop="True"
-                           local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding DragItem.MouseLeftButtonDownCommand}"
+                <DockPanel local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding DragItem.MouseLeftButtonDownCommand}"
                            local:CommandBindingBehavior.PreviewMouseMoveCommand="{Binding DragItem.MouseMoveCommand}"
-                           local:CommandBindingBehavior.PreviewDragOverCommand="{Binding DragDrop.DragOverCommand}"
-                           local:CommandBindingBehavior.PreviewDropCommand="{Binding DragDrop.DropCommand}"
                            Visibility="{Binding ErrorMessage.Value, Converter={StaticResource NullOrEmptyToVisibleConverter}}">
                     <Image DockPanel.Dock="Left" 
                            Source="{Binding IconImage.Value}"/>

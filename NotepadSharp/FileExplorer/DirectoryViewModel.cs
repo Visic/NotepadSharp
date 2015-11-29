@@ -2,9 +2,6 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Windows;
-using System.Windows.Input;
-using Utility;
 using WPFUtility;
 
 namespace NotepadSharp {
@@ -17,44 +14,13 @@ namespace NotepadSharp {
                 _isOpen = !_isOpen;
                 UpdateState();
             });
-            DragDrop = new DragAndDropHandler(AllowDrop, Drop);
         }
 
         public NotifyingProperty<ObservableCollection<ViewModelBase>> Items { get; } = new NotifyingProperty<ObservableCollection<ViewModelBase>>();
-        public DragAndDropHandler DragDrop { get; }
 
         protected override void SetPath(string path) {
             base.SetPath(path);
             UpdateState();
-        }
-
-        private bool AllowDrop(string path) {
-            var newPath = Path.Combine(_path, Path.GetFileName(path));
-            return path != _path && path != newPath;
-        }
-
-        private void Drop(string path) {
-            var newPath = Path.Combine(_path, Path.GetFileName(path));
-
-            if(File.Exists(path)) {
-                if(File.Exists(newPath)) { //handle name conflictions
-                    var currentFiles = Directory.EnumerateFiles(_path);
-                    var currentName = Path.GetFileNameWithoutExtension(newPath);
-                    var newName = UniqueNameGenerator.NextNumbered(currentName, currentFiles);
-                    newPath = Path.Combine(_path, newName) + Path.GetExtension(path);
-                }
-
-                File.Move(path, newPath);
-            } else if(Directory.Exists(path)) {
-                if(Directory.Exists(newPath)) { //handle name conflictions
-                    var currentDirectories = Directory.EnumerateDirectories(_path);
-                    var currentName = Path.GetFileName(newPath);
-                    var newName = UniqueNameGenerator.NextNumbered(currentName, currentDirectories);
-                    newPath = Path.Combine(_path, newName);
-                }
-
-                Directory.Move(path, newPath);
-            }
         }
 
         private void UpdateState() {
