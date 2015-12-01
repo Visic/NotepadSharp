@@ -24,7 +24,7 @@ namespace NotepadSharp {
         public NotifyingProperty<ViewModelBase> TopPanelContent { get; } = new NotifyingProperty<ViewModelBase>();
         public NotifyingProperty<ViewModelBase> LeftPanelContent { get; } = new NotifyingProperty<ViewModelBase>();
         public NotifyingProperty<string> MessageAreaText { get; } = new NotifyingProperty<string>();
-        public NotifyingProperty<string> MessageAreaTextColor { get; } = new NotifyingProperty<string>();
+        public NotifyingProperty<string> MessageAreaTextColor { get; } = new NotifyingProperty<string>("Black");
 
         private IButtonViewModel AddLeftPanelToggleButton(string text, ViewModelBase vm) {
             ToggleButtonViewModel toggleVm = null;

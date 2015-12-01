@@ -7,8 +7,6 @@ using WPFUtility;
 
 namespace NotepadSharp {
     public abstract class FileSystemEntityViewModel : ViewModelBase {
-        protected string _path;
-
         protected FileSystemEntityViewModel() {
             IsExpanded = new NotifyingPropertyWithChangedAction<bool>(
                 x => InteractCommand?.Execute(null)
@@ -20,10 +18,11 @@ namespace NotepadSharp {
 
             DragItem = new DragAndDropHandler(
                 () => string.IsNullOrEmpty(ErrorMessage.Value), 
-                () => new DataObject(DataFormats.FileDrop, new string[] { _path })
+                () => new DataObject(DataFormats.FileDrop, new string[] { EntityPath.Value })
             );
         }
 
+        public NotifyingProperty<string> EntityPath { get; } = new NotifyingProperty<string>();
         public NotifyingProperty<string> Name { get; } = new NotifyingProperty<string>();
         public NotifyingProperty<BitmapImage> IconImage { get; } = new NotifyingProperty<BitmapImage>();
         public NotifyingProperty<bool> Focusable { get; } = new NotifyingProperty<bool>(true);
@@ -33,7 +32,7 @@ namespace NotepadSharp {
         public ICommand InteractCommand { get; protected set; }
 
         protected virtual void SetPath(string path) {
-            _path = path;
+            EntityPath.Value = path;
 
             try {
                 Name.Value = Path.GetFileName(path);
@@ -41,6 +40,23 @@ namespace NotepadSharp {
             } catch(Exception ex) {
                 ErrorMessage.Value = ex.Message;
             }
+        }
+
+        public override bool Equals(object obj) {
+            return (obj as FileSystemEntityViewModel)?.EntityPath.Value == EntityPath.Value;
+        }
+
+        public override int GetHashCode() {
+            return EntityPath.Value.GetHashCode();
+        }
+
+        public static bool operator ==(FileSystemEntityViewModel left, FileSystemEntityViewModel right) {
+            if ((object)left == null || (object)right == null) return (object)left == null && (object)right == null;
+            return left.EntityPath.Value == right.EntityPath.Value;
+        }
+
+        public static bool operator !=(FileSystemEntityViewModel left, FileSystemEntityViewModel right) {
+            return !(left == right);
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿--Bugs
 -Maintain binding list order
--Refreshing file explorer (e.g. after drag/drop)
 
 --Features
 -More persistance
@@ -8,6 +7,3 @@
 -Async capabilities for lua scripts (coroutines or something, allowing use of C# tasks is causing unrecoverable exceptions from NLua)
 -Syntax highlighting
 -Auto-Completion
-
---Improvements
--Better folder icons
