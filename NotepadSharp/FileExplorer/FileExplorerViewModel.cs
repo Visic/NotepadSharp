@@ -16,17 +16,24 @@ namespace NotepadSharp {
 
             _refreshTimer.Interval = TimeSpan.FromMilliseconds(100);
             _refreshTimer.Tick += _refreshTimer_Tick;
-            _refreshTimer.Start();
+
+            InteractCommand = new ChainCommand(
+                InteractCommand,
+                x => {
+                    if(IsExpanded.Value) _refreshTimer.Start();
+                    else _refreshTimer.Stop();
+                }
+            );
         }
+
+        public NotifyingProperty<string> RootPath { get; }
+        public DragAndDropHandler DragDropRootPath { get; }
 
         private async void _refreshTimer_Tick(object sender, EventArgs e) {
             _refreshTimer.Stop();
             await Refresh_Async();
             _refreshTimer.Start();
         }
-
-        public NotifyingProperty<string> RootPath { get; }
-        public DragAndDropHandler DragDropRootPath { get; }
 
         private bool AllowDropPath(string path) {
             return Directory.Exists(path);

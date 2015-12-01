@@ -9,14 +9,12 @@ using WPFUtility;
 
 namespace NotepadSharp {
     public class DirectoryViewModel : FileSystemEntityViewModel {
-        bool _isOpen;
         bool _isUpdating;
 
         public DirectoryViewModel(string path) {
             Items.Value = new ObservableCollection<FileSystemEntityViewModel>(new FileSystemEntityViewModel[] { null });
 
             InteractCommand = new RelayCommand(async arg => {
-                _isOpen = !_isOpen;
                 await UpdateState_Async();
             });
 
@@ -31,7 +29,7 @@ namespace NotepadSharp {
         }
 
         protected async Task Refresh_Async() {
-            if(!_isOpen) return;
+            if(!IsExpanded.Value) return;
             await UpdateState_Async();
             foreach(var ele in Items.Value.Where(x => x is DirectoryViewModel).Cast<DirectoryViewModel>()) {
                 await ele.Refresh_Async();
@@ -41,9 +39,9 @@ namespace NotepadSharp {
         private async Task UpdateState_Async() {
             if (_isUpdating) return;
             _isUpdating = true;
-            IconImage.Value = _isOpen ? Constants.Image_FolderOpen : Constants.Image_FolderClosed;
+            IconImage.Value = IsExpanded.Value ? Constants.Image_FolderOpen : Constants.Image_FolderClosed;
 
-            if(_isOpen) {
+            if(IsExpanded.Value) {
                 try {
                     IEnumerable<string> maybeNewItems = new string[0];
                     if(string.IsNullOrWhiteSpace(EntityPath.Value)) {

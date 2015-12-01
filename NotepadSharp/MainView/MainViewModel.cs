@@ -13,9 +13,12 @@ namespace NotepadSharp {
 
             AddTopPanelButton("Bindings", new KeyBindingsViewModel());
             var fileExplorer = new FileExplorerViewModel(Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
-            AddLeftPanelToggleButton("Files", fileExplorer);
-
-            fileExplorer.InteractCommand.Execute(null); //initialize the root folder
+            AddLeftPanelToggleButton(
+                "Files", 
+                fileExplorer, 
+                x => fileExplorer.IsExpanded.Value = x
+            );
+            
             TopTabs.First().Command.Execute(null);
         }
 
@@ -26,9 +29,15 @@ namespace NotepadSharp {
         public NotifyingProperty<string> MessageAreaText { get; } = new NotifyingProperty<string>();
         public NotifyingProperty<string> MessageAreaTextColor { get; } = new NotifyingProperty<string>("Black");
 
-        private IButtonViewModel AddLeftPanelToggleButton(string text, ViewModelBase vm) {
+        private IButtonViewModel AddLeftPanelToggleButton(string text, ViewModelBase vm, Action<bool> selectionStateChanged = null) {
+            if (selectionStateChanged == null) selectionStateChanged = x => { };
+
             ToggleButtonViewModel toggleVm = null;
-            var cmd = new RelayCommand(x => LeftPanelContent.Value = toggleVm.IsSelected.Value ? vm : null);
+            var cmd = new RelayCommand(x => {
+                LeftPanelContent.Value = toggleVm.IsSelected.Value ? vm : null;
+                selectionStateChanged(toggleVm.IsSelected.Value);
+            });
+
             toggleVm = new ToggleButtonViewModel(text, cmd);
             LeftTabs.Add(toggleVm);
             return toggleVm;
