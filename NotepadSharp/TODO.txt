@@ -2,7 +2,7 @@
 -Maintain binding list order
 
 --Features
--More persistance
+-More persistence
 -Shadow copy of the edited file (like notepad++)
 -Async capabilities for lua scripts (coroutines or something, allowing use of C# tasks is causing unrecoverable exceptions from NLua)
 -Syntax highlighting

@@ -24,4 +24,8 @@
     <DataTemplate DataType="{x:Type local:FileExplorerViewModel}">
         <local:FileExplorerView/>
     </DataTemplate>
+
+    <DataTemplate DataType="{x:Type local:MainMenuViewModel}">
+        <local:MainMenuView/>
+    </DataTemplate>
 </ResourceDictionary>

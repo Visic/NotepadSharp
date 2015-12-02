@@ -58,7 +58,7 @@
                 BorderBrush="#AAAAAA"
                 BorderThickness="0,0,0,1">
             <TextBox Padding="2"
-                     Background="#DDDDDD"
+                     Background="#CCCCCC"
                      AllowDrop="True"
                      local:CommandBindingBehavior.PreviewDragOverCommand="{Binding DragDropRootPath.DragOverCommand}"
                      local:CommandBindingBehavior.PreviewDropCommand="{Binding DragDropRootPath.DropCommand}"

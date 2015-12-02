@@ -1,13 +1,9 @@
 ﻿using NotepadSharp.Properties;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows.Media.Imaging;
 
-namespace NotepadSharp
-{
+namespace NotepadSharp {
     public static class Constants
     {
         public const string CmdArgPrefix = "--";
@@ -15,5 +11,9 @@ namespace NotepadSharp
         public const string KeyBindingCollectionSettingName = "KeyBindings";
         public static readonly BitmapImage Image_FolderOpen = Resources.OpenFolder.ToBitmapImage();
         public static readonly BitmapImage Image_FolderClosed = Resources.ClosedFolder.ToBitmapImage();
+
+        public static readonly string DesktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        public static readonly string AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        public static readonly string FileCachePath = Path.Combine(AppData, "NotepadSharp");
     }
 }

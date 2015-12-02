@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Windows;
 using System.Windows.Threading;
 using Utility;
 
@@ -12,6 +13,7 @@ namespace NotepadSharp
         private void App_Startup(object sender, StartupEventArgs e)
         {
             Logger.ApplicationLoggerPath = ArgsAndSettings.LogPath;
+            if (!Directory.Exists(Constants.FileCachePath)) Directory.CreateDirectory(Constants.FileCachePath);
             CreateAndShowMainWindow();
         }
 

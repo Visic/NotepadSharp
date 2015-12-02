@@ -9,19 +9,35 @@ namespace NotepadSharp {
         public MainViewModel() {
             ApplicationState.SetMessageAreaText = msg => MessageAreaText.Value = msg;
             ApplicationState.SetMessageAreaTextColor = color => MessageAreaTextColor.Value = color;
-            ApplicationState.OpenDocument = filePath => AddDocumentTab(filePath).Command.Execute(null);
+            ApplicationState.OpenDocument = filePath => AddDocumentTab(filePath).IsSelected.Value = true;
 
-            AddTopPanelButton("Bindings", new KeyBindingsViewModel());
+            AddLeftPanelToggleButton("Menu", ApplicationState.MainMenu);
+
             var fileExplorer = new FileExplorerViewModel(Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
             AddLeftPanelToggleButton(
                 "Files", 
                 fileExplorer, 
                 x => fileExplorer.IsExpanded.Value = x
             );
-            
-            TopTabs.First().Command.Execute(null);
-        }
 
+            ApplicationState.MainMenu.SetMenuButton(
+                "Bindings", 
+                new ButtonViewModel(
+                    "Key Bindings", 
+                    new RelayCommand(
+                        x => {
+                            var button = TopTabs.FirstOrDefault(y => y.Text == "Key Bindings") ?? 
+                                         AddTopPanelButton("Key Bindings", new KeyBindingsViewModel());
+
+                            button.IsSelected.Value = true;
+                        }
+                    )
+                )
+            );
+            
+            if(TopTabs.Count() > 0) TopTabs.First().IsSelected.Value = true;
+        }
+        
         public SingleSelectionCollection<SelectableButtonViewModel> TopTabs { get; } = new SingleSelectionCollection<SelectableButtonViewModel>();
         public SingleSelectionCollection<ToggleButtonViewModel> LeftTabs { get; } = new SingleSelectionCollection<ToggleButtonViewModel>();
         public NotifyingProperty<ViewModelBase> TopPanelContent { get; } = new NotifyingProperty<ViewModelBase>();
@@ -29,7 +45,7 @@ namespace NotepadSharp {
         public NotifyingProperty<string> MessageAreaText { get; } = new NotifyingProperty<string>();
         public NotifyingProperty<string> MessageAreaTextColor { get; } = new NotifyingProperty<string>("Black");
 
-        private IButtonViewModel AddLeftPanelToggleButton(string text, ViewModelBase vm, Action<bool> selectionStateChanged = null) {
+        private ToggleButtonViewModel AddLeftPanelToggleButton(string text, ViewModelBase vm, Action<bool> selectionStateChanged = null) {
             if (selectionStateChanged == null) selectionStateChanged = x => { };
 
             ToggleButtonViewModel toggleVm = null;
@@ -43,14 +59,14 @@ namespace NotepadSharp {
             return toggleVm;
         }
 
-        private IButtonViewModel AddTopPanelButton(string text, ViewModelBase vm) {
+        private SelectableButtonViewModel AddTopPanelButton(string text, ViewModelBase vm) {
             var cmd = new RelayCommand(x => TopPanelContent.Value = vm);
             var button = new SelectableButtonViewModel(text, cmd);
             TopTabs.Add(button);
             return button;
         }
 
-        private IButtonViewModel AddDocumentTab(string filePath) {
+        private SelectableButtonViewModel AddDocumentTab(string filePath) {
             return AddTopPanelButton(Path.GetFileName(filePath), new DocumentViewModel(filePath));
         }
     }

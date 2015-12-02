@@ -88,6 +88,10 @@
     <Compile Include="MainView\ButtonBarView.xaml.cs">
       <DependentUpon>ButtonBarView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MainView\MainMenu\MainMenuView.xaml.cs">
+      <DependentUpon>MainMenuView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MainView\MainMenu\MainMenuViewModel.cs" />
     <Compile Include="Misc\ApplicationState.cs" />
     <Compile Include="Misc\CustomSettings.cs" />
     <Page Include="FileExplorer\FileExplorerView.xaml">
@@ -103,6 +107,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MainView\ButtonBarView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="MainView\MainMenu\MainMenuView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -222,9 +230,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\OpenFolder.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\generic-file-icon.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Document Generic.ico" />
