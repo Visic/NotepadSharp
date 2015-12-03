@@ -8,6 +8,9 @@ namespace NotepadSharp {
 
         public RichTextViewModel(string content) {
             ApiProvider = new NotifyingProperty<RichTextBoxApiProvider>(new RichTextBoxApiProvider());
+            ApiProvider.Value.MarkDirty = () => IsDirty.Value = true;
+            ApiProvider.Value.MarkClean = () => IsDirty.Value = false;
+
             Content = new NotifyingProperty<string>(content);
             KeyDownCommand = new RelayCommand(x => _keyBindingExecutor.KeyDown((KeyEventArgs)x));
             KeyUpCommand = new RelayCommand(x => _keyBindingExecutor.KeyUp((KeyEventArgs)x));
@@ -24,6 +27,7 @@ namespace NotepadSharp {
         
         public NotifyingProperty<RichTextBoxApiProvider> ApiProvider { get; }
         public NotifyingProperty<string> Content { get; }
+        public NotifyingProperty<bool> IsDirty { get; } = new NotifyingProperty<bool>();
         public ICommand KeyDownCommand { get; }
         public ICommand KeyUpCommand { get; }
         public ICommand LostFocusCommand { get; }

@@ -2,43 +2,16 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:NotepadSharp">
     <Style x:Key="TextBox_NoBorder" TargetType="{x:Type TextBoxBase}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate>
-                    <ScrollViewer Margin="0" x:Name="PART_ContentHost"
-                                  Background="{TemplateBinding Background}"/>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="Template" Value="{StaticResource TextboxNoBorderTemplate}"/>
     </Style>
 
     <Style TargetType="{x:Type Button}">
         <Setter Property="Focusable" Value="False"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border BorderThickness="0" BorderBrush="Black"
-                            Padding="5,0"
-                            Background="{TemplateBinding Background}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="Template" Value="{StaticResource ButtonTemplate}"/>
     </Style>
 
     <Style x:Key="Button_WithBorder" TargetType="{x:Type Button}">
         <Setter Property="Focusable" Value="False"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}"
-                            Padding="5,0"
-                            Background="{TemplateBinding Background}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="Template" Value="{StaticResource ButtonWithBorderTemplate}"/>
     </Style>
 </ResourceDictionary>

@@ -10,7 +10,7 @@ namespace NotepadSharp {
     public class DocumentViewModel : ViewModelBase {
         public DocumentViewModel(string filePath) {
             string uid, cachedFilePath;
-            if (!ArgsAndSettings.CachedFiles.TryGetT1(filePath, out uid)) {
+            if(!ArgsAndSettings.CachedFiles.TryGetT1(filePath, out uid)) {
                 uid = Guid.NewGuid().ToString();
                 cachedFilePath = Path.Combine(Constants.FileCachePath, uid);
                 File.Copy(filePath, cachedFilePath);
@@ -21,9 +21,11 @@ namespace NotepadSharp {
 
             Title = Path.GetFileName(filePath);
             DocumentContent = new RichTextViewModel(File.ReadAllText(cachedFilePath));
+            IsDirty = DocumentContent.IsDirty;
         }
 
-        public string Title { get; private set; }
-        public ViewModelBase DocumentContent { get; private set; }
+        public string Title { get; }
+        public RichTextViewModel DocumentContent { get; }
+        public NotifyingProperty<bool> IsDirty { get; }
     }
 }

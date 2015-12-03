@@ -2,6 +2,8 @@
 
 namespace NotepadSharp {
     public class RichTextBoxApiProvider {
+        public Action MarkDirty { get; set; }
+        public Action MarkClean { get; set; }
         public Action AlignCenter { get; set; }
         public Action AlignJustify { get; set; }
         public Action AlignLeft { get; set; }

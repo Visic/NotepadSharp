@@ -72,8 +72,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\LogicalConverters.cs" />
     <Compile Include="Converters\IdentityConverter.cs" />
     <Compile Include="Converters\NullOrEmptyToNullConverter.cs" />
+    <Compile Include="DataStructures\MaybeDirtySelectableButton\MaybeDirtySelectableButtonView.xaml.cs">
+      <DependentUpon>MaybeDirtySelectableButtonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DataStructures\MaybeDirtySelectableButton\MaybeDirtySelectableButtonViewModel.cs" />
     <Compile Include="DataStructures\PersistentCrossReferenceCollection.cs" />
     <Compile Include="DataStructures\SerializableTuple.cs" />
     <Compile Include="FileExplorer\DirectoryViewModel.cs" />
@@ -96,6 +101,10 @@
     <Compile Include="MainView\MainMenu\MainMenuViewModel.cs" />
     <Compile Include="Misc\ApplicationState.cs" />
     <Compile Include="Misc\CustomSettings.cs" />
+    <Page Include="DataStructures\MaybeDirtySelectableButton\MaybeDirtySelectableButtonView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="FileExplorer\FileExplorerView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -141,7 +150,6 @@
     <Compile Include="Behaviors\CommandBindingBehavior.cs" />
     <Compile Include="Misc\Constants.cs" />
     <Compile Include="Converters\ChainConverter.cs" />
-    <Compile Include="Converters\InvertBoolConverter.cs" />
     <Compile Include="Converters\NullToBoolConverter.cs" />
     <Compile Include="Converters\PrettyPrintKeyBindingConverter.cs" />
     <Compile Include="DataStructures\ConditionalNotifyingSetting.cs" />
@@ -182,6 +190,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="ViewResources\Templates.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="ViewResources\Styles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

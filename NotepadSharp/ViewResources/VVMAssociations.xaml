@@ -28,4 +28,8 @@
     <DataTemplate DataType="{x:Type local:MainMenuViewModel}">
         <local:MainMenuView/>
     </DataTemplate>
+
+    <DataTemplate DataType="{x:Type local:MaybeDirtySelectableButtonViewModel}">
+        <local:MaybeDirtySelectableButtonView/>
+    </DataTemplate>
 </ResourceDictionary>

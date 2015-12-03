@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using WPFUtility;
 
 namespace NotepadSharp {
     public class MainViewModel : ViewModelBase {
-        Dictionary<string, SelectableButtonViewModel> _buttonLookup = new Dictionary<string, SelectableButtonViewModel>();
+        Dictionary<string, ISelectableButtonViewModel> _buttonLookup = new Dictionary<string, ISelectableButtonViewModel>();
 
         public MainViewModel() {
             ApplicationState.SetMessageAreaText = msg => MessageAreaText.Value = msg;
             ApplicationState.SetMessageAreaTextColor = color => MessageAreaTextColor.Value = color;
-            ApplicationState.OpenDocument = filePath =>  AddOrSelectTopPanelButton(Path.GetFileName(filePath), () => new DocumentViewModel(filePath), filePath);
+            ApplicationState.OpenDocument = AddOrSelectDocumentButton;
 
             AddLeftPanelToggleButton("Menu", ApplicationState.MainMenu);
 
@@ -34,17 +33,17 @@ namespace NotepadSharp {
             if(TopTabs.Count() > 0) TopTabs.First().IsSelected.Value = true;
         }
         
-        public SingleSelectionCollection<SelectableButtonViewModel> TopTabs { get; } = new SingleSelectionCollection<SelectableButtonViewModel>();
-        public SingleSelectionCollection<ToggleButtonViewModel> LeftTabs { get; } = new SingleSelectionCollection<ToggleButtonViewModel>();
+        public SingleSelectionCollection<ISelectableButtonViewModel> TopTabs { get; } = new SingleSelectionCollection<ISelectableButtonViewModel>();
+        public SingleSelectionCollection<ISelectableButtonViewModel> LeftTabs { get; } = new SingleSelectionCollection<ISelectableButtonViewModel>();
         public NotifyingProperty<ViewModelBase> TopPanelContent { get; } = new NotifyingProperty<ViewModelBase>();
         public NotifyingProperty<ViewModelBase> LeftPanelContent { get; } = new NotifyingProperty<ViewModelBase>();
         public NotifyingProperty<string> MessageAreaText { get; } = new NotifyingProperty<string>();
         public NotifyingProperty<string> MessageAreaTextColor { get; } = new NotifyingProperty<string>("Black");
 
-        private ToggleButtonViewModel AddLeftPanelToggleButton(string text, ViewModelBase vm, Action<bool> selectionStateChanged = null) {
+        private void AddLeftPanelToggleButton(string text, ViewModelBase vm, Action<bool> selectionStateChanged = null) {
             if (selectionStateChanged == null) selectionStateChanged = x => { };
 
-            ToggleButtonViewModel toggleVm = null;
+            ISelectableButtonViewModel toggleVm = null;
             var cmd = new RelayCommand(x => {
                 LeftPanelContent.Value = toggleVm.IsSelected.Value ? vm : null;
                 selectionStateChanged(toggleVm.IsSelected.Value);
@@ -52,18 +51,32 @@ namespace NotepadSharp {
 
             toggleVm = new ToggleButtonViewModel(text, cmd);
             LeftTabs.Add(toggleVm);
-            return toggleVm;
         }
 
-        private SelectableButtonViewModel AddOrSelectTopPanelButton(string text, Func<ViewModelBase> vmGenerator, string uniqueName = null) {
-            SelectableButtonViewModel button;
-            if(!_buttonLookup.TryGetValue(uniqueName ?? text, out button)) {
-                var cmd = new RelayCommand(x => TopPanelContent.Value = vmGenerator());
-                _buttonLookup[uniqueName ?? text] = button = new SelectableButtonViewModel(text, cmd);
+        private void AddOrSelectTopPanelButton(string text, Func<ViewModelBase> vmGenerator) {
+            ISelectableButtonViewModel button;
+            if(!_buttonLookup.TryGetValue(text, out button)) {
+                var vm = new Lazy<ViewModelBase>(vmGenerator);
+                var cmd = new RelayCommand(x => TopPanelContent.Value = vm.Value);
+                _buttonLookup[text] = button = new SelectableButtonViewModel(text, cmd);
                 TopTabs.Add(button);
             }
             button.IsSelected.Value = true;
-            return button;
+        }
+
+        private void AddOrSelectDocumentButton(string filePath) {
+            ISelectableButtonViewModel button;
+            if(!_buttonLookup.TryGetValue(filePath, out button)) {
+                var vm = new Lazy<DocumentViewModel>(() => new DocumentViewModel(filePath));
+                var cmd = new RelayCommand(x => {
+                    ((MaybeDirtySelectableButtonViewModel)button).IsDirty = vm.Value.IsDirty;
+                    TopPanelContent.Value = vm.Value;
+                });
+                var fileName = Path.GetFileName(filePath);
+                _buttonLookup[filePath] = button = new MaybeDirtySelectableButtonViewModel(fileName, cmd);
+                TopTabs.Add(button);
+            }
+            button.IsSelected.Value = true;
         }
     }
 }
