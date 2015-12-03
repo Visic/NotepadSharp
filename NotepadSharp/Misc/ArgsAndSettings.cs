@@ -24,6 +24,7 @@ namespace NotepadSharp {
         public static Setting<double> Left { get; private set; }
         public static Setting<WindowState> WindowState { get; private set; }
         public static KeyBindingCollection KeyBindings { get; private set; }
+        public static PersistentCrossReferenceCollection<string, string> CachedFiles { get; private set; }
 
         public static void SaveSettings() {
             Settings.Default.Save();
@@ -32,6 +33,7 @@ namespace NotepadSharp {
         private static void SetDefaults() {
             LogPath = "";
             KeyBindings = new KeyBindingCollection(new PersistentCollection<LuaKeyBinding>(Constants.KeyBindingCollectionSettingName));
+            CachedFiles = new PersistentCrossReferenceCollection<string, string>(new PersistentCollection<SerializableTuple<string, string>>(Constants.CachedFileCollectionSettingName));
         }
 
         private static void LoadSettings() {

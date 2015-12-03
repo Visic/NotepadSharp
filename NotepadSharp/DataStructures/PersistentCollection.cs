@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using NotepadSharp.Properties;
 using System;
+using System.Collections;
 
 namespace NotepadSharp {
-    public class PersistentCollection<T> {
+    public class PersistentCollection<T> : IEnumerable<T> {
         string _settingName;
 
         public PersistentCollection(string settingName) {
@@ -24,6 +25,14 @@ namespace NotepadSharp {
         public void Remove(T ele) {
             GetSavedCollection().Remove(ele);
             ArgsAndSettings.SaveSettings();
+        }
+
+        public IEnumerator<T> GetEnumerator() {
+            return Collection.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() {
+            return Collection.GetEnumerator();
         }
 
         private List<T> GetSavedCollection() {
