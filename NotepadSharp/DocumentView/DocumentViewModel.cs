@@ -1,23 +1,29 @@
 ﻿using System;
+using System.Linq;
 using System.IO;
+using Utility;
 using WPFUtility;
 
 namespace NotepadSharp {
     public class DocumentViewModel : ViewModelBase {
         public DocumentViewModel(string filePath) {
-            string uid, cachedFilePath;
-            if(!ArgsAndSettings.CachedFiles.TryGetT1(filePath, out uid)) {
-                uid = Guid.NewGuid().ToString();
-                cachedFilePath = Path.Combine(Constants.FileCachePath, uid);
-                ArgsAndSettings.CachedFiles.Add(uid, filePath);
-            } else {
-                cachedFilePath = Path.Combine(Constants.FileCachePath, uid);
+            var fileInfo = ArgsAndSettings.CachedFiles.FirstOrDefault(x => x.OriginalFilePath == filePath);
+
+            if(fileInfo == null) {
+                var uid = Guid.NewGuid().ToString();
+
+                fileInfo = new SerializableFileInfo();
+                fileInfo.CachedFilePath = Path.Combine(Constants.FileCachePath, uid);
+                fileInfo.IsDirty = false;
+                fileInfo.OriginalFilePath = filePath;
+                fileInfo.Hash = Methods.HashFile(filePath);
+
+                File.Copy(filePath, fileInfo.CachedFilePath);
+                ArgsAndSettings.CachedFiles.Add(fileInfo);
             }
 
-            if (!File.Exists(cachedFilePath)) File.Copy(filePath, cachedFilePath);
-
             Title = Path.GetFileName(filePath);
-            DocumentContent = new RichTextViewModel(File.ReadAllText(cachedFilePath));
+            DocumentContent = new RichTextViewModel(fileInfo);
             IsDirty = DocumentContent.IsDirty;
         }
 

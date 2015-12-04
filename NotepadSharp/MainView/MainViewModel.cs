@@ -29,6 +29,11 @@ namespace NotepadSharp {
                     new RelayCommand(x => AddOrSelectTopPanelButton("Key Bindings", () => new KeyBindingsViewModel()))
                 )
             );
+
+            //load previously open files
+            foreach(var path in ArgsAndSettings.CachedFiles.Select(x => x.OriginalFilePath)) {
+                AddOrSelectDocumentButton(path);
+            }
             
             if(TopTabs.Count() > 0) TopTabs.First().IsSelected.Value = true;
         }

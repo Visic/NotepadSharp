@@ -18,9 +18,9 @@ namespace NotepadSharp.Properties {
         [System.Configuration.UserScopedSetting()]
         [System.Diagnostics.DebuggerNonUserCode()]
         [System.Configuration.SettingsSerializeAs(System.Configuration.SettingsSerializeAs.Binary)]
-        public List<SerializableTuple<string, string>> CachedFiles {
+        public List<SerializableFileInfo> CachedFiles {
             get {
-                return ((List<SerializableTuple<string, string>>)(this[Constants.CachedFileCollectionSettingName]));
+                return ((List<SerializableFileInfo>)(this[Constants.CachedFileCollectionSettingName]));
             }
             set {
                 this[Constants.CachedFileCollectionSettingName] = value;

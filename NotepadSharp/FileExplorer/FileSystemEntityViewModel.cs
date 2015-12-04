@@ -44,16 +44,18 @@ namespace NotepadSharp {
         }
 
         public override bool Equals(object obj) {
-            return (obj as FileSystemEntityViewModel)?.EntityPath.Value == EntityPath.Value;
+            var fse = obj as FileSystemEntityViewModel;
+            if (fse == null) return false;
+
+            return fse.EntityPath.Value == EntityPath.Value;
         }
 
         public override int GetHashCode() {
             return EntityPath.Value.GetHashCode();
         }
 
-        public static bool operator ==(FileSystemEntityViewModel left, FileSystemEntityViewModel right) {
-            if ((object)left == null || (object)right == null) return (object)left == null && (object)right == null;
-            return left.EntityPath.Value == right.EntityPath.Value;
+        public static bool operator ==(FileSystemEntityViewModel a, FileSystemEntityViewModel b) {
+            return a?.Equals(b) ?? (object)b == null;
         }
 
         public static bool operator !=(FileSystemEntityViewModel left, FileSystemEntityViewModel right) {

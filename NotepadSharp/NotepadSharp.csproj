@@ -79,8 +79,7 @@
       <DependentUpon>MaybeDirtySelectableButtonView.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataStructures\MaybeDirtySelectableButton\MaybeDirtySelectableButtonViewModel.cs" />
-    <Compile Include="DataStructures\PersistentCrossReferenceCollection.cs" />
-    <Compile Include="DataStructures\SerializableTuple.cs" />
+    <Compile Include="DataStructures\SerializableFileInfo.cs" />
     <Compile Include="FileExplorer\DirectoryViewModel.cs" />
     <Compile Include="FileExplorer\ErrorItemViewModel.cs" />
     <Compile Include="FileExplorer\FileExplorerView.xaml.cs">

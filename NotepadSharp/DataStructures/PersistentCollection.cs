@@ -27,6 +27,11 @@ namespace NotepadSharp {
             ArgsAndSettings.SaveSettings();
         }
 
+        public void AddOrReplace(T ele) {
+            bool temp = GetSavedCollection().Remove(ele);
+            Add(ele);
+        }
+
         public IEnumerator<T> GetEnumerator() {
             return Collection.GetEnumerator();
         }
