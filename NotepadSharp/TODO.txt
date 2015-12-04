@@ -14,8 +14,5 @@
         --Need to open all cached files as documents when the app opens
 
     -File explorer enhancements
-        --Live sub file/folder filtering while typing in the search field
-            --partially implemented, doesn't work like expected when typing in [directory that exists]/[doesn't exist]/
-                **it stays filtered to [directory that exists]/[doesn't exist] instead of returning nothing
         --Arrow down from the search box through the files/folders to select an item
         --Enter on files to open the file, Enter on folders to expand/collapse the folder

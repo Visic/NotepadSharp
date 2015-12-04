@@ -75,7 +75,14 @@ namespace NotepadSharp {
             if(string.IsNullOrWhiteSpace(path)) {
                 result = Environment.GetLogicalDrives();
             } else if (!Directory.Exists(path)) {
-                result = GetListing(Path.GetDirectoryName(path), Path.GetFileName(path));
+                if(path.EndsWith(Path.DirectorySeparatorChar.ToString()) || path.EndsWith(Path.AltDirectorySeparatorChar.ToString())) {
+                    result = new string[0]; //path was to a directory which doesn't exist
+                } else {
+                    var nextPath = Path.GetDirectoryName(path);
+                    var nextFilter = Path.GetFileName(path);
+
+                    result = GetListing(nextPath, nextFilter);
+                }
             } else {
                 var directoryVms = Directory.GetDirectories(path);
                 var fileVms = Directory.GetFiles(path);
