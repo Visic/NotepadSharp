@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -43,14 +42,7 @@ namespace NotepadSharp {
 
             if(IsExpanded.Value) {
                 try {
-                    IEnumerable<string> maybeNewItems = new string[0];
-                    if(string.IsNullOrWhiteSpace(EntityPath.Value)) {
-                        maybeNewItems = Environment.GetLogicalDrives();
-                    } else {
-                        var directoryVms = Directory.GetDirectories(EntityPath.Value);
-                        var fileVms = Directory.GetFiles(EntityPath.Value);
-                        maybeNewItems = directoryVms.Concat(fileVms);
-                    }
+                    var maybeNewItems = GetListing(EntityPath.Value);
                     
                     var removed = Items.Value.Where(x => x == null || !maybeNewItems.Contains(x.EntityPath.Value));
                     var temp = removed.Count();
@@ -74,6 +66,27 @@ namespace NotepadSharp {
                 }
             }
             _isUpdating = false;
+        }
+
+        //This method returns a list of files/folders/drives using the path as an initial search and moving up the path structure
+        //until a valid path is found, and then using the rest of the initial path as a filter for any files/folders in that result
+        private IEnumerable<string> GetListing(string path, string filter = "") {
+            IEnumerable<string> result;
+            if(string.IsNullOrWhiteSpace(path)) {
+                result = Environment.GetLogicalDrives();
+            } else if (!Directory.Exists(path)) {
+                result = GetListing(Path.GetDirectoryName(path), Path.GetFileName(path));
+            } else {
+                var directoryVms = Directory.GetDirectories(path);
+                var fileVms = Directory.GetFiles(path);
+                result = directoryVms.Concat(fileVms);
+            }
+
+            return result.Where(x => {
+                var fileName = Path.GetFileName(x);
+                if (string.IsNullOrEmpty(fileName)) fileName = x;
+                return fileName.ToLower().StartsWith(filter.ToLower());
+            });
         }
 
         private FileSystemEntityViewModel MakeNewItem(string path) {
