@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using WPFUtility;
 
@@ -38,6 +39,7 @@ namespace NotepadSharp {
 
         protected virtual void Drop(DragEventArgs e) {
             _drop(GetDropPath(e));
+            (e.Source as TextBox)?.SelectAll();
             e.Handled = true;
         }
 

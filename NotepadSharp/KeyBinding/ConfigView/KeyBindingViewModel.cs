@@ -12,12 +12,15 @@ namespace NotepadSharp {
     public class KeyBindingViewModel : ViewModelBase {
         KeyBinding _currentBinding;
         Action<KeyBinding, KeyBinding> _bindingChangedCallback;
-        KeyPressHandler _keyPressHandler;
 
         public KeyBindingViewModel(KeyBinding binding, Action<KeyBinding, KeyBinding> bindingChangedCallback, Action<KeyBindingViewModel> deleteBindingCallback) {
             _currentBinding = binding;
             _bindingChangedCallback = bindingChangedCallback;
-            _keyPressHandler = new KeyPressHandler(KeyPressed);
+            KeyPressHandler = new KeyPressHandler(
+                KeyPressed, 
+                keyDownCanExecute: x => IsEditingBinding.Value, 
+                keyUpCanExecute: x => IsEditingBinding.Value
+            );
             Keys = new NotifyingProperty<HashSet<Key>>(_currentBinding.Keys);
             ScriptFilePath = new NotifyingPropertyWithChangedAction<string>(x => CommitChanges(), (binding as LuaKeyBinding)?.ScriptPath);
             ExecuteOnKeyUp = new NotifyingPropertyWithChangedAction<bool>(x => { _currentBinding.ExecuteOnKeyUp = x; CommitChanges(); }, _currentBinding.ExecuteOnKeyUp);
@@ -39,16 +42,15 @@ namespace NotepadSharp {
             IsEditingBinding = new NotifyingProperty<bool>();
             StartEditingCommand = new RelayCommand(x => StartEditBinding((RoutedEventArgs)x));
             EndEditingCommand = new RelayCommand(x => EndEditBinding((RoutedEventArgs)x));
-            KeyDownCommand = new RelayCommand(x => _keyPressHandler.KeyDown((KeyEventArgs)x), x => IsEditingBinding.Value);
-            KeyUpCommand = new RelayCommand(x => _keyPressHandler.KeyUp((KeyEventArgs)x), x => IsEditingBinding.Value);
             if (deleteBindingCallback != null) DeleteBindingCommand = new RelayCommand(x => deleteBindingCallback(this));
 
             ScriptFilePathGotFocusCommand = new RelayCommand(x => ScriptFilePathIsFocused.Value = true);
             ScriptFilePathLostFocusCommand = new RelayCommand(x => ScriptFilePathIsFocused.Value = false);
             DragDrop = new DragAndDropHandler(AllowDrop, Drop);
-            LostKeyboardFocusCommand = new RelayCommand(x => _keyPressHandler.ClearPressedKeys());
+            LostKeyboardFocusCommand = new RelayCommand(x => KeyPressHandler.ClearPressedKeys());
         }
 
+        public KeyPressHandler KeyPressHandler { get; }
         public NotifyingProperty<bool> ScriptFilePathIsFocused { get; } = new NotifyingProperty<bool>();
         public NotifyingProperty<HashSet<Key>> Keys { get; private set; }
         public NotifyingPropertyWithChangedAction<string> ScriptFilePath { get; }
@@ -103,12 +105,12 @@ namespace NotepadSharp {
             if(arg.Count == 1) {
                 switch(arg[0]) {
                     case Key.Escape:
-                        _keyPressHandler.ClearPressedKeys();
+                        KeyPressHandler.ClearPressedKeys();
                         Keys.Value = _currentBinding.Keys;
                         EndEditBinding(null);
                         return true;
                     case Key.Enter:
-                        _keyPressHandler.ClearPressedKeys();
+                        KeyPressHandler.ClearPressedKeys();
                         EndEditBinding(null);
                         return true;
                 }

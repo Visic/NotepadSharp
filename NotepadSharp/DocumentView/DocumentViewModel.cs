@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WPFUtility;
 
 namespace NotepadSharp {
@@ -13,11 +9,12 @@ namespace NotepadSharp {
             if(!ArgsAndSettings.CachedFiles.TryGetT1(filePath, out uid)) {
                 uid = Guid.NewGuid().ToString();
                 cachedFilePath = Path.Combine(Constants.FileCachePath, uid);
-                File.Copy(filePath, cachedFilePath);
                 ArgsAndSettings.CachedFiles.Add(uid, filePath);
             } else {
                 cachedFilePath = Path.Combine(Constants.FileCachePath, uid);
             }
+
+            if (!File.Exists(cachedFilePath)) File.Copy(filePath, cachedFilePath);
 
             Title = Path.GetFileName(filePath);
             DocumentContent = new RichTextViewModel(File.ReadAllText(cachedFilePath));

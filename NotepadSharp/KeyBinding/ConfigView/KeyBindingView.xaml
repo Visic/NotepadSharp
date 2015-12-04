@@ -50,8 +50,8 @@
                          Style="{StaticResource TextBox_NoBorder}"
                          local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding StartEditingCommand}" 
                          local:CommandBindingBehavior.LostFocusCommand="{Binding EndEditingCommand}"
-                         local:CommandBindingBehavior.PreviewKeyDownCommand="{Binding KeyDownCommand}"
-                         local:CommandBindingBehavior.PreviewKeyUpCommand="{Binding KeyUpCommand}"
+                         local:CommandBindingBehavior.PreviewKeyDownCommand="{Binding KeyPressHandler.KeyDownCommand}"
+                         local:CommandBindingBehavior.PreviewKeyUpCommand="{Binding KeyPressHandler.KeyUpCommand}"
                          Text="{Binding Keys.Value, Converter={StaticResource PrettyPrintKeyBindingConverter}, Mode=OneWay}"/>
         </Border>
 

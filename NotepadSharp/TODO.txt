@@ -12,7 +12,3 @@
     -Shadow copy of the edited file (like notepad++) 
         --Still need to track changes/deletions of the original file to know when to warn about the out of date copy
         --Need to open all cached files as documents when the app opens
-
-    -File explorer enhancements
-        --Arrow down from the search box through the files/folders to select an item
-        --Enter on files to open the file, Enter on folders to expand/collapse the folder

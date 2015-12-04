@@ -1,15 +1,31 @@
 ﻿<UserControl x:Class="NotepadSharp.FileExplorerView"
+             x:Name="Control"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NotepadSharp"
+             xmlns:WPFUtility="clr-namespace:WPFUtility;assembly=WPFUtility"
              mc:Ignorable="d" 
+             local:CommandBindingBehavior.PreviewKeyDownCommand="{Binding KeyPressHandler.KeyDownCommand}"
+             local:CommandBindingBehavior.PreviewKeyUpCommand="{Binding KeyPressHandler.KeyUpCommand}"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <Style TargetType="{x:Type TreeViewItem}">
             <Setter Property="IsExpanded" Value="{Binding IsExpanded.Value, Mode=TwoWay}"/>
-            <Setter Property="Focusable" Value="{Binding Focusable.Value}"/>
+            <Setter Property="IsSelected" Value="{Binding IsSelected.Value, Mode=TwoWay}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding DataContext.PathBoxHasFocus.Value, ElementName=Control}" Value="True">
+                    <Setter Property="Focusable" Value="False"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding DataContext.PathBoxHasFocus.Value, ElementName=Control}" Value="False">
+                    <Setter Property="Focusable" Value="{Binding Focusable.Value}"/>
+                </DataTrigger>
+                
+                <DataTrigger Binding="{Binding IsSelected.Value}" Value="True">
+                    <Setter Property="FocusManager.FocusedElement" Value="{Binding RelativeSource={RelativeSource Self}}"/>
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
         
         <HierarchicalDataTemplate DataType="{x:Type local:DirectoryViewModel}" ItemsSource="{Binding Items.Value}">
@@ -52,7 +68,7 @@
             </Grid>
         </DataTemplate>
     </UserControl.Resources>
-    
+
     <DockPanel Background="WhiteSmoke">
         <Border DockPanel.Dock="Top" 
                 BorderBrush="#AAAAAA"
@@ -60,19 +76,31 @@
             <TextBox Padding="2"
                      Background="#CCCCCC"
                      AllowDrop="True"
+                     local:CommandBindingBehavior.GotFocusCommand="{Binding PathBoxGotFocusCommand}" 
+                     local:CommandBindingBehavior.LostFocusCommand="{Binding PathBoxLostFocusCommand}" 
                      local:CommandBindingBehavior.PreviewDragOverCommand="{Binding DragDropRootPath.DragOverCommand}"
                      local:CommandBindingBehavior.PreviewDropCommand="{Binding DragDropRootPath.DropCommand}"
-                     Style="{StaticResource TextBox_NoBorder}"
-                     Text="{Binding RootPath.Value, UpdateSourceTrigger=PropertyChanged}"/>
+                     Text="{Binding RootPath.Value, UpdateSourceTrigger=PropertyChanged}">
+                <TextBox.Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource TextBox_NoBorder}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding PathBoxHasFocus.Value}" Value="True">
+                                <Setter Property="FocusManager.FocusedElement" Value="{Binding RelativeSource={RelativeSource Self}}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
         </Border>
-        <TreeView DockPanel.Dock="Bottom" 
-                  BorderThickness="0" 
-                  Background="Transparent"
-                  ItemsSource="{Binding Items.Value}">
+        <WPFUtility:ExtendedTreeView DockPanel.Dock="Bottom" 
+                                     BorderThickness="0" 
+                                     Background="Transparent"
+                                     SelectedItem_="{Binding SelectedItem.Value, Mode=TwoWay}"
+                                     ItemsSource="{Binding Items.Value}">
             <TreeView.Resources>
                 <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent"/>
                 <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="Black"/>
             </TreeView.Resources>
-        </TreeView>
+        </WPFUtility:ExtendedTreeView>
     </DockPanel>
 </UserControl>

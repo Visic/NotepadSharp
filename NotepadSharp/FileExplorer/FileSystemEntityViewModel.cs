@@ -6,7 +6,7 @@ using System.Windows.Media.Imaging;
 using WPFUtility;
 
 namespace NotepadSharp {
-    public abstract class FileSystemEntityViewModel : ViewModelBase {
+    public abstract class FileSystemEntityViewModel : ViewModelBase, ISelectableViewModel {
         protected FileSystemEntityViewModel() {
             IsExpanded = new NotifyingPropertyWithChangedAction<bool>(
                 x => InteractCommand?.Execute(null)
@@ -28,6 +28,7 @@ namespace NotepadSharp {
         public NotifyingProperty<bool> Focusable { get; } = new NotifyingProperty<bool>(true);
         public NotifyingProperty<string> ErrorMessage { get; }
         public NotifyingProperty<bool> IsExpanded { get; }
+        public NotifyingProperty<bool> IsSelected { get; } = new NotifyingProperty<bool>();
         public DragAndDropHandler DragItem { get; }
         public ICommand InteractCommand { get; protected set; }
 

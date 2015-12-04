@@ -2,28 +2,41 @@
 using System.Windows.Input;
 using System.Linq;
 using System;
+using WPFUtility;
 
 namespace NotepadSharp {
     public class KeyPressHandler {
         HashSet<Key> _pressedKeys = new HashSet<Key>();
         protected Func<IReadOnlyList<Key>, bool> _keyPressedCallback, _keyReleasedCallback;
 
-        public KeyPressHandler(Func<IReadOnlyList<Key>, bool> keyPressedCallback = null, Func<IReadOnlyList<Key>, bool> keyReleasedCallback = null) {
+        public KeyPressHandler(Func<IReadOnlyList<Key>, bool> keyPressedCallback = null, 
+                               Func<IReadOnlyList<Key>, bool> keyReleasedCallback = null, 
+                               Func<object, bool> keyDownCanExecute = null, 
+                               Func<object, bool> keyUpCanExecute = null) 
+        {
             _keyPressedCallback = keyPressedCallback ?? new Func<IReadOnlyList<Key>, bool>(x => false);
             _keyReleasedCallback = keyReleasedCallback ?? new Func<IReadOnlyList<Key>, bool>(x => false);
+            keyDownCanExecute = keyDownCanExecute ?? new Func<object, bool>(x => true);
+            keyUpCanExecute = keyUpCanExecute ?? new Func<object, bool>(x => true);
+
+            KeyDownCommand = new RelayCommand(x => KeyDown((KeyEventArgs)x), keyDownCanExecute);
+            KeyUpCommand = new RelayCommand(x => KeyUp((KeyEventArgs)x), keyUpCanExecute);
         }
+
+        public ICommand KeyDownCommand { get; }
+        public ICommand KeyUpCommand { get; }
 
         public void ClearPressedKeys() {
             _pressedKeys.Clear();
             _keyReleasedCallback(_pressedKeys.ToList());
         }
 
-        public void KeyUp(KeyEventArgs e) {
+        private void KeyUp(KeyEventArgs e) {
             _pressedKeys.Remove(GetRelevantKey(e));
             e.Handled = _keyReleasedCallback(_pressedKeys.ToList());
         }
         
-        public void KeyDown(KeyEventArgs e) {
+        private void KeyDown(KeyEventArgs e) {
             _pressedKeys.Add(GetRelevantKey(e));
             e.Handled = _keyPressedCallback(_pressedKeys.ToList());
         }
