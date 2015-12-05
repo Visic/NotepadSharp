@@ -6,11 +6,12 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using WPFUtility;
 using System.Windows.Controls;
+using System.Windows;
 
 namespace NotepadSharp {
     public class FileExplorerViewModel : DirectoryViewModel {
         DispatcherTimer _refreshTimer = new DispatcherTimer();
-        bool _updatePathBoxCaretIndex;
+        bool _updatePathBoxCaretIndex = true;
 
         public FileExplorerViewModel(string initialDirectory) : base(initialDirectory) {
             RootPath = new NotifyingPropertyWithChangedAction<string>(
@@ -31,12 +32,21 @@ namespace NotepadSharp {
             );
 
             KeyPressHandler = new KeyPressHandler(KeyPressed);
-            PathBoxGotFocusCommand = new RelayCommand(x => { PathBoxHasFocus.Value = true; });
-            PathBoxLostFocusCommand = new RelayCommand(x => { PathBoxHasFocus.Value = false; });
+            PathBoxLostFocusCommand = new RelayCommand(x => PathBoxHasFocus.Value = false);
+
+            PathBoxGotFocusCommand = new RelayCommand(x => {
+                PathBoxHasFocus.Value = true;
+                if(_updatePathBoxCaretIndex){
+                    var arg = (RoutedEventArgs)x;
+                    SetCaretIndex((TextBox)arg.Source);
+                }
+                _updatePathBoxCaretIndex = false;
+            });
+
             PathBoxTextChangedCommand = new RelayCommand(
                 x => {
                     var arg = (TextChangedEventArgs)x;
-                    ((TextBox)arg.Source).CaretIndex = RootPath.Value.Length;
+                    SetCaretIndex((TextBox)arg.Source);
                 }, 
                 x => _updatePathBoxCaretIndex
             );
@@ -63,6 +73,11 @@ namespace NotepadSharp {
             } else if(arg.SequenceEqual(new[] { Key.LeftCtrl, Key.Enter })) {
                 DropPath(SelectedItem.Value.EntityPath.Value);
                 return true;
+            } else if(arg.SequenceEqual(new[] { Key.Up }) && !PathBoxHasFocus.Value) {
+                if(SelectedItem.Value == Items.Value.FirstOrDefault()) {
+                    FocusPathBoxCaretAtEnd();
+                    return true;
+                }
             }
             return false;
         }
@@ -74,10 +89,22 @@ namespace NotepadSharp {
         }
 
         private void DropPath(string path) {
+            FocusPathBoxCaretAtEnd(() => RootPath.Value = path);
+        }
+
+        private void FocusPathBoxCaretAtEnd(Action extraWork = null) {
             _updatePathBoxCaretIndex = true;
             PathBoxHasFocus.Value = true;
-            RootPath.Value = path;
+            if(SelectedItem.Value != null) {
+                SelectedItem.Value.IsSelected.Value = false;
+                SelectedItem.Value = null;
+            }
+            extraWork?.Invoke();
             _updatePathBoxCaretIndex = false;
+        }
+
+        private void SetCaretIndex(TextBox tb) {
+            tb.CaretIndex = RootPath.Value.Length;
         }
     }
 }
