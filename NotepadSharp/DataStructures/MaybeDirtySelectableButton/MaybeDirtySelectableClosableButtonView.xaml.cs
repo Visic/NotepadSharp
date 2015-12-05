@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace NotepadSharp
 {
     /// <summary>
-    /// Interaction logic for MaybeDirtySelectableButtonView.xaml
+    /// Interaction logic for MaybeDirtySelectableClosableButtonView.xaml
     /// </summary>
-    public partial class MaybeDirtySelectableButtonView : UserControl
+    public partial class MaybeDirtySelectableClosableButtonView : UserControl
     {
-        public MaybeDirtySelectableButtonView()
+        public MaybeDirtySelectableClosableButtonView()
         {
             InitializeComponent();
         }

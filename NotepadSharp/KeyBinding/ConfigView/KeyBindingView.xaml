@@ -22,21 +22,10 @@
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
-        <Button Height="13"
-                Margin="1"
+        <Button Margin="1"
+                Style="{StaticResource SmallCloseButton}"
                 Command="{Binding DeleteBindingCommand}" 
-                Visibility="{Binding DeleteBindingCommand, Converter={StaticResource NullToHiddenConverter}}">
-            <Button.Template>
-                <ControlTemplate>
-                    <TextBlock Text="X" 
-                               FontWeight="Medium"
-                               VerticalAlignment="Center" 
-                               TextAlignment="Center" 
-                               Background="#CC2222"
-                               Padding="0,0,0,-.5"/>
-                </ControlTemplate>
-            </Button.Template>
-        </Button>
+                Visibility="{Binding DeleteBindingCommand, Converter={StaticResource NullToHiddenConverter}}"/>
 
         <Border Grid.Column="1"
                 Margin="1" 

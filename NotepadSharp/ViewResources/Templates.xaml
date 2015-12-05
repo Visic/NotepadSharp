@@ -1,23 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:NotepadSharp">
-    <ControlTemplate x:Key="MaybeDirtyButtonTemplate" TargetType="Button">
-        <Border BorderThickness="0" BorderBrush="Black"
-                Padding="5,0"
-                Background="{TemplateBinding Background}">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="*" 
-                           TextAlignment="Right" VerticalAlignment="Center"
-                           Visibility="{Binding IsDirty.Value, Converter={StaticResource FalseToHiddenConverter}}"/>
-
-                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-
-                <!--This is just here for spacing-->
-                <TextBlock Text="*" Visibility="Hidden"/>
-            </StackPanel>
-        </Border>
-    </ControlTemplate>
-
     <ControlTemplate x:Key="ButtonTemplate" TargetType="Button">
         <Border BorderThickness="0" BorderBrush="Black"
                 Padding="5,0"

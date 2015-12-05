@@ -31,7 +31,7 @@ namespace NotepadSharp {
             );
 
             //load previously open files
-            foreach(var path in ArgsAndSettings.CachedFiles.Select(x => x.OriginalFilePath)) {
+            foreach(var path in ArgsAndSettings.CachedFiles.Select(x => x.OriginalFilePath).ToArray()) {
                 AddOrSelectDocumentButton(path);
             }
             
@@ -63,7 +63,8 @@ namespace NotepadSharp {
             if(!_buttonLookup.TryGetValue(text, out button)) {
                 var vm = new Lazy<ViewModelBase>(vmGenerator);
                 var cmd = new RelayCommand(x => TopPanelContent.Value = vm.Value);
-                _buttonLookup[text] = button = new SelectableButtonViewModel(text, cmd);
+                var closeCmd = new RelayCommand(x => CloseTopTab(text, vm.Value));
+                _buttonLookup[text] = button = new SelectableCloseableButtonViewModel(text, cmd, closeCmd);
                 TopTabs.Add(button);
             }
             button.IsSelected.Value = true;
@@ -73,15 +74,34 @@ namespace NotepadSharp {
             ISelectableButtonViewModel button;
             if(!_buttonLookup.TryGetValue(filePath, out button)) {
                 var vm = new Lazy<DocumentViewModel>(() => new DocumentViewModel(filePath));
+
                 var cmd = new RelayCommand(x => {
-                    ((MaybeDirtySelectableButtonViewModel)button).IsDirty = vm.Value.IsDirty;
+                    ((MaybeDirtySelectableClosableButtonViewModel)button).IsDirty = vm.Value.IsDirty;
                     TopPanelContent.Value = vm.Value;
                 });
+
+                var closeCmd = new RelayCommand(x => CloseTopTab(filePath, vm.Value, vm.Value.Close));
+
                 var fileName = Path.GetFileName(filePath);
-                _buttonLookup[filePath] = button = new MaybeDirtySelectableButtonViewModel(fileName, cmd);
+                _buttonLookup[filePath] = button = new MaybeDirtySelectableClosableButtonViewModel(fileName, cmd, closeCmd);
                 TopTabs.Add(button);
             }
             button.IsSelected.Value = true;
+        }
+
+        private void CloseTopTab(string tabId, ViewModelBase vm, Action closeCallback = null) {
+            var button = _buttonLookup[tabId];
+            _buttonLookup.Remove(tabId);
+
+            var tabIndex = TopTabs.IndexOf(button);
+            TopTabs.Remove(button);
+            if(TopPanelContent.Value == vm) {
+                //select the next tab and update the top panel content
+                var nextTab = TopTabs.ElementAtOrDefault(tabIndex) ?? TopTabs.ElementAtOrDefault(tabIndex - 1);
+                if (nextTab == null) TopPanelContent.Value = null;
+                else nextTab.Command.Execute(null);
+            }
+            closeCallback?.Invoke();
         }
     }
 }

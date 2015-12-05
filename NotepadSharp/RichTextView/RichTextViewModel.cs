@@ -3,20 +3,29 @@ using System.IO;
 using System.Windows.Input;
 using Utility;
 using WPFUtility;
-
+//TODO:: Move the persistence/IsDirty check to the document view model
 namespace NotepadSharp {
     public class RichTextViewModel : ViewModelBase {
         SerializableFileInfo _fileInfo;
         
         public RichTextViewModel(SerializableFileInfo fileInfo) {
             _fileInfo = fileInfo;
-            IsDirty = new  NotifyingPropertyWithChangedAction<bool>(x => { _fileInfo.IsDirty = x; SaveState(); }, _fileInfo.IsDirty);
+
+            IsDirty = new  NotifyingPropertyWithChangedAction<bool>(
+                x => {
+                    _fileInfo.IsDirty = x;
+                    SaveState();
+                }, 
+                _fileInfo.IsDirty
+            );
 
             ApiProvider = new NotifyingProperty<RichTextBoxApiProvider>(new RichTextBoxApiProvider());
             ApiProvider.Value.MarkDirty = () => IsDirty.Value = true;
             ApiProvider.Value.MarkClean = () => IsDirty.Value = false;
 
+            //TODO:: Don't update the file on every key press, maybe use a timer or just on closing of the application
             Content = new NotifyingPropertyWithChangedAction<string>(x => UpdateFile(), File.ReadAllText(fileInfo.CachedFilePath));
+
             KeyBindingHandler = new KeyBindingExecution(ex => {
                 ApplicationState.SetMessageAreaText(ex.Message);
                 ApplicationState.SetMessageAreaTextColor("DarkRed");
