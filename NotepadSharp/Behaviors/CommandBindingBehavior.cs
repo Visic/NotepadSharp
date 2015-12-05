@@ -4,6 +4,21 @@ using System.Windows.Input;
 
 namespace NotepadSharp {
     public static class CommandBindingBehavior {
+        public static DependencyProperty TextChangedCommandProperty = DependencyProperty.RegisterAttached(
+            "TextChangedCommand", 
+            typeof(ICommand), 
+            typeof(CommandBindingBehavior),
+            new PropertyMetadata(TextChangedCommand_PropertyChanged)
+        );
+
+        public static void SetTextChangedCommand(TextBox element, ICommand value) {
+            element.SetValue(TextChangedCommandProperty, value);
+        }
+
+        public static ICommand GetTextChangedCommand(TextBox element) {
+            return (ICommand)element.GetValue(TextChangedCommandProperty);
+        }
+
         public static DependencyProperty PreviewLostKeyboardFocusCommandProperty = DependencyProperty.RegisterAttached(
             "PreviewLostKeyboardFocusCommand", 
             typeof(ICommand), 
@@ -212,6 +227,21 @@ namespace NotepadSharp {
 
         public static ICommand GetPreviewMouseMoveCommand(UIElement element) {
             return (ICommand)element.GetValue(PreviewMouseMoveCommandProperty);
+        }
+
+        private static void TextChangedCommand_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var ele = (TextBox)d;
+            if(e.NewValue != null) {
+                ele.AddHandler(TextBox.TextChangedEvent, new RoutedEventHandler(TextChanged));
+            } else {
+                ele.RemoveHandler(TextBox.TextChangedEvent, new RoutedEventHandler(TextChanged));
+            }
+        }
+
+        private static void TextChanged(object sender, RoutedEventArgs e) {
+            var ele = (TextBox)sender;
+            var cmd = GetTextChangedCommand(ele);
+            if(cmd.CanExecute(e)) cmd.Execute(e);
         }
 
         private static void PreviewMouseMove_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {

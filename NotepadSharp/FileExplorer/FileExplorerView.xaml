@@ -76,11 +76,12 @@
             <TextBox Padding="2"
                      Background="#CCCCCC"
                      AllowDrop="True"
+                     Text="{Binding RootPath.Value, UpdateSourceTrigger=PropertyChanged}"
+                     local:CommandBindingBehavior.TextChangedCommand="{Binding PathBoxTextChangedCommand}"
                      local:CommandBindingBehavior.GotFocusCommand="{Binding PathBoxGotFocusCommand}" 
                      local:CommandBindingBehavior.LostFocusCommand="{Binding PathBoxLostFocusCommand}" 
                      local:CommandBindingBehavior.PreviewDragOverCommand="{Binding DragDropRootPath.DragOverCommand}"
-                     local:CommandBindingBehavior.PreviewDropCommand="{Binding DragDropRootPath.DropCommand}"
-                     Text="{Binding RootPath.Value, UpdateSourceTrigger=PropertyChanged}">
+                     local:CommandBindingBehavior.PreviewDropCommand="{Binding DragDropRootPath.DropCommand}">
                 <TextBox.Style>
                     <Style TargetType="TextBox" BasedOn="{StaticResource TextBox_NoBorder}">
                         <Style.Triggers>

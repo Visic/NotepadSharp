@@ -11,3 +11,5 @@
 --In progress
     -Shadow copy of the edited file (like notepad++) 
         --Still need to track changes/deletions of the original file to know when to warn about the out of date copy
+
+    -File explorer move to next instance of letter (e.g. when in the tree view, hit a key and go to the first file/folder starting with that letter)
