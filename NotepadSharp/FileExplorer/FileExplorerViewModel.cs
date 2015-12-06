@@ -19,6 +19,9 @@ namespace NotepadSharp {
                 initialDirectory
             );
             DragDropRootPath = new DragAndDropHandler(x => true, DropPath);
+            SelectedItem = new NotifyingPropertyWithChangedAction<FileSystemEntityViewModel>(x => {
+                SelectedIndex = x == null ? -1 : GetItems(this).Select((e, i) => new { I = i, E = e }).First(z => z.E == x).I;
+            });
 
             _refreshTimer.Interval = TimeSpan.FromMilliseconds(100);
             _refreshTimer.Tick += _refreshTimer_Tick;
@@ -36,7 +39,7 @@ namespace NotepadSharp {
 
             PathBoxGotFocusCommand = new RelayCommand(x => {
                 PathBoxHasFocus.Value = true;
-                if(_updatePathBoxCaretIndex){
+                if(_updatePathBoxCaretIndex) {
                     var arg = (RoutedEventArgs)x;
                     SetCaretIndex((TextBox)arg.Source);
                 }
@@ -47,7 +50,7 @@ namespace NotepadSharp {
                 x => {
                     var arg = (TextChangedEventArgs)x;
                     SetCaretIndex((TextBox)arg.Source);
-                }, 
+                },
                 x => _updatePathBoxCaretIndex
             );
         }
@@ -59,7 +62,8 @@ namespace NotepadSharp {
         public ICommand PathBoxLostFocusCommand { get; }
         public ICommand PathBoxTextChangedCommand { get; }
         public NotifyingProperty<bool> PathBoxHasFocus { get; } = new NotifyingProperty<bool>();
-        public NotifyingProperty<FileSystemEntityViewModel> SelectedItem { get; } = new NotifyingProperty<FileSystemEntityViewModel>();
+        public NotifyingProperty<FileSystemEntityViewModel> SelectedItem { get; }
+        private int SelectedIndex { get; set; } = -1;
 
         private bool KeyPressed(IReadOnlyList<Key> arg) {
             if(arg.SequenceEqual(new[] { Key.Down }) && PathBoxHasFocus.Value) {
@@ -78,6 +82,25 @@ namespace NotepadSharp {
                     FocusPathBoxCaretAtEnd();
                     return true;
                 }
+            } else if(arg.Count == 1 && SelectedItem.Value != null) {
+                var maybeChar = KeyHelper.GetCharForKey(arg[0]);
+                var applied = false;
+                maybeChar.Apply(x => {
+                    applied = true;
+                    var str = x.ToString();
+                    //select the next item in the list with this starting char, looping to the top after the end
+                    var maybeItem = GetItems(this).Skip(SelectedIndex + 1)
+                                                    .Concat(GetItems(this))
+                                                    .FirstOrDefault(
+                                                        y => y.Name.Value.StartsWith(
+                                                            str,
+                                                            StringComparison.CurrentCultureIgnoreCase
+                                                        )
+                                                    );
+
+                    if(maybeItem != null) maybeItem.IsSelected.Value = true;
+                });
+                if(applied) return true;
             }
             return false;
         }
@@ -105,6 +128,16 @@ namespace NotepadSharp {
 
         private void SetCaretIndex(TextBox tb) {
             tb.CaretIndex = RootPath.Value.Length;
+        }
+
+        //Return all currently visible items
+        private IEnumerable<FileSystemEntityViewModel> GetItems(FileSystemEntityViewModel fse) {
+            var result = new[] { fse };
+            if(fse is FileViewModel) return result;
+            var dvm = (DirectoryViewModel)fse;
+            if(!dvm.IsExpanded.Value) return result;
+            var children = dvm.Items.Value.SelectMany(x => GetItems(x));
+            return fse == this ? children : result.Concat(children);
         }
     }
 }

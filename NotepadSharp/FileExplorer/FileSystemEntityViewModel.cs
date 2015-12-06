@@ -61,5 +61,9 @@ namespace NotepadSharp {
         public static bool operator !=(FileSystemEntityViewModel left, FileSystemEntityViewModel right) {
             return !(left == right);
         }
+
+        public override string ToString() {
+            return EntityPath.Value;
+        }
     }
 }
