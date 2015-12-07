@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
+using WPFUtility;
 
 namespace NotepadSharp
 {
@@ -11,6 +13,11 @@ namespace NotepadSharp
         {
             DataContext = new MainWindowViewModel();
             InitializeComponent();
+        }
+
+        protected override void OnClosing(CancelEventArgs e) {
+            ((IViewModelBase)DataContext).Dispose();
+            base.OnClosing(e);
         }
     }
 }

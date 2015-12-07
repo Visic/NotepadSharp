@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Windows.Input;
 using WPFUtility;
 
@@ -17,5 +18,8 @@ namespace NotepadSharp {
         public bool IsDefault { get { return _buttonVm.IsDefault; } }
         public NotifyingProperty<bool> IsSelected { get { return _buttonVm.IsSelected; } }
         public NotifyingProperty<string> Text { get { return _buttonVm.Text; } }
+
+        public void Dispose() {
+        }
     }
 }

@@ -13,5 +13,10 @@ namespace NotepadSharp {
         public NotifyingSetting<double> Left { get; } = new NotifyingSetting<double>(ArgsAndSettings.Left);
         public NotifyingSetting<WindowState> WindowState { get; } = new NotifyingSetting<WindowState>(ArgsAndSettings.WindowState);
         public ViewModelBase ActiveViewModel { get; private set; }
+
+        public override void Dispose() {
+            base.Dispose();
+            ActiveViewModel.Dispose();
+        }
     }
 }

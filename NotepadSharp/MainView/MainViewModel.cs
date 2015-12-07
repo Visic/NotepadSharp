@@ -103,5 +103,7 @@ namespace NotepadSharp {
             }
             closeCallback?.Invoke();
         }
+
+        //TODO:: rework the content -> tab button association to allow for easy cleanup and add a dispose override
     }
 }

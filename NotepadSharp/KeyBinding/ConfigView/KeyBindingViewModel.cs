@@ -22,9 +22,9 @@ namespace NotepadSharp {
                 keyUpCanExecute: x => IsEditingBinding.Value
             );
             Keys = new NotifyingProperty<HashSet<Key>>(_currentBinding.Keys);
-            ScriptFilePath = new NotifyingPropertyWithChangedAction<string>(x => CommitChanges(), (binding as LuaKeyBinding)?.ScriptPath);
-            ExecuteOnKeyUp = new NotifyingPropertyWithChangedAction<bool>(x => { _currentBinding.ExecuteOnKeyUp = x; CommitChanges(); }, _currentBinding.ExecuteOnKeyUp);
-            ExecuteOnKeyDown = new NotifyingPropertyWithChangedAction<bool>(
+            ScriptFilePath = new NotifyingProperty<string>(x => CommitChanges(), (binding as LuaKeyBinding)?.ScriptPath);
+            ExecuteOnKeyUp = new NotifyingProperty<bool>(x => { _currentBinding.ExecuteOnKeyUp = x; CommitChanges(); }, _currentBinding.ExecuteOnKeyUp);
+            ExecuteOnKeyDown = new NotifyingProperty<bool>(
                 x => {
                     _currentBinding.ExecuteOnKeyDown = x;
                     if(!x) RepeatOnKeyDown.Value = x;
@@ -32,7 +32,7 @@ namespace NotepadSharp {
                 }, 
                 _currentBinding.ExecuteOnKeyDown
             );
-            RepeatOnKeyDown = new NotifyingPropertyWithChangedAction<bool>(
+            RepeatOnKeyDown = new NotifyingProperty<bool>(
                 x => {
                     _currentBinding.RepeatOnKeyDown = x;
                     if (x) ExecuteOnKeyDown.Value = x;
@@ -53,10 +53,10 @@ namespace NotepadSharp {
         public KeyPressHandler KeyPressHandler { get; }
         public NotifyingProperty<bool> ScriptFilePathIsFocused { get; } = new NotifyingProperty<bool>();
         public NotifyingProperty<HashSet<Key>> Keys { get; private set; }
-        public NotifyingPropertyWithChangedAction<string> ScriptFilePath { get; }
-        public NotifyingPropertyWithChangedAction<bool> ExecuteOnKeyDown { get; }
-        public NotifyingPropertyWithChangedAction<bool> ExecuteOnKeyUp { get; }
-        public NotifyingPropertyWithChangedAction<bool> RepeatOnKeyDown { get; }
+        public NotifyingProperty<string> ScriptFilePath { get; }
+        public NotifyingProperty<bool> ExecuteOnKeyDown { get; }
+        public NotifyingProperty<bool> ExecuteOnKeyUp { get; }
+        public NotifyingProperty<bool> RepeatOnKeyDown { get; }
         public NotifyingProperty<bool> IsEditingBinding { get; }
         public DragAndDropHandler DragDrop { get; }
         public ICommand KeyDownCommand { get; }

@@ -14,12 +14,12 @@ namespace NotepadSharp {
         bool _updatePathBoxCaretIndex = true;
 
         public FileExplorerViewModel(string initialDirectory) : base(initialDirectory) {
-            RootPath = new NotifyingPropertyWithChangedAction<string>(
+            RootPath = new NotifyingProperty<string>(
                 x => SetPath(x),
                 initialDirectory
             );
             DragDropRootPath = new DragAndDropHandler(x => true, DropPath);
-            SelectedItem = new NotifyingPropertyWithChangedAction<FileSystemEntityViewModel>(x => {
+            SelectedItem = new NotifyingProperty<FileSystemEntityViewModel>(x => {
                 SelectedIndex = x == null ? -1 : GetItems(this).Select((e, i) => new { I = i, E = e }).First(z => z.E == x).I;
             });
 
@@ -112,7 +112,10 @@ namespace NotepadSharp {
         }
 
         private void DropPath(string path) {
-            FocusPathBoxCaretAtEnd(() => RootPath.Value = path);
+            FocusPathBoxCaretAtEnd(() => {
+                _updatePathBoxCaretIndex = true;
+                RootPath.Value = path;
+            });
         }
 
         private void FocusPathBoxCaretAtEnd(Action extraWork = null) {

@@ -5,6 +5,7 @@ using Utility;
 using WPFUtility;
 
 namespace NotepadSharp {
+    //This view model deals with abstracting the persistency away from the content vm
     public class DocumentViewModel : ViewModelBase {
         SerializableFileInfo _fileInfo;
 
@@ -25,8 +26,12 @@ namespace NotepadSharp {
             }
 
             Title = Path.GetFileName(filePath);
-            DocumentContent = new RichTextViewModel(_fileInfo);
+            DocumentContent = new RichTextViewModel(_fileInfo.CachedFilePath);
             IsDirty = DocumentContent.IsDirty;
+            IsDirty.PropertyChanged += (s, e) => SaveState();
+            DocumentContent.Content.PropertyChanged += (s,e) => UpdateHash();
+
+            UpdateIsDirty();
         }
 
         public string Title { get; }
@@ -36,6 +41,32 @@ namespace NotepadSharp {
         public void Close() {
             ArgsAndSettings.CachedFiles.Remove(_fileInfo);
             File.Delete(_fileInfo.CachedFilePath);
+        }
+
+        private void UpdateIsDirty() {
+            bool state = false;
+            if(!File.Exists(_fileInfo.OriginalFilePath)) {
+                state = true;
+            } else if (Methods.HashFile(_fileInfo.OriginalFilePath) != _fileInfo.Hash) {
+                state = true;
+            }
+            IsDirty.Value = state;
+        }
+
+        private void UpdateHash() {
+            _fileInfo.Hash = Methods.Hash(DocumentContent.Content.Value);
+            SaveState();
+            UpdateIsDirty();
+        }
+
+        private void SaveState() {
+            ArgsAndSettings.CachedFiles.AddOrReplace(_fileInfo);
+        }
+
+        public override void Dispose() {
+            base.Dispose();
+            if (IsDirty.Value) File.WriteAllText(_fileInfo.CachedFilePath, DocumentContent.Content.Value);
+            DocumentContent.Dispose();
         }
     }
 }

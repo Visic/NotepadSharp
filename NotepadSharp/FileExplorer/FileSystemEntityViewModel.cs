@@ -8,11 +8,11 @@ using WPFUtility;
 namespace NotepadSharp {
     public abstract class FileSystemEntityViewModel : ViewModelBase, ISelectableViewModel {
         protected FileSystemEntityViewModel() {
-            IsExpanded = new NotifyingPropertyWithChangedAction<bool>(
+            IsExpanded = new NotifyingProperty<bool>(
                 x => InteractCommand?.Execute(null)
             );
 
-            ErrorMessage = new NotifyingPropertyWithChangedAction<string>(
+            ErrorMessage = new NotifyingProperty<string>(
                 x => Focusable.Value = string.IsNullOrEmpty(x)
             );
 
