@@ -11,5 +11,3 @@
 --In progress
     -Shadow copy of the edited file (like notepad++) 
         --Still need to track changes/deletions of the original file to know when to warn about the out of date copy
-
-    -Working on adding cleanup to all view models

@@ -11,7 +11,7 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <local:BindableRichTextBox ApiProvider="{Binding ApiProvider.Value}" 
+            <local:BindableRichTextBox ApiProvider="{Binding ApiProvider}" 
                                        Style="{StaticResource TextBox_NoBorder}">
                 <FlowDocument>
                     <Paragraph Margin="0">

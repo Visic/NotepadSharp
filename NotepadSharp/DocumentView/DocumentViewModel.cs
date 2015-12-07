@@ -11,30 +11,26 @@ namespace NotepadSharp {
 
         public DocumentViewModel(string filePath) {
             _fileInfo = ArgsAndSettings.CachedFiles.FirstOrDefault(x => x.OriginalFilePath == filePath);
+            IsDirty = new NotifyingProperty<bool>(x => SaveFileInfo());
 
             if(_fileInfo == null) {
                 var uid = Guid.NewGuid().ToString();
-
                 _fileInfo = new SerializableFileInfo();
                 _fileInfo.CachedFilePath = Path.Combine(Constants.FileCachePath, uid);
                 _fileInfo.IsDirty = false;
                 _fileInfo.OriginalFilePath = filePath;
                 _fileInfo.Hash = Methods.HashFile(filePath);
-
                 File.Copy(filePath, _fileInfo.CachedFilePath);
                 ArgsAndSettings.CachedFiles.Add(_fileInfo);
+            } else {
+                UpdateIsDirty();
             }
 
-            Title = Path.GetFileName(filePath);
             DocumentContent = new RichTextViewModel(_fileInfo.CachedFilePath);
-            IsDirty = DocumentContent.IsDirty;
-            IsDirty.PropertyChanged += (s, e) => SaveState();
             DocumentContent.Content.PropertyChanged += (s,e) => UpdateHash();
-
-            UpdateIsDirty();
+            DocumentContent.ApiProvider.Save = SaveChanges;
         }
 
-        public string Title { get; }
         public RichTextViewModel DocumentContent { get; }
         public NotifyingProperty<bool> IsDirty { get; }
         
@@ -55,17 +51,29 @@ namespace NotepadSharp {
 
         private void UpdateHash() {
             _fileInfo.Hash = Methods.Hash(DocumentContent.Content.Value);
-            SaveState();
+            SaveFileInfo();
             UpdateIsDirty();
         }
 
-        private void SaveState() {
+        private void SaveFileInfo() {
             ArgsAndSettings.CachedFiles.AddOrReplace(_fileInfo);
+        }
+        
+        private void SaveChanges() {
+            if(IsDirty.Value) {
+                UpdateCachedFile();
+                File.Copy(_fileInfo.CachedFilePath, _fileInfo.OriginalFilePath, true);
+                IsDirty.Value = false;
+            }
+        }
+
+        private void UpdateCachedFile() {
+            File.WriteAllText(_fileInfo.CachedFilePath, DocumentContent.Content.Value);
         }
 
         public override void Dispose() {
             base.Dispose();
-            if (IsDirty.Value) File.WriteAllText(_fileInfo.CachedFilePath, DocumentContent.Content.Value);
+            if (IsDirty.Value) UpdateCachedFile();
             DocumentContent.Dispose();
         }
     }
