@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows.Input;
+using Utility;
 using WPFUtility;
 
 namespace NotepadSharp {
@@ -23,6 +25,16 @@ namespace NotepadSharp {
                 x => fileExplorer.IsExpanded.Value = x
             );
 
+            var newDocumentCommand = new RelayCommand(y => AddOrSelectDocumentButton(UniqueNameGenerator.NextNumbered("Untitled ", TopTabs.Select(x => x.Text.Value))));
+            ApplicationState.MainMenu.SetMenuButton(
+                "New File",
+                new ButtonViewModel(
+                    "New File",
+                    newDocumentCommand
+                )
+            );
+            ApplicationState.NewDocument = () => newDocumentCommand.Execute(null);
+
             ApplicationState.MainMenu.SetMenuButton(
                 "Bindings", 
                 new ButtonViewModel(
@@ -32,8 +44,8 @@ namespace NotepadSharp {
             );
 
             //load previously open files
-            foreach(var path in ArgsAndSettings.CachedFiles.Select(x => x.OriginalFilePath).ToArray()) {
-                AddOrSelectDocumentButton(path);
+            foreach(var fileInfo in ArgsAndSettings.CachedFiles.ToArray()) {
+                AddOrSelectDocumentButton(fileInfo.OriginalFilePath ?? fileInfo.CachedFilePath);
             }
             
             if(TopTabs.Count() > 0) TopTabs.First().IsSelected.Value = true;
@@ -74,7 +86,7 @@ namespace NotepadSharp {
         private void AddOrSelectDocumentButton(string filePath) {
             ISelectableButtonViewModel button;
             if(!_buttonLookup.TryGetValue(filePath, out button)) {
-                var vm = new Lazy<DocumentViewModel>(() => NewVm(new DocumentViewModel(filePath)));
+                var vm = new Lazy<DocumentViewModel>(() => NewVm(new DocumentViewModel(filePath, x => button.Text.Value = x)));
 
                 var cmd = new RelayCommand(x => {
                     ((MaybeDirtySelectableClosableButtonViewModel)button).IsDirty = vm.Value.IsDirty;

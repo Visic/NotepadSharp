@@ -9,7 +9,7 @@ namespace NotepadSharp {
         public bool IsDirty { get; set; }
 
         public override int GetHashCode() {
-            return OriginalFilePath.GetHashCode();
+            return OriginalFilePath?.GetHashCode() ?? CachedFilePath.GetHashCode();
         }
 
         public override bool Equals(object obj) {
