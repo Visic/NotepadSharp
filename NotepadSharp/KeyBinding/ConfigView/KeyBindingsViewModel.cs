@@ -11,7 +11,6 @@ namespace NotepadSharp {
             EmptyBinding = new NotifyingProperty<KeyBindingViewModel>(MakeEmptyBinding());
         }
 
-        public string Title { get; } = "Key Bindings";
         public ObservableCollection<KeyBindingViewModel> KeyBindings { get; }
         public NotifyingProperty<KeyBindingViewModel> EmptyBinding { get; }
 
