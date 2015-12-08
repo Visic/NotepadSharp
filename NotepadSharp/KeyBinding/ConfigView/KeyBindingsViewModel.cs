@@ -35,7 +35,7 @@ namespace NotepadSharp {
             EmptyBinding.Value = null; //have to null this first or the content template bindings don't update
             EmptyBinding.Value = MakeEmptyBinding();
 
-            if (oldEmptyBinding.ScriptFilePathIsFocused.Value) newBindingVm.ScriptFilePathIsFocused.Value = true;
+            if (oldEmptyBinding.PathOrLiteralIsFocused.Value) newBindingVm.PathOrLiteralIsFocused.Value = true;
         }
 
         private KeyBindingViewModel MakeEmptyBinding() {

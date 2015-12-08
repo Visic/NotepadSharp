@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using WPFUtility;
@@ -22,38 +20,51 @@ namespace NotepadSharp {
                 keyUpCanExecute: x => IsEditingBinding.Value
             );
             Keys = new NotifyingProperty<HashSet<Key>>(_currentBinding.Keys);
-            ScriptFilePath = new NotifyingProperty<string>(x => CommitChanges(), (binding as LuaKeyBinding)?.ScriptPath);
-            ExecuteOnKeyUp = new NotifyingProperty<bool>(x => { _currentBinding.ExecuteOnKeyUp = x; CommitChanges(); }, _currentBinding.ExecuteOnKeyUp);
+            PathOrLiteral = new NotifyingProperty<string>(x => CommitChanges(), (binding as LuaKeyBinding)?.PathOrLiteral);
+            ExecuteOnKeyUp = new NotifyingProperty<bool>(
+                x => {
+                    _currentBinding.ExecuteOnKeyUp = x;
+
+                    if(IsEditingBinding.Value) EndEditBinding();
+                    else CommitChanges();
+                }, 
+                _currentBinding.ExecuteOnKeyUp
+            );
             ExecuteOnKeyDown = new NotifyingProperty<bool>(
                 x => {
                     _currentBinding.ExecuteOnKeyDown = x;
+
                     if(!x) RepeatOnKeyDown.Value = x;
-                    CommitChanges();
+                    else if(IsEditingBinding.Value) EndEditBinding();
+                    else CommitChanges();
                 }, 
                 _currentBinding.ExecuteOnKeyDown
             );
             RepeatOnKeyDown = new NotifyingProperty<bool>(
                 x => {
                     _currentBinding.RepeatOnKeyDown = x;
+
                     if (x) ExecuteOnKeyDown.Value = x;
+                    else if(IsEditingBinding.Value) EndEditBinding();
+                    else CommitChanges();
                 }, 
                 _currentBinding.RepeatOnKeyDown
             );
             IsEditingBinding = new NotifyingProperty<bool>();
-            StartEditingCommand = new RelayCommand(x => StartEditBinding((RoutedEventArgs)x));
-            EndEditingCommand = new RelayCommand(x => EndEditBinding((RoutedEventArgs)x));
+            StartEditingCommand = new RelayCommand(x => StartEditBinding());
+            EndEditingCommand = new RelayCommand(x => EndEditBinding());
             if (deleteBindingCallback != null) DeleteBindingCommand = new RelayCommand(x => deleteBindingCallback(this));
 
-            ScriptFilePathGotFocusCommand = new RelayCommand(x => ScriptFilePathIsFocused.Value = true);
-            ScriptFilePathLostFocusCommand = new RelayCommand(x => ScriptFilePathIsFocused.Value = false);
+            PathOrLiteralGotFocusCommand = new RelayCommand(x => PathOrLiteralIsFocused.Value = true);
+            PathOrLiteralLostFocusCommand = new RelayCommand(x => PathOrLiteralIsFocused.Value = false);
             DragDrop = new DragAndDropHandler(AllowDrop, Drop);
             LostKeyboardFocusCommand = new RelayCommand(x => KeyPressHandler.ClearPressedKeys());
         }
 
         public KeyPressHandler KeyPressHandler { get; }
-        public NotifyingProperty<bool> ScriptFilePathIsFocused { get; } = new NotifyingProperty<bool>();
+        public NotifyingProperty<bool> PathOrLiteralIsFocused { get; } = new NotifyingProperty<bool>();
         public NotifyingProperty<HashSet<Key>> Keys { get; private set; }
-        public NotifyingProperty<string> ScriptFilePath { get; }
+        public NotifyingProperty<string> PathOrLiteral { get; }
         public NotifyingProperty<bool> ExecuteOnKeyDown { get; }
         public NotifyingProperty<bool> ExecuteOnKeyUp { get; }
         public NotifyingProperty<bool> RepeatOnKeyDown { get; }
@@ -64,17 +75,17 @@ namespace NotepadSharp {
         public ICommand StartEditingCommand { get; }
         public ICommand EndEditingCommand { get; }
         public ICommand DeleteBindingCommand { get; }
-        public ICommand ScriptFilePathGotFocusCommand { get; }
-        public ICommand ScriptFilePathLostFocusCommand { get; }
+        public ICommand PathOrLiteralGotFocusCommand { get; }
+        public ICommand PathOrLiteralLostFocusCommand { get; }
         public ICommand LostKeyboardFocusCommand { get; }
 
         public KeyBinding GetBinding() {
-            return new LuaKeyBinding(_currentBinding, ScriptFilePath.Value, Keys.Value.ToArray());
+            return new LuaKeyBinding(_currentBinding, PathOrLiteral.Value, Keys.Value.ToArray());
         }
 
         public void ClearBinding() {
-            StartEditBinding(null);
-            EndEditBinding(null);
+            StartEditBinding();
+            EndEditBinding();
         }
 
         private void CommitChanges() {
@@ -88,15 +99,15 @@ namespace NotepadSharp {
         }
 
         private void Drop(string path) {
-            ScriptFilePath.Value = path;
+            PathOrLiteral.Value = path;
         }
 
-        private void StartEditBinding(RoutedEventArgs obj) {
+        private void StartEditBinding() {
             IsEditingBinding.Value = true;
             Keys.Value = new HashSet<Key>();
         }
 
-        private void EndEditBinding(RoutedEventArgs obj) {
+        private void EndEditBinding() {
             IsEditingBinding.Value = false;
             if(GetBinding() != _currentBinding) CommitChanges();
         }
@@ -107,11 +118,11 @@ namespace NotepadSharp {
                     case Key.Escape:
                         KeyPressHandler.ClearPressedKeys();
                         Keys.Value = _currentBinding.Keys;
-                        EndEditBinding(null);
+                        EndEditBinding();
                         return true;
                     case Key.Enter:
                         KeyPressHandler.ClearPressedKeys();
-                        EndEditBinding(null);
+                        EndEditBinding();
                         return true;
                 }
             }

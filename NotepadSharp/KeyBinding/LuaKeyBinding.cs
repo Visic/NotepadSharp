@@ -2,27 +2,26 @@
 using System;
 using System.Collections.Generic;
 using Utility;
-using System.Threading.Tasks;
 
 namespace NotepadSharp {
     [Serializable]
     public class LuaKeyBinding : KeyBinding {
-        public LuaKeyBinding(KeyBinding otherBinding, string scriptPath, params Key[] keys)
+        public LuaKeyBinding(KeyBinding otherBinding, string pathOrLiteral, params Key[] keys)
             : base(otherBinding, keys)
         {
-            ScriptPath = scriptPath;
+            PathOrLiteral = pathOrLiteral;
         }
 
-        public LuaKeyBinding(string scriptPath, params Key[] keys)
+        public LuaKeyBinding(string pathOrLiteral, params Key[] keys)
             : base(keys)
         {
-            ScriptPath = scriptPath;
+            PathOrLiteral = pathOrLiteral;
         }
 
-        public string ScriptPath { get; }
+        public string PathOrLiteral { get; }
 
         public override Option<Exception> Execute(Dictionary<string, object> args) {
-            return LuaScriptRunner.Execute(ScriptPath, args);
+            return LuaScriptRunner.Execute(PathOrLiteral, args);
         }
     }
 }

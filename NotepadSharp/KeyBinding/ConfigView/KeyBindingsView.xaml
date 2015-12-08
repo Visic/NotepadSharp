@@ -23,7 +23,7 @@
         <TextBlock Grid.Row="0" Grid.Column="2" TextAlignment="Center" FontSize="13" Text="On Press"/>
         <TextBlock Grid.Row="0" Grid.Column="3" TextAlignment="Center" FontSize="13" Text="Repeat If Held"/>
         <TextBlock Grid.Row="0" Grid.Column="4" TextAlignment="Center" FontSize="13" Text="On Release"/>
-        <TextBlock Grid.Row="0" Grid.Column="5" TextAlignment="Center" FontSize="13" Text="Script File Path"/>
+        <TextBlock Grid.Row="0" Grid.Column="5" TextAlignment="Center" FontSize="13" Text="Script File Path Or Literal"/>
 
         <ScrollViewer Grid.Row="1" Grid.ColumnSpan="6" VerticalScrollBarVisibility="Auto">
             <StackPanel>

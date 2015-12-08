@@ -52,22 +52,21 @@
                 BorderBrush="Gray"
                 Margin="1" 
                 BorderThickness=".75">
-            <TextBox x:Name="ScriptFilePath"
-                     TextAlignment="Left" 
+            <TextBox TextAlignment="Left" 
                      Padding="2"
                      AllowDrop="True"
-                     ToolTipService.ToolTip="{Binding ScriptFilePath.Value}"
-                     ToolTipService.IsEnabled="{Binding ScriptFilePath.Value, Converter={StaticResource NullOrEmptyToFalseConverter}}"
+                     ToolTipService.ToolTip="{Binding PathOrLiteral.Value}"
+                     ToolTipService.IsEnabled="{Binding PathOrLiteral.Value, Converter={StaticResource NullOrEmptyToFalseConverter}}"
                      local:CommandBindingBehavior.PreviewDragOverCommand="{Binding DragDrop.DragOverCommand}"
                      local:CommandBindingBehavior.PreviewDropCommand="{Binding DragDrop.DropCommand}"
-                     local:CommandBindingBehavior.LostFocusCommand="{Binding ScriptFilePathLostFocusCommand}"
-                     local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding ScriptFilePathGotFocusCommand}"
-                     Text="{Binding ScriptFilePath.Value, UpdateSourceTrigger=PropertyChanged}">
+                     local:CommandBindingBehavior.LostFocusCommand="{Binding PathOrLiteralLostFocusCommand}"
+                     local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding PathOrLiteralGotFocusCommand}"
+                     Text="{Binding PathOrLiteral.Value, UpdateSourceTrigger=PropertyChanged}">
                 <TextBox.Style>
                     <Style TargetType="TextBox" BasedOn="{StaticResource TextBox_NoBorder}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding ScriptFilePathIsFocused.Value}" Value="true">
-                                <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=ScriptFilePath}"/>
+                            <DataTrigger Binding="{Binding PathOrLiteralIsFocused.Value}" Value="true">
+                                <Setter Property="FocusManager.FocusedElement" Value="{Binding RelativeSource={RelativeSource Self}}"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
