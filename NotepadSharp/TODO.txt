@@ -9,5 +9,3 @@
 -Auto-Completion
 
 --In progress
-    -Shadow copy of the edited file (like notepad++) 
-        --Still need a timer to track changes to the original file

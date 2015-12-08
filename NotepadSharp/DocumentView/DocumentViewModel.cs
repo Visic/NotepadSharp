@@ -4,12 +4,14 @@ using System.IO;
 using Utility;
 using WPFUtility;
 using Microsoft.Win32;
+using System.Windows.Threading;
 
 namespace NotepadSharp {
     //This view model deals with abstracting the persistency away from the content vm
     public class DocumentViewModel : ViewModelBase {
         SerializableFileInfo _fileInfo;
         Action<string> _updateLabelCallback;
+        DispatcherTimer _fileCheckTimer = new DispatcherTimer();
 
         public DocumentViewModel(string filePath, Action<string> updateLabelCallback) {
             _updateLabelCallback = updateLabelCallback;
@@ -40,6 +42,9 @@ namespace NotepadSharp {
             DocumentContent.Content.PropertyChanged += (s,e) => UpdateHash();
             DocumentContent.ApiProvider.Save = SaveChanges;
 
+            _fileCheckTimer.Interval = TimeSpan.FromMilliseconds(150);
+            _fileCheckTimer.Tick += (s, e) => UpdateIsDirty();
+            _fileCheckTimer.Start();
             UpdateIsDirty();
         }
 
@@ -87,7 +92,7 @@ namespace NotepadSharp {
                 }
                 
                 File.Copy(_fileInfo.CachedFilePath, _fileInfo.OriginalFilePath, true);
-                IsDirty.Value = false;
+                UpdateHash();
             }
         }
 
