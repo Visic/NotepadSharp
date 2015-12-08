@@ -13,7 +13,10 @@ namespace NotepadSharp {
         public MainViewModel() {
             ApplicationState.SetMessageAreaText = msg => MessageAreaText.Value = msg;
             ApplicationState.SetMessageAreaTextColor = color => MessageAreaTextColor.Value = color;
-            ApplicationState.OpenDocument = AddOrSelectDocumentButton;
+            ApplicationState.OpenDocument = x => {
+                if(!File.Exists(x)) throw new FileNotFoundException($"File [{x}] not found.");
+                AddOrSelectDocumentButton(x);
+            };
 
             AddLeftPanelToggleButton("Menu", ApplicationState.MainMenu);
 
@@ -44,7 +47,11 @@ namespace NotepadSharp {
 
             //load previously open files
             foreach(var fileInfo in ArgsAndSettings.CachedFiles.ToArray()) {
-                AddOrSelectDocumentButton(fileInfo.OriginalFilePath ?? fileInfo.CachedFilePath);
+                if (fileInfo.OriginalFilePath == null) {
+                    AddOrSelectDocumentButton(fileInfo.CachedFilePath, Path.GetFileName(fileInfo.CachedFilePath));
+                } else {
+                    AddOrSelectDocumentButton(fileInfo.OriginalFilePath);
+                }
             }
             
             if(TopTabs.Count() > 0) TopTabs.First().IsSelected.Value = true;
@@ -82,9 +89,11 @@ namespace NotepadSharp {
             button.IsSelected.Value = true;
         }
 
-        private void AddOrSelectDocumentButton(string filePath) {
+        private void AddOrSelectDocumentButton(string filePath, string buttonId = null) {
+            buttonId = buttonId ?? filePath;
+
             ISelectableButtonViewModel button;
-            if(!_buttonLookup.TryGetValue(filePath, out button)) {
+            if(!_buttonLookup.TryGetValue(buttonId, out button)) {
                 var vm = new Lazy<DocumentViewModel>(() => NewVm(new DocumentViewModel(filePath, x => button.Text.Value = x)));
 
                 var cmd = new RelayCommand(x => {
@@ -92,10 +101,10 @@ namespace NotepadSharp {
                     TopPanelContent.Value = vm.Value;
                 });
 
-                var closeCmd = new RelayCommand(x => CloseTopTab(filePath, vm.Value, vm.Value.Close));
+                var closeCmd = new RelayCommand(x => CloseTopTab(buttonId, vm.Value, vm.Value.Close));
 
                 var fileName = Path.GetFileName(filePath);
-                _buttonLookup[filePath] = button = new MaybeDirtySelectableClosableButtonViewModel(fileName, cmd, closeCmd);
+                _buttonLookup[buttonId] = button = new MaybeDirtySelectableClosableButtonViewModel(fileName, cmd, closeCmd);
                 TopTabs.Add(button);
             }
             button.IsSelected.Value = true;
