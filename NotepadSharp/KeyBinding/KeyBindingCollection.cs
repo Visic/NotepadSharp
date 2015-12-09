@@ -21,7 +21,10 @@ namespace NotepadSharp {
         }
 
         public void SetBinding(KeyBinding keyBinding) {
-            if (keyBinding.GetHashCode() == KeyBinding.C_Unassigned) Add(keyBinding, _unbound);
+            if(keyBinding.GetHashCode() == KeyBinding.C_Unassigned) {
+                Add(keyBinding, _unbound);
+                return;
+            }
 
             //if the binding already exists, remove it (essentially letting us overwriting the associated action)
             if (_keyBindings.Contains(keyBinding)) Remove(keyBinding, _keyBindings);

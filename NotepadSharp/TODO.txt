@@ -13,6 +13,5 @@
 
 --In progress
     --Bug fix
-        -over writing a binding messes up the persistent list (it loads incorrectly the next time you start the program)
 
     --Feature
