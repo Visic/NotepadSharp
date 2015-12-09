@@ -22,12 +22,12 @@ namespace NotepadSharp {
 
             var fileExplorer = NewVm(new FileExplorerViewModel(Environment.GetFolderPath(Environment.SpecialFolder.Desktop)));
             AddLeftPanelToggleButton(
-                "Files", 
-                fileExplorer, 
+                "Files",
+                fileExplorer,
                 x => fileExplorer.IsExpanded.Value = x
             );
 
-            var newDocumentCommand = new RelayCommand(y => AddOrSelectDocumentButton(UniqueNameGenerator.NextNumbered("Untitled ", TopTabs.Select(x => x.Text.Value))));
+            var newDocumentCommand = new RelayCommand(y => NewDocument());
             ApplicationState.MainMenu.SetMenuButton(
                 "New File",
                 new ButtonViewModel(
@@ -38,25 +38,29 @@ namespace NotepadSharp {
             ApplicationState.NewDocument = () => newDocumentCommand.Execute(null);
 
             ApplicationState.MainMenu.SetMenuButton(
-                "Bindings", 
+                "Bindings",
                 new ButtonViewModel(
-                    "Key Bindings", 
+                    "Key Bindings",
                     new RelayCommand(x => AddOrSelectTopPanelButton("Key Bindings", () => new KeyBindingsViewModel()))
                 )
             );
 
-            //load previously open files
-            foreach(var fileInfo in ArgsAndSettings.CachedFiles.ToArray()) {
-                if (fileInfo.OriginalFilePath == null) {
-                    AddOrSelectDocumentButton(fileInfo.CachedFilePath, Path.GetFileName(fileInfo.CachedFilePath));
-                } else {
-                    AddOrSelectDocumentButton(fileInfo.OriginalFilePath);
+            if(ArgsAndSettings.CachedFiles.Count() == 0) {
+                newDocumentCommand.Execute(null);
+            } else {
+                //load previously open files
+                foreach(var fileInfo in ArgsAndSettings.CachedFiles.ToArray()) {
+                    if(fileInfo.OriginalFilePath == null) {
+                        AddOrSelectDocumentButton(fileInfo.CachedFilePath, Path.GetFileName(fileInfo.CachedFilePath));
+                    } else {
+                        AddOrSelectDocumentButton(fileInfo.OriginalFilePath);
+                    }
                 }
             }
-            
-            if(TopTabs.Count() > 0) TopTabs.First().IsSelected.Value = true;
+
+            TopTabs.First().IsSelected.Value = true;
         }
-        
+
         public SingleSelectionCollection<ISelectableButtonViewModel> TopTabs { get; } = new SingleSelectionCollection<ISelectableButtonViewModel>();
         public SingleSelectionCollection<ISelectableButtonViewModel> LeftTabs { get; } = new SingleSelectionCollection<ISelectableButtonViewModel>();
         public NotifyingProperty<ViewModelBase> TopPanelContent { get; } = new NotifyingProperty<ViewModelBase>();
@@ -65,7 +69,7 @@ namespace NotepadSharp {
         public NotifyingProperty<string> MessageAreaTextColor { get; } = new NotifyingProperty<string>("Black");
 
         private void AddLeftPanelToggleButton(string text, ViewModelBase vm, Action<bool> selectionStateChanged = null) {
-            if (selectionStateChanged == null) selectionStateChanged = x => { };
+            if(selectionStateChanged == null) selectionStateChanged = x => { };
 
             ISelectableButtonViewModel toggleVm = null;
             var cmd = new RelayCommand(x => {
@@ -101,7 +105,10 @@ namespace NotepadSharp {
                     TopPanelContent.Value = vm.Value;
                 });
 
-                var closeCmd = new RelayCommand(x => CloseTopTab(buttonId, vm.Value, vm.Value.Close));
+                var closeCmd = new RelayCommand(x => {
+                    if (_currentViewModels.Count(y => y is DocumentViewModel) == 1) NewDocument();
+                    CloseTopTab(buttonId, vm.Value, vm.Value.Close);
+                });
 
                 var fileName = Path.GetFileName(filePath);
                 _buttonLookup[buttonId] = button = new MaybeDirtySelectableClosableButtonViewModel(fileName, cmd, closeCmd);
@@ -119,7 +126,7 @@ namespace NotepadSharp {
             if(TopPanelContent.Value == vm) {
                 //select the next tab and update the top panel content
                 var nextTab = TopTabs.ElementAtOrDefault(tabIndex) ?? TopTabs.ElementAtOrDefault(tabIndex - 1);
-                if (nextTab == null) TopPanelContent.Value = null;
+                if(nextTab == null) TopPanelContent.Value = null;
                 else nextTab.Command.Execute(null);
             }
             closeCallback?.Invoke();
@@ -131,6 +138,10 @@ namespace NotepadSharp {
         private T NewVm<T>(T vm) where T : IViewModelBase {
             _currentViewModels.Add(vm);
             return vm;
+        }
+
+        private void NewDocument() {
+            AddOrSelectDocumentButton(UniqueNameGenerator.FirstAvailableNumbered("Untitled ", TopTabs.Select(x => x.Text.Value)));
         }
 
         public override void Dispose() {
