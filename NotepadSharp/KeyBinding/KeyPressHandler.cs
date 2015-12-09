@@ -6,7 +6,7 @@ using WPFUtility;
 
 namespace NotepadSharp {
     public class KeyPressHandler {
-        HashSet<Key> _pressedKeys = new HashSet<Key>();
+        static HashSet<Key> _pressedKeys = new HashSet<Key>();
         protected Func<IReadOnlyList<Key>, bool> _keyPressedCallback, _keyReleasedCallback;
 
         public KeyPressHandler(Func<IReadOnlyList<Key>, bool> keyPressedCallback = null, 

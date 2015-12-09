@@ -7,14 +7,17 @@ namespace NotepadSharp {
         public RichTextViewModel(string filepath) {
             Content = new NotifyingProperty<string>(File.ReadAllText(filepath));
 
-            KeyBindingHandler = new KeyBindingExecution(ex => {
-                ApplicationState.SetMessageAreaText(ex.Message);
-                ApplicationState.SetMessageAreaTextColor("DarkRed");
-            });
-            
-            LostFocusCommand = new RelayCommand(x => KeyBindingHandler.ClearPressedKeys());
+            KeyBindingHandler = new KeyBindingExecution(
+                ex => {
+                    ApplicationState.SetMessageAreaText(ex.Message);
+                    ApplicationState.SetMessageAreaTextColor("DarkRed");
+                }
+            );
+
             KeyBindingHandler.SetScriptArg("textbox", ApiProvider);
             KeyBindingHandler.SetScriptArgs(new DefaultProviderRegistry());
+            
+            LostFocusCommand = new RelayCommand(x => KeyBindingHandler.ClearPressedKeys());
         }
 
         public RichTextBoxApiProvider ApiProvider { get; } = new RichTextBoxApiProvider();

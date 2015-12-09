@@ -10,9 +10,9 @@ namespace NotepadSharp {
         Action<Exception> _exceptionHandler;
 
         public KeyBindingExecution(Action<Exception> exceptionHandler) {
+            _exceptionHandler = exceptionHandler;
             _keyPressedCallback = KeyPressed;
             _keyReleasedCallback = KeyReleased;
-            _exceptionHandler = exceptionHandler;
         }
 
         public void SetScriptArgs(Dictionary<string, object> args) {
@@ -50,7 +50,7 @@ namespace NotepadSharp {
         //returns whether or not a binding existed with these keys
         private bool KeyPressed(IReadOnlyList<Key> keys) {
             var bindings = KeysChanged(keys);
-            if (bindings.Item2 != null && bindings.Item2.ExecuteOnKeyDown) { //if your suppose to execute it on key down
+            if (bindings.Item2 != null && bindings.Item2.ExecuteOnKeyDown) { //if your supposed to execute it on key down
                 if (bindings.Item1 != null && bindings.Item1 == bindings.Item2 && !bindings.Item1.RepeatOnKeyDown) return true; //if it didn't change and your not suppose to execute it on repeat
                 bindings.Item2.Execute(_scriptArgs).Apply(_exceptionHandler);
             }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Utility;
 
@@ -16,8 +15,7 @@ namespace NotepadSharp {
         }
 
         public KeyBinding(KeyBinding otherBinding, params Key[] keys) :
-            this(keys)
-        {
+            this(keys) {
             UID = otherBinding.UID;
             ExecuteOnKeyDown = otherBinding.ExecuteOnKeyDown;
             ExecuteOnKeyUp = otherBinding.ExecuteOnKeyUp;
@@ -32,8 +30,7 @@ namespace NotepadSharp {
         HashSet<Key> _keys;
         public HashSet<Key> Keys {
             get { return _keys; }
-            protected set 
-            {
+            protected set {
                 _keys = value;
                 _hashCode = _keys.Count > 0 ? int.Parse(_keys.Select(x => (int)x).ToDelimitedString("")) : C_Unassigned;
             }

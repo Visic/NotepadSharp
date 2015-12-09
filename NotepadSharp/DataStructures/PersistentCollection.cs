@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using NotepadSharp.Properties;
-using System;
 using System.Collections;
 
 namespace NotepadSharp {
@@ -28,7 +27,7 @@ namespace NotepadSharp {
         }
 
         public void AddOrReplace(T ele) {
-            bool temp = GetSavedCollection().Remove(ele);
+            GetSavedCollection().Remove(ele);
             Add(ele);
         }
 

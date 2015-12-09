@@ -45,20 +45,19 @@ namespace NotepadSharp {
                     var maybeNewItems = GetListing(EntityPath.Value);
                     
                     var removed = Items.Value.Where(x => x == null || !maybeNewItems.Contains(x.EntityPath.Value));
-                    var temp = removed.Count();
                     foreach(var ele in removed.ToArray()) {
                         Items.Value.Remove(ele);
                     }
 
                     var currentNames = Items.Value.Select(x => x == null ? null : x.EntityPath.Value);
-                    var added = maybeNewItems.Except(currentNames).Select(x => MakeNewItem(x)).ToArray();
+                    var added = maybeNewItems.Select((x, i) => currentNames.Contains(x) ? null : new { index = i, item = MakeNewItem(x) }).Where(x => x != null).ToArray();
                     foreach(var ele in added) {
-                        Items.Value.Add(ele);
+                        Items.Value.Insert(ele.index, ele.item);
                     }
 
                     //list updated, now slowly get all of the new files icons
                     foreach(var ele in added) {
-                        await ((ele as FileViewModel)?.UpdateIcon_Async() ?? Task.CompletedTask);
+                        await ((ele.item as FileViewModel)?.UpdateIcon_Async() ?? Task.CompletedTask);
                     }
                 } catch(Exception ex) {
                     Items.Value.Clear();

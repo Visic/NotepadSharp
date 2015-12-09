@@ -1,11 +1,18 @@
 ﻿--Bugs
 -Maintain binding list order
--change binding for file explorer for an ItemsSource so files and folders will be sorted correctly when added to the collection after it's created
+
+--Improvements
+-change the key binding execution/key press handler to be a singleton
 
 --Features
 -More persistence
 -Async capabilities for lua scripts (coroutines or something, allowing use of C# tasks is causing unrecoverable exceptions from NLua)
 -Syntax highlighting
 -Auto-Completion
+-File comparison for "Dirty" files
 
 --In progress
+    --Bug fix
+        -over writing a binding messes up the persistent list (it loads incorrectly the next time you start the program)
+
+    --Feature

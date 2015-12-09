@@ -52,6 +52,7 @@ namespace NotepadSharp {
         public NotifyingProperty<bool> IsDirty { get; }
         
         public void Close() {
+            _fileCheckTimer.Stop();
             IsDirty.Value = false;
             ArgsAndSettings.CachedFiles.Remove(_fileInfo);
             Directory.Delete(Path.GetDirectoryName(_fileInfo.CachedFilePath), true);
@@ -102,6 +103,7 @@ namespace NotepadSharp {
 
         public override void Dispose() {
             base.Dispose();
+            _fileCheckTimer.Stop();
             if (IsDirty.Value) UpdateCachedFile();
             DocumentContent.Dispose();
         }
