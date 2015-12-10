@@ -23,8 +23,6 @@ namespace NotepadSharp {
             PathOrLiteral = new NotifyingProperty<string>(x => CommitChanges(), (binding as LuaKeyBinding)?.PathOrLiteral);
             ExecuteOnKeyUp = new NotifyingProperty<bool>(
                 x => {
-                    _currentBinding.ExecuteOnKeyUp = x;
-
                     if(IsEditingBinding.Value) EndEditBinding();
                     else CommitChanges();
                 }, 
@@ -32,8 +30,6 @@ namespace NotepadSharp {
             );
             ExecuteOnKeyDown = new NotifyingProperty<bool>(
                 x => {
-                    _currentBinding.ExecuteOnKeyDown = x;
-
                     if(!x) RepeatOnKeyDown.Value = x;
                     else if(IsEditingBinding.Value) EndEditBinding();
                     else CommitChanges();
@@ -42,8 +38,6 @@ namespace NotepadSharp {
             );
             RepeatOnKeyDown = new NotifyingProperty<bool>(
                 x => {
-                    _currentBinding.RepeatOnKeyDown = x;
-
                     if (x) ExecuteOnKeyDown.Value = x;
                     else if(IsEditingBinding.Value) EndEditBinding();
                     else CommitChanges();
@@ -61,6 +55,7 @@ namespace NotepadSharp {
             LostKeyboardFocusCommand = new RelayCommand(x => KeyPressHandler.ClearPressedKeys());
         }
 
+        public ulong DisplayIndex { get { return _currentBinding.DisplayIndex; } }
         public KeyPressHandler KeyPressHandler { get; }
         public NotifyingProperty<bool> PathOrLiteralIsFocused { get; } = new NotifyingProperty<bool>();
         public NotifyingProperty<HashSet<Key>> Keys { get; private set; }
@@ -80,7 +75,11 @@ namespace NotepadSharp {
         public ICommand LostKeyboardFocusCommand { get; }
 
         public KeyBinding GetBinding() {
-            return new LuaKeyBinding(_currentBinding, PathOrLiteral.Value, Keys.Value.ToArray());
+            var newBinding = new LuaKeyBinding(_currentBinding, PathOrLiteral.Value, Keys.Value.ToArray());
+            newBinding.ExecuteOnKeyDown = ExecuteOnKeyDown.Value;
+            newBinding.ExecuteOnKeyUp = ExecuteOnKeyUp.Value;
+            newBinding.RepeatOnKeyDown = RepeatOnKeyDown.Value;
+            return newBinding;
         }
 
         public void ClearBinding() {

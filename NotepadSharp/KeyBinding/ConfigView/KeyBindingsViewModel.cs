@@ -6,7 +6,7 @@ namespace NotepadSharp {
     public class KeyBindingsViewModel : ViewModelBase {
         public KeyBindingsViewModel() {
             KeyBindings = new ObservableCollection<KeyBindingViewModel>(
-                ArgsAndSettings.KeyBindings.Select(x => new KeyBindingViewModel(x, EditBinding, DeleteBinding))
+                ArgsAndSettings.KeyBindings.OrderBy(x => x.DisplayIndex).Select(x => new KeyBindingViewModel(x, EditBinding, DeleteBinding))
             );
             EmptyBinding = new NotifyingProperty<KeyBindingViewModel>(MakeEmptyBinding());
         }
@@ -39,7 +39,8 @@ namespace NotepadSharp {
         }
 
         private KeyBindingViewModel MakeEmptyBinding() {
-            return new KeyBindingViewModel(new LuaKeyBinding(""), NewBinding, null);
+            var displayIndex = KeyBindings.Count == 0 ? 0 : KeyBindings.Max(x => x.DisplayIndex) + 1;
+            return new KeyBindingViewModel(new LuaKeyBinding(displayIndex, ""), NewBinding, null);
         }
     }
 }

@@ -10,12 +10,13 @@ namespace NotepadSharp {
         public const int C_Unassigned = -1;
         int _hashCode = -1;
 
-        public KeyBinding(params Key[] keys) {
+        public KeyBinding(ulong displayIndex, params Key[] keys) {
+            DisplayIndex = displayIndex;
             Keys = new HashSet<Key>(keys);
         }
 
         public KeyBinding(KeyBinding otherBinding, params Key[] keys) :
-            this(keys) {
+            this(otherBinding.DisplayIndex, keys) {
             UID = otherBinding.UID;
             ExecuteOnKeyDown = otherBinding.ExecuteOnKeyDown;
             ExecuteOnKeyUp = otherBinding.ExecuteOnKeyUp;
@@ -23,6 +24,7 @@ namespace NotepadSharp {
         }
 
         public string UID { get; } = Guid.NewGuid().ToString();
+        public ulong DisplayIndex { get; }
         public bool ExecuteOnKeyDown { get; set; }
         public bool ExecuteOnKeyUp { get; set; }
         public bool RepeatOnKeyDown { get; set; }
@@ -43,8 +45,13 @@ namespace NotepadSharp {
         }
 
         public override bool Equals(object obj) {
-            var maybeHashcode = (obj as KeyBinding)?.GetHashCode();
-            return maybeHashcode.HasValue && maybeHashcode == _hashCode;
+            if (!(obj is KeyBinding) || obj == null) return false;
+
+            var otherBinding = (KeyBinding)obj;
+            return otherBinding._hashCode == _hashCode && 
+                   otherBinding.ExecuteOnKeyDown == ExecuteOnKeyDown && 
+                   otherBinding.ExecuteOnKeyUp == ExecuteOnKeyUp && 
+                   otherBinding.RepeatOnKeyDown == RepeatOnKeyDown;
         }
 
         public static bool operator ==(KeyBinding a, KeyBinding b) {

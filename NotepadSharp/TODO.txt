@@ -1,5 +1,4 @@
 ﻿--Bugs
--Maintain binding list order
 
 --Improvements
 -change the key binding execution/key press handler to be a singleton

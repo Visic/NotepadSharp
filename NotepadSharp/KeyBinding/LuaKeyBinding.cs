@@ -12,8 +12,8 @@ namespace NotepadSharp {
             PathOrLiteral = pathOrLiteral;
         }
 
-        public LuaKeyBinding(string pathOrLiteral, params Key[] keys)
-            : base(keys)
+        public LuaKeyBinding(ulong displayIndex, string pathOrLiteral, params Key[] keys)
+            : base(displayIndex, keys)
         {
             PathOrLiteral = pathOrLiteral;
         }
