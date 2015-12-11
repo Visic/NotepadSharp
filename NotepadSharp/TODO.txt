@@ -1,4 +1,5 @@
 ﻿--Bugs
+    -Maintain tab order for open documents
 
 --Improvements
 -change the key binding execution/key press handler to be a singleton
@@ -14,3 +15,6 @@
     --Bug fix
 
     --Feature
+
+    --Misc
+        -Working on text editing
