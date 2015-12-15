@@ -26,7 +26,8 @@ namespace NotepadSharp {
             _blinkTimer.Tick += _blinkTimer_Tick;
             _blinkTimer.Start();
 
-            Text = Constants.LoremIpsum;
+            //Text = Constants.LoremIpsum;
+            Text = string.Join(" --- ", Enumerable.Repeat(Constants.LoremIpsum, 100).ToArray());
         }
 
         #region Dependency Properties
@@ -84,37 +85,61 @@ namespace NotepadSharp {
             if(string.IsNullOrEmpty(Text) || _defaultFormatter == null) return; //not yet loaded, or no text to render
 
             //render the text
-            var nextLoc = new Point(0, 0);
+            var endOfLine = new Point(0, 0);
+            var nextLine = new Point(0, 0);
             foreach(var ele in (TextFormatter ?? _defaultFormatter).Format(Text)) {
-                foreach(var line in WordWrap_Rec(nextLoc.X, ele)) {
-                    drawingContext.DrawText(line, nextLoc);
+                var pos = endOfLine;
+                foreach(var line in WordWrap_Rec(pos.X, ele)) {
+                    if (pos.Y + line.Height > ActualHeight) return; //We've run out of room for lines, done rendering text
+                    drawingContext.DrawText(line, pos);
 
-                    nextLoc.X = (int)((nextLoc.X + line.Width) / ActualWidth);
-                    nextLoc.Y = nextLoc.Y + line.Height;
+                    if(pos == nextLine) {
+                        endOfLine.X = line.WidthIncludingTrailingWhitespace;
+                        endOfLine.Y = nextLine.Y;
+                        nextLine.Y += line.Height;
+                    } else {
+                        endOfLine.X = endOfLine.X + line.WidthIncludingTrailingWhitespace;
+
+                        var maybeNextLineY = endOfLine.Y + line.Height; //handle change in font size within one line of text
+                        nextLine.Y = nextLine.Y < maybeNextLineY ? maybeNextLineY : nextLine.Y;
+                    }
+
+                    pos = nextLine;
                 }
             }
         }
 
-        //Recursively wrap the given text to return a collection of lines
-        private IEnumerable<FormattedText> WordWrap_Rec(double originX, TextWithFormatting txt) {
-            var result = new List<FormattedText>();
-            var requiredWidth = originX + txt.GetFormattedText().Width;
+        private IEnumerable<FormattedText> WordWrap_Rec(double offsetX, TextWithFormatting txt) {
+            var approxWidthPerChar = txt.GetFormattedText().WidthIncludingTrailingWhitespace / txt.Text.Length;
 
-            if(requiredWidth > ActualWidth) {
-                var approxChars = (int)(txt.Text.Length / (requiredWidth / ActualWidth));
+            var rest = txt.Text;
+            while(!string.IsNullOrEmpty(rest)) {
+                var remainingWidth = ActualWidth - offsetX;
+                var numChars = (int)(remainingWidth / approxWidthPerChar);
 
-                var str1 = txt.Text.Substring(0, approxChars);
-                var whiteSpaceIndex = str1.LastIndexOfAny(new[] { ' ', '\t' });
-                if (whiteSpaceIndex > -1) str1 = str1.Substring(0, whiteSpaceIndex + 1);
+                if(numChars < rest.Length) {
+                    var strTxt = rest.Substring(0, numChars);
+                    if(strTxt.TrimEnd(' ', '\t') == strTxt) {
+                        var lastWhiteSpace = strTxt.LastIndexOfAny(new[] { ' ', '\t' });
+                        if (lastWhiteSpace != -1) strTxt = strTxt.Substring(0, lastWhiteSpace + 1);
+                    }
 
-                result.Add(WordWrap_Rec(originX, new TextWithFormatting(str1, txt)).First());
+                    var str = WordWrap_Rec(
+                        offsetX, 
+                        new TextWithFormatting(
+                            strTxt, 
+                            txt
+                        )
+                    ).First();
 
-                var str2 = txt.Text.Substring(result[0].Text.Length, txt.Text.Length - result[0].Text.Length);
-                result.AddRange(WordWrap_Rec(0, new TextWithFormatting(str2, txt)));
-            } else {
-                result.Add(txt.GetFormattedText());
+                    yield return str;
+                    rest = rest.Substring(str.Text.Length);
+                    offsetX = 0;
+                } else {
+                    yield return new TextWithFormatting(rest, txt).GetFormattedText();
+                    rest = "";
+                }
             }
-            return result;
         }
 
         private void FormattedTextbox_Loaded(object sender, RoutedEventArgs e) {
