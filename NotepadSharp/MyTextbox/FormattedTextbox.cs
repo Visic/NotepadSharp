@@ -29,8 +29,9 @@ namespace NotepadSharp {
             //Text = Constants.LoremIpsum;
             //Text = new string('W', 5000000);
             //Text = string.Join("", Enumerable.Repeat("abcdefghijklmnopqrstuvwxyz", 50).ToArray());
-            Text = string.Join(" --- ", Enumerable.Repeat(Constants.LoremIpsum, 50).ToArray());
-            //Text = string.Join(" --- ", Enumerable.Repeat(Constants.LoremIpsum, 5000).ToArray());
+            //Text = string.Join(" --- ", Enumerable.Repeat(Constants.LoremIpsum, 50).ToArray());
+            Text = string.Join(" --- ", Enumerable.Repeat(Constants.LoremIpsum, 5000).ToArray());
+            //Text = new string('A', 100) + "abcdefghi";
         }
 
         #region Dependency Properties
@@ -94,18 +95,17 @@ namespace NotepadSharp {
             var nextLine = new Point(0, 0);
             foreach(var ele in (TextFormatter ?? _defaultFormatter).Format(Text)) {
                 var pos = endOfLine;
-                foreach(var line in WordWrap_Rec(pos.X, ele)) {
-                    if(pos.Y + line.Height > ActualHeight) return; //We've run out of room for lines, done rendering text
-                    drawingContext.DrawText(line, pos);
+                foreach(var line in WordWrap(pos.X, ele)) {
+                    var lineHeight = line.Item1.Height;
+                    if(pos.Y + lineHeight > ActualHeight) return; //We've run out of room for lines, done rendering text
+                    drawingContext.DrawText(line.Item1, pos);
+                    endOfLine.X = line.Item2;
 
                     if(pos == nextLine) {
-                        endOfLine.X = line.WidthIncludingTrailingWhitespace;
                         endOfLine.Y = nextLine.Y;
-                        nextLine.Y += line.Height;
+                        nextLine.Y += lineHeight;
                     } else {
-                        endOfLine.X = line.WidthIncludingTrailingWhitespace;
-
-                        var maybeNextLineY = endOfLine.Y + line.Height; //handle change in font size within one line of text
+                        var maybeNextLineY = endOfLine.Y + lineHeight; //handle change in font size within one line of text
                         nextLine.Y = nextLine.Y < maybeNextLineY ? maybeNextLineY : nextLine.Y;
                     }
 
@@ -114,47 +114,41 @@ namespace NotepadSharp {
             }
         }
 
-        //Control text is created by taking into consideration the frequency of the first 1k characters
-        private string GetControlText(string txt) {
-            txt = new string(txt.Take(1000).ToArray());
-            var freqs = Methods.CountCharOccurrences(txt).OrderByDescending(x => x.Value).ToArray();
-            var avg = freqs.Average(x => (double)x.Value);
+        TextWithFormatting _lastTxt;
+        Dictionary<char, double> _knownCharSizes;
+        private double GetCharSize(char ch, TextWithFormatting txt) {
+            if(_lastTxt == null || !_lastTxt.SizeFactorsAreEqual(txt)) {
+                _lastTxt = txt;
+                _knownCharSizes = new Dictionary<char, double>();
+            }
 
-            //now return a string consisting of the important characters weighted by their frequency of occurrence relative to the average
-            return new string(freqs.SelectMany(x => Enumerable.Repeat(x.Key, (int)Math.Round(x.Value / avg))).ToArray());
+            return _knownCharSizes.GetOrAdd(ch, () => new TextWithFormatting(ch.ToString(), txt).GetFormattedText().WidthIncludingTrailingWhitespace);
         }
 
-        private IEnumerable<FormattedText> WordWrap_Rec(double offsetX, TextWithFormatting txt) {
-            var ctrlTxt = GetControlText(txt.Text);
-            var approxWidthPerChar = new TextWithFormatting(ctrlTxt, txt).GetFormattedText().WidthIncludingTrailingWhitespace / ctrlTxt.Length;
-            //TODO:: rather than using control text, maybe just calculate the width of all characters, and the width of space between characters
-            var rest = txt.Text;
-            while(!string.IsNullOrEmpty(rest)) {
+        private IEnumerable<Tuple<FormattedText, double>> WordWrap(double offsetX, TextWithFormatting txt) {
+            var startIndex = 0;
+            while(startIndex < txt.Text.Length) {
+                var txtWidth = 0.0;
                 var remainingWidth = ActualWidth - offsetX;
-                var numChars = (int)(remainingWidth / approxWidthPerChar);
 
-                if(numChars < rest.Length) {
-                    var strTxt = rest.Substring(0, numChars);
-                    if(strTxt.TrimEnd(' ', '\t') == strTxt) {
-                        var lastWhiteSpace = strTxt.LastIndexOfAny(new[] { ' ', '\t' });
-                        if(lastWhiteSpace != -1) strTxt = strTxt.Substring(0, lastWhiteSpace + 1);
+                int lastWhiteSpaceIndex = -1;
+                int endIndex = startIndex;
+                while(remainingWidth > 0 && endIndex < txt.Text.Length) {
+                    var ch = txt.Text[endIndex];
+                    var chWidth = GetCharSize(ch, txt);
+                    remainingWidth -= chWidth;
+
+                    if(remainingWidth >= 0) {
+                        txtWidth += chWidth;
+                        if(ch == ' ' || ch == '\t') lastWhiteSpaceIndex = endIndex;
+                        ++endIndex;
+                    } else if(lastWhiteSpaceIndex > -1) {
+                        endIndex = lastWhiteSpaceIndex;
                     }
-
-                    var str = WordWrap_Rec(
-                        offsetX,
-                        new TextWithFormatting(
-                            strTxt,
-                            txt
-                        )
-                    ).First();
-
-                    yield return str;
-                    rest = rest.Substring(str.Text.Length);
-                    offsetX = 0;
-                } else {
-                    yield return new TextWithFormatting(rest, txt).GetFormattedText();
-                    rest = "";
                 }
+                yield return Tuple.Create(new TextWithFormatting(txt.Text.Substring(startIndex, endIndex - startIndex), txt).GetFormattedText(), txtWidth);
+                startIndex = endIndex;
+                offsetX = 0;
             }
         }
 
