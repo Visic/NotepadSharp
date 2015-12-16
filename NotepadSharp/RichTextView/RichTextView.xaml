@@ -10,7 +10,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <local:FormattedTextbox FontSize="30" />
+        <local:FormattedTextbox />
         <!--<ScrollViewer VerticalScrollBarVisibility="Auto">
             <local:BindableRichTextBox ApiProvider="{Binding ApiProvider}" 
                                        Style="{StaticResource TextBox_NoBorder}">
