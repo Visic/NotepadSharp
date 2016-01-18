@@ -15,7 +15,7 @@ namespace NotepadSharp {
 
         public FileExplorerViewModel(string initialDirectory) : base(initialDirectory) {
             RootPath = new NotifyingProperty<string>(
-                x => SetPath(x),
+                (oldS, newS) => { if(newS.Trim() != oldS) SetPath(newS); },
                 initialDirectory
             );
             DragDropRootPath = new DragAndDropHandler(x => true, DropPath);
