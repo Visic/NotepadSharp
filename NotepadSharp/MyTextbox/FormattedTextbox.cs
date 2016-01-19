@@ -57,22 +57,23 @@ namespace NotepadSharp {
         KeyPressHandler _keyPressHandler;
         ITextFormatter _defaultFormatter;
         OrderedList<Line> _visibleLines = new OrderedList<Line>();
-        bool _showCarets;
+        bool _showCarets = false;
 
         public FormattedTextbox() {
+            FocusVisualStyle = null;
             Background = Brushes.Transparent;
             Cursor = Cursors.IBeam;
             _keyPressHandler = new KeyPressHandler(KeyPressed);
             Loaded += FormattedTextbox_Loaded;
 
-            _blinkTimer.Interval = TimeSpan.FromMilliseconds(500);
+            _blinkTimer.Interval = TimeSpan.FromMilliseconds(400);
             _blinkTimer.Tick += _blinkTimer_Tick;
             _blinkTimer.Start();
 
             //Text = Constants.LoremIpsum;
             //Text = new string('W', 5000000);
             //Text = string.Join("", Enumerable.Repeat("abcdefghijklmnopqrstuvwxyz", 50).ToArray());
-            Text = string.Join(" --- ", Enumerable.Repeat(Constants.LoremIpsum, 50).ToArray());
+            //Text = string.Join(" --- ", Enumerable.Repeat(Constants.LoremIpsum, 50).ToArray());
             //Text = string.Join(" --- ", Enumerable.Repeat(Constants.LoremIpsum, 5000).ToArray());
             //Text = new string('A', 100) + "abcdefghi";
         }
@@ -81,35 +82,57 @@ namespace NotepadSharp {
             if((arg.Count > 1 && !arg.Contains(Key.LeftAlt)) || arg.Count > 2) return false;
 
             if(arg.Count == 1) {
-                var newText = Text;
-                if(arg.First() == Key.Back) {
-                    for(int i = 0; i < _carets.Count; ++i) {
-                        if(_carets[i].X == 0) continue;
-                        
-                        newText = newText.Remove(_carets[i].CharacterIndex, 1);
+                var newText = Text ?? "";
+                bool modified = false, caretsChanged = false;
+                for(int i = 0; i < _carets.Count; ++i) {
+                    if(arg[0] == Key.Back) {
+                        if(string.IsNullOrEmpty(newText)) break;
+                        if(_carets[i].CharacterIndex < 0) continue;
 
+                        newText = newText.Remove(_carets[i].CharacterIndex, 1);
                         for(int z = i; z < _carets.Count; ++z) {
                             _carets[z].CharacterIndex -= 1;
                         }
+                        modified = true;
+                    } else if(arg[0] == Key.Delete) {
+                        if(string.IsNullOrEmpty(newText)) break;
+                        if(_carets[i].CharacterIndex == newText.Length - 1) continue;
 
-                        if (i + 1 < _carets.Count) {
-                            //If this caret is in the same position as the one after it, remove the next caret
-                            if (_carets[i].CharacterIndex == _carets[i + 1].CharacterIndex) {
-                                _carets.Remove(_carets[i + 1]);
-                            }
+                        newText = newText.Remove(_carets[i].CharacterIndex + 1, 1);
+                        for(int z = i + 1; z < _carets.Count; ++z) {
+                            _carets[z].CharacterIndex -= 1;
+                        }
+                        modified = true;
+                    } else if(arg[0] == Key.Left || arg[0] == Key.Right) {
+                        if(string.IsNullOrEmpty(newText)) break;
+                        _carets[i].CharacterIndex += arg[0] == Key.Left ? -1 : 1;
+                        if (_carets[i].CharacterIndex < -1) _carets[i].CharacterIndex = -1;
+                        caretsChanged = true;
+                    } else {
+                        var maybeCh = KeyHelper.GetCharForKey(arg.First());
+                        if(maybeCh.IsNone) break; //a character we don't handle
+                        newText = newText.Insert(_carets[i].CharacterIndex + 1, "" + maybeCh.Value);
+                        for(int z = i; z < _carets.Count; ++z) {
+                            _carets[z].CharacterIndex += 1;
+                        }
+                        modified = true;
+                    }
+
+                    if(i + 1 < _carets.Count) {
+                        //If this caret is in the same position as the one after it, remove the next caret
+                        if(_carets[i].CharacterIndex == _carets[i + 1].CharacterIndex) {
+                            _carets.Remove(_carets[i + 1]);
                         }
                     }
-                } else {
-                    var maybeCh = KeyHelper.GetCharForKey(arg.First());
-                    maybeCh.Apply(ch => {
-                        newText = (Text ?? "") + ch; //TODO:: Insert char into string
-                    });
+                }
+                
+                if(modified) Text = newText;
+                if(caretsChanged) {
+                    _showCarets = true;
+                    InvalidateVisual();
                 }
 
-                if(!string.IsNullOrEmpty(newText)) {
-                    Text = newText;
-                    return true;
-                }
+                if (modified || caretsChanged) return true;
             } else {
                 //TODO:: Handle alt codes
             }
@@ -163,27 +186,23 @@ namespace NotepadSharp {
             base.OnMouseDown(e);
             Focus();
             if(!Keyboard.IsKeyDown(Key.LeftCtrl)) _carets.Clear();
+            var index = -1;
 
-            var pos = e.GetPosition(this);
-            var line = _visibleLines[_visibleLines.FindInsertionIndex(pos.Y) - 1];
+            if(_visibleLines.Count > 0) {
+                var pos = e.GetPosition(this);
+                var line = _visibleLines[_visibleLines.FindInsertionIndex(pos.Y) - 1];
 
-            var chIndex = line.Chars.FindInsertionIndex(pos.X);
-            var ch = line.Chars[chIndex == line.Chars.Count ? chIndex - 1 : chIndex];
-            if (_carets.Any(x => x.CharacterIndex == ch.CharacterIndex)) return;
+                var chIndex = line.Chars.FindInsertionIndex(pos.X);
+                var ch = line.Chars[chIndex == line.Chars.Count ? chIndex - 1 : chIndex];
+                index = ch.CharacterIndex;
+            }
 
-            if(ch.EndX - (ch.Width / 2) > pos.X) {
-                _carets.Add(new Caret() {
-                    CharacterIndex = ch.CharacterIndex,
-                    X = ch.EndX - ch.Width,
-                    Y = line.Y,
-                    Height = line.Height
-                });
+            var alreadyThere = _carets.FirstOrDefault(x => x.CharacterIndex == index);
+            if(alreadyThere != null) { //clicking on a caret that is already there, removes it
+                _carets.Remove(alreadyThere);
             } else {
                 _carets.Add(new Caret() {
-                    CharacterIndex = ch.CharacterIndex,
-                    X = ch.EndX,
-                    Y = line.Y,
-                    Height = line.Height
+                    CharacterIndex = index,
                 });
             }
             InvalidateVisual();
@@ -210,52 +229,60 @@ namespace NotepadSharp {
 
             //Background (makes the control clickable outside of just the text)
             drawingContext.DrawRectangle(Background, new Pen(), new Rect(0, 0, ActualWidth, ActualHeight));
-            if(string.IsNullOrEmpty(Text) || _defaultFormatter == null) return; //not yet loaded, or no text to render
-            
-            //render the text
-            var endOfLine = new Point(0, 0);
-            var nextLine = new Point(0, 0);
-            int charIndex = 0;
-            _visibleLines.Clear();
-            foreach(var ele in (TextFormatter ?? _defaultFormatter).Format(Text)) {
-                var pos = endOfLine;
-                var outOfRoom = false;
-                foreach(var line in WordWrap(charIndex, pos.X, ele)) {
-                    if(pos.Y + line.Height > ActualHeight) {
-                        outOfRoom = true;
-                        break; //We've run out of room for lines, done rendering text
+            if(_defaultFormatter == null) return; //not yet loaded
+
+            if(!string.IsNullOrEmpty(Text)) {
+                //render the text
+                var endOfLine = new Point(0, 0);
+                var nextLine = new Point(0, 0);
+                int charIndex = 0;
+                _visibleLines.Clear();
+                foreach(var ele in (TextFormatter ?? _defaultFormatter).Format(Text)) {
+                    var pos = endOfLine;
+                    var outOfRoom = false;
+                    foreach(var line in WordWrap(charIndex, pos.X, ele)) {
+                        if(pos.Y + line.Height > ActualHeight) {
+                            outOfRoom = true;
+                            break; //We've run out of room for lines, done rendering text
+                        }
+                        line.Y = pos.Y;
+                        _visibleLines.Add(line);
+
+                        drawingContext.DrawText(line.Text, pos);
+                        endOfLine.X = line.Width;
+
+                        if(pos == nextLine) {
+                            endOfLine.Y = nextLine.Y;
+                            nextLine.Y += line.Height;
+                        } else {
+                            var maybeNextLineY = endOfLine.Y + line.Height; //handle change in font size within one line of text
+                            nextLine.Y = nextLine.Y < maybeNextLineY ? maybeNextLineY : nextLine.Y;
+                        }
+
+                        pos = nextLine;
                     }
-                    line.Y = pos.Y;
-                    _visibleLines.Add(line);
-
-                    drawingContext.DrawText(line.Text, pos);
-                    endOfLine.X = line.Width;
-
-                    if(pos == nextLine) {
-                        endOfLine.Y = nextLine.Y;
-                        nextLine.Y += line.Height;
-                    } else {
-                        var maybeNextLineY = endOfLine.Y + line.Height; //handle change in font size within one line of text
-                        nextLine.Y = nextLine.Y < maybeNextLineY ? maybeNextLineY : nextLine.Y;
-                    }
-
-                    pos = nextLine;
+                    if(outOfRoom) break;
+                    charIndex = ele.Text.Length - 1;
                 }
-                if (outOfRoom) break;
-                charIndex = ele.Text.Length - 1;
             }
 
+            //render the carets
             if(_showCarets) {
                 var lineIndex = 0;
                 foreach(var caret in _carets) {
-                    for(; lineIndex < _visibleLines.Count; ++lineIndex) {
-                        var line = _visibleLines[lineIndex];
-                        var ch = line.Chars.FirstOrDefault(x => x.CharacterIndex == caret.CharacterIndex);
-                        if(ch != null) {
-                            caret.X = ch.EndX;
-                            caret.Y = line.Y;
-                            caret.Height = line.Height;
-                            break;
+                    if(caret.CharacterIndex < 0) {
+                        caret.X = 0;
+                        if(caret.Height == 0) caret.Height = FontSize * 2; //TODO:: Caret size?
+                    } else {
+                        for(; lineIndex < _visibleLines.Count; ++lineIndex) {
+                            var line = _visibleLines[lineIndex];
+                            var ch = line.Chars.FirstOrDefault(x => x.CharacterIndex == caret.CharacterIndex);
+                            if(ch != null) {
+                                caret.X = ch.EndX;
+                                caret.Y = line.Y;
+                                caret.Height = line.Height;
+                                break;
+                            }
                         }
                     }
 

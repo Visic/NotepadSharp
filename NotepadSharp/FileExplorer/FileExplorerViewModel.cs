@@ -136,7 +136,7 @@ namespace NotepadSharp {
         //Return all currently visible items
         private IEnumerable<FileSystemEntityViewModel> GetItems(FileSystemEntityViewModel fse) {
             var result = new[] { fse };
-            if(fse is FileViewModel) return result;
+            if(fse is FileViewModel || fse is ErrorItemViewModel) return result;
             var dvm = (DirectoryViewModel)fse;
             if(!dvm.IsExpanded.Value) return result;
             var children = dvm.Items.Value.SelectMany(x => GetItems(x));
