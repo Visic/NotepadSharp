@@ -43,13 +43,17 @@ namespace NotepadSharp {
             }
         }
 
-        public class Caret : IComparable {
-            int _lineRelativeCharacterIndex;
+        public class Caret {
             OrderedList<Line> _visibleLines;
+            Func<bool> _scrollUpOneLine, _scrollDownOneLine;
 
-            public Caret(Tuple<int, int> lineAndCharIndicies, OrderedList<Line> visibleLines) : this(lineAndCharIndicies.Item1, lineAndCharIndicies.Item2, visibleLines) { }
-            public Caret(int visibileLineIndex, int charIndex, OrderedList<Line> visibleLines) {
-                VisibileLineIndex = visibileLineIndex;
+            public Caret(Tuple<int, int> lineAndCharIndicies, OrderedList<Line> visibleLines, Func<bool> scrollUpOneLine, Func<bool> scrollDownOneLine) 
+                : this(lineAndCharIndicies.Item1, lineAndCharIndicies.Item2, visibleLines, scrollUpOneLine, scrollDownOneLine) { }
+
+            public Caret(int visibileLineIndex, int charIndex, OrderedList<Line> visibleLines, Func<bool> scrollUpOneLine, Func<bool> scrollDownOneLine) {
+                VisibileLineIndex = visibileLineIndex < 0 ? 0 : visibileLineIndex;
+                _scrollUpOneLine = scrollUpOneLine;
+                _scrollDownOneLine = scrollDownOneLine;
                 _lineRelativeCharacterIndex = charIndex;
                 _visibleLines = visibleLines;
             }
@@ -57,82 +61,83 @@ namespace NotepadSharp {
             public int VisibileLineIndex { get; set; }
             public Brush Brush { get; set; } = Brushes.Green;
 
-            public int CompareTo(object obj) {
-                var other = (Caret)obj;
-                if(other.VisibileLineIndex < VisibileLineIndex) return 1;
-                if(other.VisibileLineIndex > VisibileLineIndex) return -1;
-                return _lineRelativeCharacterIndex.CompareTo(other.GetLineRelativeCharacterIndex());
-            }
-
-            public int GetLineRelativeCharacterIndex() {
-                return _lineRelativeCharacterIndex;
+            int _lineRelativeCharacterIndex;
+            public int LineRelativeCharacterIndex {
+                get {
+                    //Because of the way scrolling down works with _visibleLines (lazily updated on Render)
+                    //our index might be past the end of the line if we just called [MoveDown]
+                    //In addition, this approach simplifies MoveDown and MoveUp
+                    if(_visibleLines.Count > 0) {
+                        var lineLength = _visibleLines[VisibileLineIndex].Chars.Count;
+                        if(_lineRelativeCharacterIndex > lineLength - 1) return lineLength - 1;
+                    }
+                    return _lineRelativeCharacterIndex;
+                }
+                set { _lineRelativeCharacterIndex = value; }
             }
 
             public int GetAbsoluteCharacterIndex() {
-                return _visibleLines[VisibileLineIndex].Chars[0].AbsoluteCharacterIndex + GetLineRelativeCharacterIndex();
+                if (_visibleLines.Count == 0) return -1;
+                return _visibleLines[VisibileLineIndex].Chars[0].AbsoluteCharacterIndex + LineRelativeCharacterIndex;
             }
 
             public void MoveLeft() {
-                if (_lineRelativeCharacterIndex == 0) {
-                    if (VisibileLineIndex == 0) return;
-                    --VisibileLineIndex;
-                    _lineRelativeCharacterIndex = _visibleLines[VisibileLineIndex].Chars.Count - 1;
+                if (_lineRelativeCharacterIndex == -1) {
+                    if(VisibileLineIndex == 0) {
+                        if(_scrollUpOneLine()) _lineRelativeCharacterIndex = _visibleLines[VisibileLineIndex].Chars.Count - 1;
+                    } else {
+                        --VisibileLineIndex;
+                        _lineRelativeCharacterIndex = _visibleLines[VisibileLineIndex].Chars.Count - 1;
+                    }
                 } else {
                     --_lineRelativeCharacterIndex;
                 }
             }
 
             public void MoveRight() {
-                if (_lineRelativeCharacterIndex == _visibleLines[VisibileLineIndex].Chars.Count - 1) {
-                    if (VisibileLineIndex == _visibleLines.Count - 1) return;
-                    ++VisibileLineIndex;
-                    _lineRelativeCharacterIndex = 0;
+                if (_visibleLines.Count > 0 && _lineRelativeCharacterIndex == _visibleLines[VisibileLineIndex].Chars.Count - 1) {
+                    if(VisibileLineIndex == _visibleLines.Count - 1) {
+                        if(_scrollDownOneLine()) _lineRelativeCharacterIndex = -1;
+                    } else {
+                        _lineRelativeCharacterIndex = -1;
+                        ++VisibileLineIndex;
+                    }
                 } else {
                     ++_lineRelativeCharacterIndex;
                 }
             }
 
-            public void MoveUp(Func<Point, Tuple<int, int>> getIndiciesFromPos, Action scrollUpOneLine) {
+            public void MoveUp() {
                 if(VisibileLineIndex == 0) {
-                    scrollUpOneLine();
-                    return;
+                    _scrollUpOneLine();
+                } else {
+                    --VisibileLineIndex;
                 }
-
-                var ch = _visibleLines[VisibileLineIndex].Chars[_lineRelativeCharacterIndex];
-                var newLine = _visibleLines[VisibileLineIndex - 1];
-
-                var indicies = getIndiciesFromPos(new Point(ch.EndX, newLine.Y));
-                VisibileLineIndex = indicies.Item1;
-                _lineRelativeCharacterIndex = indicies.Item2;
             }
 
-            public void MoveDown(Func<Point, Tuple<int, int>> getIndiciesFromPos, Action scrollDownOneLine) {
+            public void MoveDown() {
                 if(VisibileLineIndex == _visibleLines.Count - 1) {
-                    scrollDownOneLine();
-                    return;
+                    _scrollDownOneLine();
+                } else {
+                    ++VisibileLineIndex;
                 }
-
-                var ch = _visibleLines[VisibileLineIndex].Chars[_lineRelativeCharacterIndex];
-                var newLine = _visibleLines[VisibileLineIndex + 1];
-
-                var indicies = getIndiciesFromPos(new Point(ch.EndX, newLine.Y));
-                VisibileLineIndex = indicies.Item1;
-                _lineRelativeCharacterIndex = indicies.Item2;
             }
         }
 
         DispatcherTimer _blinkTimer = new DispatcherTimer();
-        OrderedList<Caret> _carets = new OrderedList<Caret>();
         KeyPressHandler _keyPressHandler;
         ITextFormatter _defaultFormatter;
         Stack<Line> _linesBeforeVisible = new Stack<Line>(); //lines which have been scrolled out of view
         OrderedList<Line> _visibleLines = new OrderedList<Line>();
-        bool _showCarets = false;
+        Caret _caret;
+        double _defaultCaretHeight;
+        bool _showCaret = false;
 
         public FormattedTextbox() {
             FocusVisualStyle = null;
             Background = Brushes.Transparent;
             Cursor = Cursors.IBeam;
+            _caret = new Caret(0, 0, _visibleLines, ScrollUpOneLine, ScrollDownOneLine);
             _keyPressHandler = new KeyPressHandler(KeyPressed);
             Loaded += FormattedTextbox_Loaded;
 
@@ -143,25 +148,29 @@ namespace NotepadSharp {
             //Text = Constants.LoremIpsum;
             //Text = new string('W', 5000000);
             //Text = string.Join("", Enumerable.Repeat("abcdefghijklmnopqrstuvwxyz", 50).ToArray());
-            Text = string.Join(" --- ", Enumerable.Repeat(Constants.LoremIpsum, 50).ToArray());
+            //Text = string.Join(" --- ", Enumerable.Repeat(Constants.LoremIpsum, 50).ToArray());
             //Text = string.Join(" --- ", Enumerable.Repeat(Constants.LoremIpsum, 4).ToArray());
             //Text = string.Join(" --- ", Enumerable.Repeat(Constants.LoremIpsum, 5000).ToArray());
             //Text = new string('A', 100) + "abcdefghi";
         }
 
-        private void ScrollDownOneLine() {
+        private bool ScrollDownOneLine() {
             //if there is more text after what is visible, scroll down a line
             if(_visibleLines.Count > 0 && _visibleLines.Last().Chars.Last().AbsoluteCharacterIndex < Text.Length - 1) {
                 _linesBeforeVisible.Push(_visibleLines[0]);
                 _visibleLines.RemoveRange(0, 1);
+                return true;
             }
+            return false;
         }
 
-        private void ScrollUpOneLine() {
+        private bool ScrollUpOneLine() {
             //if there is more text after what is visible, scroll down a line
             if(_linesBeforeVisible.Count > 0) {
                 _visibleLines.Add(_linesBeforeVisible.Pop());
+                return true;
             }
+            return false;
         }
 
         private bool KeyPressed(IReadOnlyList<Key> arg) {
@@ -170,61 +179,45 @@ namespace NotepadSharp {
             if(arg.Count == 1) {
                 var newText = Text ?? "";
                 bool modified = false, caretsChanged = false;
-                for(int i = 0; i < _carets.Count; ++i) {
-                    var caret = _carets[i];
-                    var absoluteCharacterIndex = caret.GetAbsoluteCharacterIndex();
-                    if(arg[0] == Key.Back) {
-                        if(string.IsNullOrEmpty(newText)) break;
-                        if(caret.GetLineRelativeCharacterIndex() < 0) continue;
-
-                        //Note:: We have to subtract i, because we have offset [absoluteCharacterIndex] by already removing i characters
-                        newText = newText.Remove(absoluteCharacterIndex - i, 1);
-                        caret.MoveLeft();
-                        modified = true;
-                    } else if(arg[0] == Key.Delete) {
-                        if(string.IsNullOrEmpty(newText)) break;
-                        if(caret.GetLineRelativeCharacterIndex() == newText.Length - 1) continue;
-
-                        //Note:: We have to subtract i, because we have offset [absoluteCharacterIndex] by already removing i characters
-                        newText = newText.Remove(absoluteCharacterIndex + 1 - i, 1);
-                        modified = true;
-                    } else if(arg[0] == Key.Left || arg[0] == Key.Right || arg[0] == Key.Up || arg[0] == Key.Down) {
-                        if(string.IsNullOrEmpty(newText)) break;
-                        switch(arg[0]) {
-                            case Key.Left:
-                                caret.MoveLeft();
-                                break;
-                            case Key.Right:
-                                caret.MoveRight();
-                                break;
-                            case Key.Up:
-                                caret.MoveUp(GetLineAndCharIndex, ScrollUpOneLine);
-                                break;
-                            case Key.Down:
-                                caret.MoveDown(GetLineAndCharIndex, ScrollDownOneLine);
-                                break;
-                        }
-                        caretsChanged = true;
-                    } else {
-                        var maybeCh = KeyHelper.GetCharForKey(arg.First());
-                        if(maybeCh.IsNone) break; //a character we don't handle
-                        //Note:: We have to add i, because we have offset [absoluteCharacterIndex] by already adding i characters
-                        newText = newText.Insert(absoluteCharacterIndex + 1 + i, "" + maybeCh.Value);
-                        caret.MoveRight();
+                var absoluteCharacterIndex = _caret.GetAbsoluteCharacterIndex();
+                if(arg[0] == Key.Back) {
+                    if(_caret.LineRelativeCharacterIndex >= 0) {
+                        newText = newText.Remove(absoluteCharacterIndex, 1);
+                        --_caret.LineRelativeCharacterIndex;
                         modified = true;
                     }
-
-                    if(i + 1 < _carets.Count) {
-                        //If this caret is in the same position as the one after it, remove the next caret
-                        if(caret.CompareTo(_carets[i + 1]) == 0) {
-                            _carets.Remove(_carets[i + 1]);
-                        }
+                } else if(arg[0] == Key.Delete) {
+                    if(_caret.LineRelativeCharacterIndex != newText.Length - 1) {
+                        newText = newText.Remove(absoluteCharacterIndex + 1, 1);
+                        modified = true;
                     }
+                } else if(arg[0] == Key.Left || arg[0] == Key.Right || arg[0] == Key.Up || arg[0] == Key.Down) {
+                    switch(arg[0]) {
+                        case Key.Left:
+                            _caret.MoveLeft();
+                            break;
+                        case Key.Right:
+                            _caret.MoveRight();
+                            break;
+                        case Key.Up:
+                            _caret.MoveUp();
+                            break;
+                        case Key.Down:
+                            _caret.MoveDown();
+                            break;
+                    }
+                    caretsChanged = true;
+                } else {
+                    KeyHelper.GetCharForKey(arg.First()).Apply(x => {
+                        newText = newText.Insert(absoluteCharacterIndex + 1, "" + x);
+                        ++_caret.LineRelativeCharacterIndex;
+                        modified = true;
+                    });
                 }
                 
                 if(modified) Text = newText;
                 if(caretsChanged) {
-                    _showCarets = true;
+                    _showCaret = true;
                     InvalidateVisual();
                 }
 
@@ -245,22 +238,8 @@ namespace NotepadSharp {
             return Tuple.Create(lineIndex, charIndex);
         }
 
-        private void AddCaret(Point pos) {
-            var indicies = GetLineAndCharIndex(pos);
-            var newCaret = new Caret(indicies, _visibleLines);
-            var alreadyThere = _carets.FirstOrDefault(x => x.CompareTo(newCaret) == 0);
-            if(alreadyThere == null) _carets.Add(newCaret);
-        }
-
-        private bool RemoveCaret(Point pos) {
-            var indicies = GetLineAndCharIndex(pos);
-            var newCaret = new Caret(indicies, _visibleLines);
-            var alreadyThere = _carets.FirstOrDefault(x => x.CompareTo(newCaret) == 0);
-            if(alreadyThere != null) {
-                _carets.Remove(alreadyThere);
-                return true;
-            }
-            return false;
+        private void PutCaret(Point pos) {
+            _caret = new Caret(GetLineAndCharIndex(pos), _visibleLines, ScrollUpOneLine, ScrollDownOneLine);
         }
 
         #region Dependency Properties
@@ -301,6 +280,7 @@ namespace NotepadSharp {
             ctrl.TextFormatter.DefaultFontStyle = ctrl.TextFormatter?.DefaultFontStyle ?? ctrl.FontStyle;
             ctrl.TextFormatter.DefaultFontWeight = ctrl.TextFormatter?.DefaultFontWeight ?? ctrl.FontWeight;
             ctrl.TextFormatter.DefaultFontColor = ctrl.TextFormatter?.DefaultFontColor ?? ctrl.Foreground;
+            ctrl._defaultCaretHeight = ctrl.TextFormatter.Format("W").First().GetFormattedText().Height;
             ctrl.InvalidateVisual();
         }
         #endregion
@@ -308,11 +288,7 @@ namespace NotepadSharp {
         protected override void OnMouseDown(MouseButtonEventArgs e) {
             base.OnMouseDown(e);
             Focus();
-            if(!Keyboard.IsKeyDown(Key.LeftCtrl)) _carets.Clear();
-            var pos = e.GetPosition(this);
-
-            //remove caret if there is one, otherwise just add a new one
-            if (!RemoveCaret(pos)) AddCaret(pos);
+            PutCaret(e.GetPosition(this));
             InvalidateVisual();
         }
 
@@ -377,19 +353,19 @@ namespace NotepadSharp {
                 }
             }
 
-            //render the carets
-            if(_showCarets) {
-                foreach(var caret in _carets) {
-                    //if(caret.CharacterIndex < 0) {
-                    //    caret.X = 0;
-                    //    if(caret.Height == 0) caret.Height = FontSize * 2; //TODO:: Caret size?
-                    //} else {
-                            var line = _visibleLines[caret.VisibileLineIndex];
-                            var ch = line.Chars[caret.GetLineRelativeCharacterIndex()];
-                    //}
+            //render the caret
+            if(_showCaret) {
+                double x = 0, y = 0, height = _defaultCaretHeight;
+                if(_visibleLines.Count > 0) {
+                    var line = _visibleLines[_caret.VisibileLineIndex];
+                    y = line.Y;
+                    height = line.Height;
 
-                    drawingContext.DrawLine(new Pen(caret.Brush, 0.75), new Point(ch.EndX, line.Y), new Point(ch.EndX, line.Y + line.Height));
+                    if(_caret.LineRelativeCharacterIndex >= 0) {
+                        x = line.Chars[_caret.LineRelativeCharacterIndex].EndX;
+                    }
                 }
+                drawingContext.DrawLine(new Pen(_caret.Brush, 0.75), new Point(x, y), new Point(x, y + height));
             }
         }
 
@@ -454,17 +430,14 @@ namespace NotepadSharp {
                 DefaultFontWeight = FontWeight,
                 DefaultFontColor = Foreground
             };
+            _defaultCaretHeight = _defaultFormatter.Format("W").First().GetFormattedText().Height;
             if(TextFormatter == null) InvalidateVisual();
         }
 
         private void _blinkTimer_Tick(object sender, EventArgs e) {
             if(!HasEffectiveKeyboardFocus) return;
-            if(_carets.Count() > 0) {
-                _showCarets = !_showCarets;
-                InvalidateVisual();
-            } else {
-                _showCarets = false;
-            }
+            _showCaret = !_showCaret;
+            InvalidateVisual();
         }
     }
 }

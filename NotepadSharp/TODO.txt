@@ -10,6 +10,7 @@
 -Syntax highlighting
 -Auto-Completion
 -File comparison for "Dirty" files
+-Multi-edit
 
 --In progress
     --Bug fix
