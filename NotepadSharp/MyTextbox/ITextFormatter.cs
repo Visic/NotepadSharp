@@ -10,18 +10,17 @@ using Utility;
 
 namespace NotepadSharp {
     public class TextWithFormatting {
-        public TextWithFormatting(string text, FontFamily font, FontStyle style, FontWeight weight, FontStretch strech, Brush fontColor, double size) {
+        public TextWithFormatting(string text, FontFamily font, FontStyle style, FontWeight weight, FontStretch strech, Brush fontColor) {
             Text = text;
             FontFamily = font;
             FontStyle = style;
             FontWeight = weight;
             FontStretch = strech;
             FontColor = fontColor;
-            FontSize = size;
         }
 
         public TextWithFormatting(string text, TextWithFormatting other) 
-            : this(text, other.FontFamily, other.FontStyle, other.FontWeight, other.FontStretch, other.FontColor, other.FontSize) 
+            : this(text, other.FontFamily, other.FontStyle, other.FontWeight, other.FontStretch, other.FontColor) 
         {
         }
 
@@ -31,9 +30,8 @@ namespace NotepadSharp {
         public FontWeight FontWeight { get; }
         public FontStretch FontStretch { get; }
         public Brush FontColor { get; }
-        public double FontSize { get; }
 
-        public FormattedText GetFormattedText() {
+        public FormattedText GetFormattedText(double fontSize) {
             return new FormattedText(
                 Text, 
                 CultureInfo.CurrentCulture, 
@@ -44,14 +42,13 @@ namespace NotepadSharp {
                     FontWeight,
                     FontStretch
                 ),
-                FontSize,
+                fontSize,
                 FontColor
             );
         }
 
         public bool SizeFactorsAreEqual(TextWithFormatting other) {
-            return FontSize == other.FontSize &&
-                   FontFamily == other.FontFamily &&
+            return FontFamily == other.FontFamily &&
                    FontStyle == other.FontStyle &&
                    FontWeight == other.FontWeight &&
                    FontStretch == other.FontStretch;
@@ -64,7 +61,6 @@ namespace NotepadSharp {
         FontWeight? DefaultFontWeight { get; set; }
         FontStretch? DefaultFontStretch { get; set; }
         Brush DefaultFontColor { get; set; }
-        double? DefaultFontSize { get; set; }
         IEnumerable<TextWithFormatting> Format(string text);
     }
 }

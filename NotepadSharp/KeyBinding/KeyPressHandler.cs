@@ -7,15 +7,16 @@ using WPFUtility;
 namespace NotepadSharp {
     public class KeyPressHandler {
         static HashSet<Key> _pressedKeys = new HashSet<Key>();
-        protected Func<IReadOnlyList<Key>, bool> _keyPressedCallback, _keyReleasedCallback;
+        protected Func<IReadOnlyList<Key>, bool> _keyPressedCallback;
+        protected Func<IReadOnlyList<Key>, IReadOnlyList<Key>, bool> _keyReleasedCallback;
 
         public KeyPressHandler(Func<IReadOnlyList<Key>, bool> keyPressedCallback = null, 
-                               Func<IReadOnlyList<Key>, bool> keyReleasedCallback = null, 
+                               Func<IReadOnlyList<Key>, IReadOnlyList<Key>, bool> keyReleasedCallback = null, 
                                Func<object, bool> keyDownCanExecute = null, 
                                Func<object, bool> keyUpCanExecute = null) 
         {
             _keyPressedCallback = keyPressedCallback ?? new Func<IReadOnlyList<Key>, bool>(x => false);
-            _keyReleasedCallback = keyReleasedCallback ?? new Func<IReadOnlyList<Key>, bool>(x => false);
+            _keyReleasedCallback = keyReleasedCallback ?? new Func<IReadOnlyList<Key>, IReadOnlyList<Key>, bool>((x, y) => false);
             keyDownCanExecute = keyDownCanExecute ?? new Func<object, bool>(x => true);
             keyUpCanExecute = keyUpCanExecute ?? new Func<object, bool>(x => true);
 
@@ -27,13 +28,14 @@ namespace NotepadSharp {
         public ICommand KeyUpCommand { get; }
 
         public void ClearPressedKeys() {
+            _keyReleasedCallback(new List<Key>(), _pressedKeys.ToList());
             _pressedKeys.Clear();
-            _keyReleasedCallback(_pressedKeys.ToList());
         }
 
         private void KeyUp(KeyEventArgs e) {
-            _pressedKeys.Remove(GetRelevantKey(e));
-            e.Handled = _keyReleasedCallback(_pressedKeys.ToList());
+            var releasedKey = GetRelevantKey(e);
+            _pressedKeys.Remove(releasedKey);
+            e.Handled = _keyReleasedCallback(_pressedKeys.ToList(), new List<Key>() { releasedKey });
         }
         
         private void KeyDown(KeyEventArgs e) {

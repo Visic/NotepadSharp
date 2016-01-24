@@ -15,8 +15,8 @@ using WPFUtility;
 namespace NotepadSharp {
     public class FormattedTextbox : Control {
         public class Character : IComparable {
+            public double StartX { get; set; }
             public double EndX { get; set; }
-            public double Width { get; set; }
             public char Ch { get; set; }
             public int AbsoluteCharacterIndex { get; set; }
 
@@ -64,9 +64,7 @@ namespace NotepadSharp {
             int _lineRelativeCharacterIndex;
             public int LineRelativeCharacterIndex {
                 get {
-                    //Because of the way scrolling down works with _visibleLines (lazily updated on Render)
-                    //our index might be past the end of the line if we just called [MoveDown]
-                    //In addition, this approach simplifies MoveDown and MoveUp
+                    //this approach simplifies MoveDown and MoveUp
                     if(_visibleLines.Count > 0) {
                         var lineLength = _visibleLines[VisibileLineIndex].Chars.Count;
                         if(_lineRelativeCharacterIndex > lineLength - 1) return lineLength - 1;
@@ -127,10 +125,10 @@ namespace NotepadSharp {
         DispatcherTimer _blinkTimer = new DispatcherTimer();
         KeyPressHandler _keyPressHandler;
         ITextFormatter _defaultFormatter;
-        Stack<Line> _linesBeforeVisible = new Stack<Line>(); //lines which have been scrolled out of view
+        Stack<Line> _linesBeforeVisible = new Stack<Line>(); //lines which have been scrolled out of view, TODO:: Remove the need for this
         OrderedList<Line> _visibleLines = new OrderedList<Line>();
         Caret _caret;
-        double _defaultCaretHeight;
+        double _defaultCaretHeight, _visibleAreaHeight;
         bool _showCaret = false;
 
         public FormattedTextbox() {
@@ -138,7 +136,7 @@ namespace NotepadSharp {
             Background = Brushes.Transparent;
             Cursor = Cursors.IBeam;
             _caret = new Caret(0, 0, _visibleLines, ScrollUpOneLine, ScrollDownOneLine);
-            _keyPressHandler = new KeyPressHandler(KeyPressed);
+            _keyPressHandler = new KeyPressHandler(KeyPressed, KeyReleased);
             Loaded += FormattedTextbox_Loaded;
 
             _blinkTimer.Interval = TimeSpan.FromMilliseconds(400);
@@ -148,10 +146,125 @@ namespace NotepadSharp {
             //Text = Constants.LoremIpsum;
             //Text = new string('W', 5000000);
             //Text = string.Join("", Enumerable.Repeat("abcdefghijklmnopqrstuvwxyz", 50).ToArray());
-            //Text = string.Join(" --- ", Enumerable.Repeat(Constants.LoremIpsum, 50).ToArray());
+            Text = string.Join(" --- ", Enumerable.Repeat(Constants.LoremIpsum, 50).ToArray());
             //Text = string.Join(" --- ", Enumerable.Repeat(Constants.LoremIpsum, 4).ToArray());
             //Text = string.Join(" --- ", Enumerable.Repeat(Constants.LoremIpsum, 5000).ToArray());
             //Text = new string('A', 100) + "abcdefghi";
+        }
+
+        #region Dependency Properties
+        public static readonly DependencyProperty TextProperty = DependencyProperty.Register(
+            "Text",
+            typeof(string),
+            typeof(FormattedTextbox),
+            new FrameworkPropertyMetadata(TextChanged)
+        );
+
+        public string Text {
+            get { return (string)GetValue(TextProperty); }
+            set { SetValue(TextProperty, value); }
+        }
+
+        private static void TextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var ctrl = (FormattedTextbox)d;
+            ctrl.InvalidateMeasure();
+            ctrl.UpdateVisibleText();
+            ctrl.InvalidateVisual();
+        }
+
+        public static readonly DependencyProperty TextFormatterProperty = DependencyProperty.Register(
+            "TextFormatter",
+            typeof(ITextFormatter),
+            typeof(FormattedTextbox),
+            new FrameworkPropertyMetadata(TextFormatterChanged)
+        );
+
+        public ITextFormatter TextFormatter {
+            get { return (ITextFormatter)GetValue(TextFormatterProperty); }
+            set { SetValue(TextFormatterProperty, value); }
+        }
+
+        private static void TextFormatterChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var ctrl = (FormattedTextbox)d;
+            ctrl.TextFormatter.DefaultFontFamily = ctrl.TextFormatter?.DefaultFontFamily ?? ctrl.FontFamily;
+            ctrl.TextFormatter.DefaultFontStretch = ctrl.TextFormatter?.DefaultFontStretch ?? ctrl.FontStretch;
+            ctrl.TextFormatter.DefaultFontStyle = ctrl.TextFormatter?.DefaultFontStyle ?? ctrl.FontStyle;
+            ctrl.TextFormatter.DefaultFontWeight = ctrl.TextFormatter?.DefaultFontWeight ?? ctrl.FontWeight;
+            ctrl.TextFormatter.DefaultFontColor = ctrl.TextFormatter?.DefaultFontColor ?? ctrl.Foreground;
+            ctrl._defaultCaretHeight = ctrl.TextFormatter.Format("W").First().GetFormattedText(ctrl.FontSize).Height;
+            ctrl.InvalidateMeasure();
+            ctrl.UpdateVisibleText();
+            ctrl.InvalidateVisual();
+        }
+        #endregion
+
+        protected override void OnMouseDown(MouseButtonEventArgs e) {
+            base.OnMouseDown(e);
+            Focus();
+            _caret = new Caret(GetLineAndCharIndex(e.GetPosition(this)), _visibleLines, ScrollUpOneLine, ScrollDownOneLine);
+            InvalidateVisual();
+        }
+
+        protected override void OnPreviewKeyUp(KeyEventArgs e) {
+            base.OnPreviewKeyUp(e);
+            if(_keyPressHandler.KeyUpCommand.CanExecute(e)) _keyPressHandler.KeyUpCommand.Execute(e);
+        }
+
+        protected override void OnPreviewKeyDown(KeyEventArgs e) {
+            base.OnPreviewKeyDown(e);
+            if(_keyPressHandler.KeyDownCommand.CanExecute(e)) _keyPressHandler.KeyDownCommand.Execute(e);
+            if(GetRelevantKey(e) != Key.LeftAlt && _keyPressHandler.KeyUpCommand.CanExecute(e)) _keyPressHandler.KeyUpCommand.Execute(e);
+        }
+
+        private Key GetRelevantKey(KeyEventArgs e) {
+            return e.Key == Key.System ? e.SystemKey : e.Key;
+        }
+
+        protected override Size ArrangeOverride(Size arrangeBounds) {
+            if(_visibleAreaHeight == 0) {
+                _visibleAreaHeight = arrangeBounds.Height;
+                VerticalAlignment = VerticalAlignment.Top; //vertically align top so that text shows up
+            }
+
+            return new Size(arrangeBounds.Width, _visibleAreaHeight);
+        }
+
+        protected override Size MeasureOverride(Size constraint) {
+            if (_visibleLines.Count > 0) {
+                var height = _visibleLines[0].Height * (Text.Length / (double)_visibleLines[0].Chars.Count);
+                return new Size(constraint.Width, height);
+            }
+ 
+            return base.MeasureOverride(constraint);
+        }
+
+        //TODO:: Sometimes word wrapping throws off our caret, need to update it appropriately
+        //TODO:: Optimize by not calling the parser unnecessarily (or let the parser be the one to take care of that by caching results)
+        protected override void OnRender(DrawingContext drawingContext) {
+            base.OnRender(drawingContext);
+
+            //Background (makes the control clickable outside of just the text)
+            drawingContext.DrawRectangle(Background, new Pen(), new Rect(0, 0, ActualWidth, ActualHeight));
+
+            var sv = (ScrollViewer)Parent;
+            foreach(var line in _visibleLines) {
+                drawingContext.DrawText(line.Text, new Point(line.Chars[0].StartX, line.Y + sv.VerticalOffset));
+            }
+
+            //render the caret
+            if(_showCaret) {
+                double x = 0, y = 0, height = _defaultCaretHeight;
+                if(_visibleLines.Count > 0) {
+                    var line = _visibleLines[_caret.VisibileLineIndex];
+                    y = line.Y;
+                    height = line.Height;
+
+                    if(_caret.LineRelativeCharacterIndex >= 0) {
+                        x = line.Chars[_caret.LineRelativeCharacterIndex].EndX;
+                    }
+                }
+                drawingContext.DrawLine(new Pen(_caret.Brush, 0.75), new Point(x, y), new Point(x, y + height));
+            }
         }
 
         private bool ScrollDownOneLine() {
@@ -159,6 +272,12 @@ namespace NotepadSharp {
             if(_visibleLines.Count > 0 && _visibleLines.Last().Chars.Last().AbsoluteCharacterIndex < Text.Length - 1) {
                 _linesBeforeVisible.Push(_visibleLines[0]);
                 _visibleLines.RemoveRange(0, 1);
+                UpdateVisibleText();
+                if(Parent is ScrollViewer) {
+                    var sv = (ScrollViewer)Parent;
+                    sv.ScrollToVerticalOffset(_visibleLines[0].Height);
+                    sv.UpdateLayout();
+                }
                 return true;
             }
             return false;
@@ -168,9 +287,15 @@ namespace NotepadSharp {
             //if there is more text after what is visible, scroll down a line
             if(_linesBeforeVisible.Count > 0) {
                 _visibleLines.Add(_linesBeforeVisible.Pop());
+                UpdateVisibleText();
                 return true;
             }
             return false;
+        }
+
+        private bool KeyReleased(IReadOnlyList<Key> pressedKeys, IReadOnlyList<Key> releasedKeys) {
+            //handle key released for navigation keys, otherwise the scroll viewer will move
+            return releasedKeys.Intersect(new[] { Key.Left, Key.Right, Key.Up, Key.Down }).Count() > 0;
         }
 
         private bool KeyPressed(IReadOnlyList<Key> arg) {
@@ -233,109 +358,26 @@ namespace NotepadSharp {
             int lineIndex = -1, charIndex = -1;
             if(_visibleLines.Count > 0) {
                 lineIndex = _visibleLines.FindInsertionIndex(pos.Y) - 1;
-                charIndex = _visibleLines[lineIndex].Chars.FindInsertionIndex(pos.X);
+                charIndex = _visibleLines[lineIndex].Chars.FindInsertionIndex(pos.X) - 1;
             }
             return Tuple.Create(lineIndex, charIndex);
         }
 
-        private void PutCaret(Point pos) {
-            _caret = new Caret(GetLineAndCharIndex(pos), _visibleLines, ScrollUpOneLine, ScrollDownOneLine);
-        }
-
-        #region Dependency Properties
-        public static readonly DependencyProperty TextProperty = DependencyProperty.Register(
-            "Text",
-            typeof(string),
-            typeof(FormattedTextbox),
-            new FrameworkPropertyMetadata(TextChanged)
-        );
-
-        public string Text {
-            get { return (string)GetValue(TextProperty); }
-            set { SetValue(TextProperty, value); }
-        }
-
-        private static void TextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            var ctrl = (FormattedTextbox)d;
-            ctrl.InvalidateVisual();
-        }
-
-        public static readonly DependencyProperty TextFormatterProperty = DependencyProperty.Register(
-            "TextFormatter",
-            typeof(ITextFormatter),
-            typeof(FormattedTextbox),
-            new FrameworkPropertyMetadata(TextFormatterChanged)
-        );
-
-        public ITextFormatter TextFormatter {
-            get { return (ITextFormatter)GetValue(TextFormatterProperty); }
-            set { SetValue(TextFormatterProperty, value); }
-        }
-
-        private static void TextFormatterChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            var ctrl = (FormattedTextbox)d;
-            ctrl.TextFormatter.DefaultFontFamily = ctrl.TextFormatter?.DefaultFontFamily ?? ctrl.FontFamily;
-            ctrl.TextFormatter.DefaultFontSize = ctrl.TextFormatter?.DefaultFontSize ?? ctrl.FontSize;
-            ctrl.TextFormatter.DefaultFontStretch = ctrl.TextFormatter?.DefaultFontStretch ?? ctrl.FontStretch;
-            ctrl.TextFormatter.DefaultFontStyle = ctrl.TextFormatter?.DefaultFontStyle ?? ctrl.FontStyle;
-            ctrl.TextFormatter.DefaultFontWeight = ctrl.TextFormatter?.DefaultFontWeight ?? ctrl.FontWeight;
-            ctrl.TextFormatter.DefaultFontColor = ctrl.TextFormatter?.DefaultFontColor ?? ctrl.Foreground;
-            ctrl._defaultCaretHeight = ctrl.TextFormatter.Format("W").First().GetFormattedText().Height;
-            ctrl.InvalidateVisual();
-        }
-        #endregion
-
-        protected override void OnMouseDown(MouseButtonEventArgs e) {
-            base.OnMouseDown(e);
-            Focus();
-            PutCaret(e.GetPosition(this));
-            InvalidateVisual();
-        }
-
-        protected override void OnPreviewKeyUp(KeyEventArgs e) {
-            base.OnPreviewKeyUp(e);
-            if(_keyPressHandler.KeyUpCommand.CanExecute(e)) _keyPressHandler.KeyUpCommand.Execute(e);
-        }
-
-        protected override void OnPreviewKeyDown(KeyEventArgs e) {
-            base.OnPreviewKeyDown(e);
-            if(_keyPressHandler.KeyDownCommand.CanExecute(e)) _keyPressHandler.KeyDownCommand.Execute(e);
-            if(GetRelevantKey(e) != Key.LeftAlt && _keyPressHandler.KeyUpCommand.CanExecute(e)) _keyPressHandler.KeyUpCommand.Execute(e);
-        }
-
-        private Key GetRelevantKey(KeyEventArgs e) {
-            return e.Key == Key.System ? e.SystemKey : e.Key;
-        }
-
-        //TODO:: Optimize by not calling the parser unnecessarily (or let the parser be the one to take care of that by caching results)
-        protected override void OnRender(DrawingContext drawingContext) {
-            base.OnRender(drawingContext);
-
-            //Background (makes the control clickable outside of just the text)
-            drawingContext.DrawRectangle(Background, new Pen(), new Rect(0, 0, ActualWidth, ActualHeight));
+        private void UpdateVisibleText() {
             if(_defaultFormatter == null) return; //not yet loaded
 
-            if(!string.IsNullOrEmpty(Text)) {
-                //render the text
-                var endOfLine = new Point(0, 0);
-                var nextLine = new Point(0, 0);
-                int charIndex = _visibleLines.Count > 0 ? _visibleLines[0].Chars[0].AbsoluteCharacterIndex : 0;
-                _visibleLines.Clear();
+            var endOfLine = new Point(0, 0);
+            var nextLine = new Point(0, 0);
+            int charIndex = _visibleLines.Count > 0 ? _visibleLines[0].Chars[0].AbsoluteCharacterIndex : 0;
+            _visibleLines.Clear();
 
-                //Maybe for a scroll bar if I took out the text size in the formatter, we could figure out how many characters fit in a screen, and how many there are total, and guess at
-                //how many lines/whatever we need for the scrollbar
+            if(!string.IsNullOrEmpty(Text)) {
                 foreach(var ele in (TextFormatter ?? _defaultFormatter).Format(Text.Substring(charIndex))) {
                     var pos = endOfLine;
-                    var outOfRoom = false;
                     foreach(var line in WordWrap(charIndex, pos.X, ele)) {
-                        if(pos.Y + line.Height > ActualHeight) {
-                            outOfRoom = true;
-                            break; //We've run out of room for lines, done rendering text
-                        }
+                        if(pos.Y + line.Height > ActualHeight) return; //We've run out of room for lines, done rendering text
                         line.Y = pos.Y;
                         _visibleLines.Add(line);
-                        
-                        drawingContext.DrawText(line.Text, pos);
                         endOfLine.X = line.Width;
 
                         if(pos == nextLine) {
@@ -348,24 +390,8 @@ namespace NotepadSharp {
 
                         pos = nextLine;
                     }
-                    if(outOfRoom) break;
                     charIndex = ele.Text.Length - 1;
                 }
-            }
-
-            //render the caret
-            if(_showCaret) {
-                double x = 0, y = 0, height = _defaultCaretHeight;
-                if(_visibleLines.Count > 0) {
-                    var line = _visibleLines[_caret.VisibileLineIndex];
-                    y = line.Y;
-                    height = line.Height;
-
-                    if(_caret.LineRelativeCharacterIndex >= 0) {
-                        x = line.Chars[_caret.LineRelativeCharacterIndex].EndX;
-                    }
-                }
-                drawingContext.DrawLine(new Pen(_caret.Brush, 0.75), new Point(x, y), new Point(x, y + height));
             }
         }
 
@@ -378,7 +404,7 @@ namespace NotepadSharp {
             }
 
             return _knownCharSizes.GetOrAdd(ch, () => {
-                var fmtTxt = new TextWithFormatting(ch.ToString(), txt).GetFormattedText();
+                var fmtTxt = new TextWithFormatting(ch.ToString(), txt).GetFormattedText(FontSize);
                 return Tuple.Create(fmtTxt.WidthIncludingTrailingWhitespace, fmtTxt.LineHeight);
             });
         }
@@ -398,8 +424,8 @@ namespace NotepadSharp {
                     remainingWidth -= chDim.Item1;
 
                     if(remainingWidth >= 0) {
+                        line.Chars.Add(new Character() { AbsoluteCharacterIndex = charIndex, Ch = ch, EndX = txtWidth + offsetX + chDim.Item1, StartX = txtWidth + offsetX });
                         txtWidth += chDim.Item1;
-                        line.Chars.Add(new Character() { AbsoluteCharacterIndex = charIndex, Ch = ch, EndX = txtWidth + offsetX, Width = chDim.Item1 });
                         if(ch == ' ' || ch == '\t') lastWhiteSpaceIndex = endIndex;
                         ++endIndex;
                         ++charIndex;
@@ -411,7 +437,7 @@ namespace NotepadSharp {
                     }
                 }
 
-                line.Text = new TextWithFormatting(txt.Text.Substring(startIndex, endIndex - startIndex), txt).GetFormattedText();
+                line.Text = new TextWithFormatting(txt.Text.Substring(startIndex, endIndex - startIndex), txt).GetFormattedText(FontSize);
                 line.Width = txtWidth;
                 line.Height = line.Text.Height;
                 yield return line;
@@ -422,6 +448,11 @@ namespace NotepadSharp {
         }
 
         private void FormattedTextbox_Loaded(object sender, RoutedEventArgs e) {
+            if(Parent is ScrollViewer) {
+                var sv = (ScrollViewer)Parent;
+                sv.ScrollChanged += Sv_ScrollChanged;
+            }
+
             _defaultFormatter = new TextFormatter() {
                 DefaultFontFamily = FontFamily,
                 DefaultFontSize = FontSize,
@@ -430,8 +461,19 @@ namespace NotepadSharp {
                 DefaultFontWeight = FontWeight,
                 DefaultFontColor = Foreground
             };
-            _defaultCaretHeight = _defaultFormatter.Format("W").First().GetFormattedText().Height;
-            if(TextFormatter == null) InvalidateVisual();
+            _defaultCaretHeight = _defaultFormatter.Format("W").First().GetFormattedText(FontSize).Height;
+
+            if(TextFormatter == null) {
+                UpdateVisibleText();
+                InvalidateMeasure();
+                InvalidateArrange();
+                InvalidateVisual();
+            }
+        }
+
+        private void Sv_ScrollChanged(object sender, ScrollChangedEventArgs e) {
+            ScrollDownOneLine(); //TODO:: Scroll down/up far enough
+            InvalidateVisual();
         }
 
         private void _blinkTimer_Tick(object sender, EventArgs e) {

@@ -30,9 +30,9 @@ namespace NotepadSharp {
         }
 
         //returns whether or not we executed the binding
-        private bool KeyReleased(IReadOnlyList<Key> keys) {
+        private bool KeyReleased(IReadOnlyList<Key> pressedKeys, IReadOnlyList<Key> releasedKeys) { //TODO:: Re-evaluate now that I have [releasedKeys]
             var executed = false;
-            var bindings = KeysChanged(keys);
+            var bindings = KeysChanged(pressedKeys);
 
             if (bindings.Item1 != null && bindings.Item1.ExecuteOnKeyUp) {
                 bindings.Item1.Execute(_scriptArgs).Apply(_exceptionHandler);

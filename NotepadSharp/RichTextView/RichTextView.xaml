@@ -10,10 +10,13 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <!-- Note:: When you uncomment this scrollviewer, the textbox won't keep keyboardfocus (or something) -->
-        <!--<ScrollViewer>--> 
-        <local:FormattedTextbox />
-        <!--</ScrollViewer>-->
+        <!--<local:FormattedTextbox FontSize="20" />-->
+        <!--<ScrollViewer Focusable="False">
+            <local:FormattedTextbox VerticalAlignment="Top" FontSize="20" />
+        </ScrollViewer>-->
+        <ScrollViewer Focusable="False">
+            <local:FormattedTextbox FontSize="20" />
+        </ScrollViewer>
         <!--<ScrollViewer VerticalScrollBarVisibility="Auto">
             <local:BindableRichTextBox ApiProvider="{Binding ApiProvider}" 
                                        Style="{StaticResource TextBox_NoBorder}">

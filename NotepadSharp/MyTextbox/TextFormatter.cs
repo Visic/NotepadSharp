@@ -48,9 +48,7 @@ namespace NotepadSharp {
                     DefaultFontStyle.Value,
                     DefaultFontWeight.Value,
                     DefaultFontStretch.Value,
-                    DefaultFontColor,
-                    20
-                    //DefaultFontSize.Value
+                    DefaultFontColor
                 )
             };
         }
