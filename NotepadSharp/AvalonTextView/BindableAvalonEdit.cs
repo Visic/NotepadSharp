@@ -1,29 +1,46 @@
-﻿using System;
+﻿using ICSharpCode.AvalonEdit;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Input;
 
 namespace NotepadSharp {
-    public class BindableRichTextBox : RichTextBox {
+    public class BindableAvalonEdit : TextEditor {
+        public static readonly DependencyProperty Text_Property = DependencyProperty.Register(
+            "Text_",
+            typeof(string),
+            typeof(BindableAvalonEdit),
+            new FrameworkPropertyMetadata(_TextChanged)
+        );
+
+        public string Text_ {
+            get { return (string)GetValue(Text_Property); }
+            set { SetValue(Text_Property, value); }
+        }
+
+        private static void _TextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var src = (BindableAvalonEdit)d;
+            if (src._updatingText) return;
+            src.Document.Text = src.Text_;
+        }
+
         public static readonly DependencyProperty ApiProviderProperty = DependencyProperty.Register(
             "ApiProvider",
-            typeof(RichTextBoxApiProvider),
-            typeof(BindableRichTextBox),
+            typeof(TextBoxApiProvider),
+            typeof(BindableAvalonEdit),
             new FrameworkPropertyMetadata(ApiProviderChanged)
         );
 
-        public RichTextBoxApiProvider ApiProvider {
-            get { return (RichTextBoxApiProvider)GetValue(ApiProviderProperty); }
+        public TextBoxApiProvider ApiProvider {
+            get { return (TextBoxApiProvider)GetValue(ApiProviderProperty); }
             set { SetValue(ApiProviderProperty, value); }
         }
 
         private static void ApiProviderChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            var source = (BindableRichTextBox)d;
+            var source = (BindableAvalonEdit)d;
             source.ApiProvider.DeleteNextWord =		    () => EditingCommands.DeleteNextWord.Execute(null, source);
             source.ApiProvider.AlignCenter =		    () => EditingCommands.AlignCenter.Execute(null, source);
             source.ApiProvider.AlignJustify =		    () => EditingCommands.AlignJustify.Execute(null, source);
@@ -79,6 +96,22 @@ namespace NotepadSharp {
             source.ApiProvider.ToggleSubscript =		() => EditingCommands.ToggleSubscript.Execute(null, source);
             source.ApiProvider.ToggleSuperscript =		() => EditingCommands.ToggleSuperscript.Execute(null, source);
             source.ApiProvider.ToggleUnderline =		() => EditingCommands.ToggleUnderline.Execute(null, source);
+        }
+        
+        bool _updatingText;
+        ICSharpCode.AvalonEdit.Document.IDocument _currentDocument;
+
+        protected override void OnDocumentChanged(EventArgs e) {
+            base.OnDocumentChanged(e);
+            if (_currentDocument != null) _currentDocument.TextChanged -= Document_TextChanged;
+            _currentDocument = Document;
+            Document.TextChanged += Document_TextChanged;
+        }
+
+        private void Document_TextChanged(object sender, EventArgs e) {
+            _updatingText = true;
+            Text_ = Document.Text;
+            _updatingText = false;
         }
     }
 }

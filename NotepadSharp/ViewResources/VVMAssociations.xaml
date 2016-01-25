@@ -9,8 +9,8 @@
         <local:DocumentView/>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type local:RichTextViewModel}">
-        <local:RichTextView/>
+    <DataTemplate DataType="{x:Type local:AvalonTextViewModel}">
+        <local:AvalonTextView/>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type local:KeyBindingsViewModel}">

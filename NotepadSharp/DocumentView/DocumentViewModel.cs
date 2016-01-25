@@ -38,7 +38,7 @@ namespace NotepadSharp {
                 ArgsAndSettings.CachedFiles.Add(_fileInfo);
             }
 
-            DocumentContent = new RichTextViewModel(_fileInfo.CachedFilePath);
+            DocumentContent = new AvalonTextViewModel(_fileInfo.CachedFilePath);
             DocumentContent.Content.PropertyChanged += (s,e) => UpdateHash();
             DocumentContent.ApiProvider.Save = SaveChanges;
 
@@ -48,7 +48,7 @@ namespace NotepadSharp {
             UpdateIsDirty();
         }
 
-        public RichTextViewModel DocumentContent { get; }
+        public AvalonTextViewModel DocumentContent { get; }
         public NotifyingProperty<bool> IsDirty { get; }
         
         public void Close() {

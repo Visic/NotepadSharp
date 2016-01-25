@@ -35,6 +35,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.AvalonEdit, Version=5.0.1.0, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
+      <HintPath>..\packages\AvalonEdit.5.0.2\lib\Net40\ICSharpCode.AvalonEdit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="KeraLua, Version=1.3.2.0, Culture=neutral, PublicKeyToken=04d04586786c6f34, processorArchitecture=MSIL">
       <HintPath>..\packages\NLua.1.3.2.1\lib\net45\KeraLua.dll</HintPath>
       <Private>True</Private>
@@ -90,6 +94,7 @@
     <Compile Include="FileExplorer\FileViewModel.cs" />
     <Compile Include="LuaApiProviders\ApplicationApiProvider.cs" />
     <Compile Include="LuaApiProviders\DefaultProviderRegistry.cs" />
+    <Compile Include="LuaApiProviders\TextBoxApiProvider.cs" />
     <Compile Include="LuaApiProviders\ThreadingApiProvider.cs" />
     <Compile Include="MainView\ButtonBarView.xaml.cs">
       <DependentUpon>ButtonBarView.xaml</DependentUpon>
@@ -124,7 +129,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="RichTextView\RichTextView.xaml">
+    <Page Include="AvalonTextView\AvalonTextView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -170,15 +175,11 @@
     <Compile Include="Misc\DragAndDropHandler.cs" />
     <Compile Include="Misc\MiscExtensions.cs" />
     <Compile Include="Misc\LuaScriptRunner.cs" />
-    <Compile Include="MyTextbox\FormattedTextbox.cs" />
-    <Compile Include="MyTextbox\ITextFormatter.cs" />
-    <Compile Include="MyTextbox\TextFormatter.cs" />
-    <Compile Include="RichTextView\BindableRichTextBox.cs" />
-    <Compile Include="LuaApiProviders\RichTextBoxApiProvider.cs" />
-    <Compile Include="RichTextView\RichTextView.xaml.cs">
-      <DependentUpon>RichTextView.xaml</DependentUpon>
+    <Compile Include="AvalonTextView\BindableAvalonEdit.cs" />
+    <Compile Include="AvalonTextView\AvalonTextView.xaml.cs">
+      <DependentUpon>AvalonTextView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="RichTextView\RichTextViewModel.cs" />
+    <Compile Include="AvalonTextView\AvalonTextViewModel.cs" />
     <Compile Include="DocumentView\DocumentView.xaml.cs">
       <DependentUpon>DocumentView.xaml</DependentUpon>
     </Compile>

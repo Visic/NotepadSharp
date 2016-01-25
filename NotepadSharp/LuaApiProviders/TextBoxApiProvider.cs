@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace NotepadSharp {
-    public class RichTextBoxApiProvider {
+    public class TextBoxApiProvider {
         public Action Save { get; set; }
         public Action AlignCenter { get; set; }
         public Action AlignJustify { get; set; }
