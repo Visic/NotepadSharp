@@ -13,8 +13,10 @@
     <Grid>
         <local:BindableAvalonEdit
             Text_="{Binding Content.Value, Mode=TwoWay}"
+            HorizontalScrollBarVisibility="Auto"
             ApiProvider="{Binding ApiProvider}"
             FontFamily="Consolas"
+            ShowLineNumbers="True"
             SyntaxHighlighting="C#"
             FontSize="10pt"/>
     </Grid>

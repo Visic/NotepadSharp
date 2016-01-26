@@ -45,9 +45,11 @@ namespace NotepadSharp {
                 )
             );
 
-            if(ArgsAndSettings.CachedFiles.Count() == 0) {
+            if(ArgsAndSettings.CachedFiles.Count() == 0 && string.IsNullOrEmpty(ArgsAndSettings.OpenOnStartup)) { //nothing to load
                 newDocumentCommand.Execute(null);
             } else {
+                if (!string.IsNullOrEmpty(ArgsAndSettings.OpenOnStartup)) AddOrSelectDocumentButton(ArgsAndSettings.OpenOnStartup);
+
                 //load previously open files
                 foreach(var fileInfo in ArgsAndSettings.CachedFiles.ToArray()) {
                     if(fileInfo.OriginalFilePath == null) {

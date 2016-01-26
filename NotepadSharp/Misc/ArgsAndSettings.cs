@@ -1,6 +1,7 @@
 ﻿using NotepadSharp.Properties;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
 
@@ -17,6 +18,7 @@ namespace NotepadSharp {
             LoadArgs();
         }
 
+        public static string OpenOnStartup { get; private set; } //Gets set from "Open With" windows context menu
         public static string LogPath { get; private set; }
         public static Setting<double> Width { get; private set; }
         public static Setting<double> Height { get; private set; }
@@ -50,7 +52,14 @@ namespace NotepadSharp {
         }
 
         private static void LoadArgs() {
-            var args = Environment.GetCommandLineArgs().SkipWhile(x => !x.StartsWith(Constants.CmdArgPrefix));
+            var allArgs = Environment.GetCommandLineArgs().Skip(1).ToArray(); //first arg is the exe path
+            if(allArgs.Length == 0) return;
+            if(File.Exists(allArgs.Last())) {
+                OpenOnStartup = allArgs.Last();
+                allArgs = allArgs.Take(allArgs.Length - 1).ToArray(); //consumed the last arg
+            }
+
+            var args = allArgs.SkipWhile(x => !x.StartsWith(Constants.CmdArgPrefix));
             var options = args.Aggregate(
                 new List<List<string>>(),
                 (list, value) => {
