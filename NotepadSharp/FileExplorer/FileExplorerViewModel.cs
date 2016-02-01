@@ -38,6 +38,7 @@ namespace NotepadSharp {
             PathBoxLostFocusCommand = new RelayCommand(x => PathBoxHasFocus.Value = false);
 
             PathBoxGotFocusCommand = new RelayCommand(x => {
+                DeselectItem();
                 PathBoxHasFocus.Value = true;
                 if(_updatePathBoxCaretIndex) {
                     var arg = (RoutedEventArgs)x;
@@ -121,12 +122,16 @@ namespace NotepadSharp {
         private void FocusPathBoxCaretAtEnd(Action extraWork = null) {
             _updatePathBoxCaretIndex = true;
             PathBoxHasFocus.Value = true;
+            DeselectItem();
+            extraWork?.Invoke();
+            _updatePathBoxCaretIndex = false;
+        }
+
+        private void DeselectItem() {
             if(SelectedItem.Value != null) {
                 SelectedItem.Value.IsSelected.Value = false;
                 SelectedItem.Value = null;
             }
-            extraWork?.Invoke();
-            _updatePathBoxCaretIndex = false;
         }
 
         private void SetCaretIndex(TextBox tb) {

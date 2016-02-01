@@ -1,5 +1,6 @@
-﻿--Bugs
-    -Maintain tab order for open documents
+--Bugs
+-Maintain tab order for open documents
+-Making a new keybinding (starting by typing in the lua/path) refocuses the textbox while typing
 
 --Improvements
 -change the key binding execution/key press handler to be a singleton
@@ -11,6 +12,11 @@
 -Auto-Completion
 -File comparison for "Dirty" files
 -Multi-edit
+-Search in file for text/regex
+-Middle mouse click tabs to close them
+-right-click and rename tab (especially for untitled files)
+-drawing canvas (to workout graphs, jot notes, whatever)
+-favorited locations in file explorer (quick access)
 
 --In progress
     --Bug fix
@@ -18,4 +24,3 @@
     --Feature
 
     --Misc
-        -Working on text editing
