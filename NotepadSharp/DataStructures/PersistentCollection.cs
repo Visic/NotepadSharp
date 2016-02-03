@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using NotepadSharp.Properties;
 using System.Collections;
+using System.Collections.Specialized;
 
 namespace NotepadSharp {
-    public class PersistentCollection<T> : IEnumerable<T> {
+    public class PersistentCollection<T> : IEnumerable<T>, INotifyCollectionChanged {
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
         string _settingName;
 
         public PersistentCollection(string settingName) {
@@ -19,16 +21,26 @@ namespace NotepadSharp {
         public void Add(T ele) {
             GetSavedCollection().Add(ele);
             ArgsAndSettings.SaveSettings();
+            NotifyAdded(ele);
         }
 
         public void Remove(T ele) {
-            GetSavedCollection().Remove(ele);
-            ArgsAndSettings.SaveSettings();
+            var collection = GetSavedCollection();
+            if(collection.Contains(ele)) {
+                var index = collection.IndexOf(ele);
+                collection.RemoveAt(index);
+                ArgsAndSettings.SaveSettings();
+                NotifyRemoved(ele, index);
+            }
         }
 
         public void AddOrReplace(T ele) {
-            GetSavedCollection().Remove(ele);
+            Remove(ele);
             Add(ele);
+        }
+
+        public bool Contains(T ele) {
+            return GetSavedCollection().Contains(ele);
         }
 
         public IEnumerator<T> GetEnumerator() {
@@ -41,6 +53,14 @@ namespace NotepadSharp {
 
         private List<T> GetSavedCollection() {
             return (List<T>)Settings.Default[_settingName];
+        }
+
+        private void NotifyRemoved(T ele, int index) {
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, ele, index));
+        }
+
+        private void NotifyAdded(T ele) {
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, ele));
         }
     }
 }

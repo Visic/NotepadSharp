@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
@@ -20,6 +21,16 @@ namespace NotepadSharp {
                 () => string.IsNullOrEmpty(ErrorMessage.Value), 
                 () => new DataObject(DataFormats.FileDrop, new string[] { EntityPath.Value })
             );
+
+            FavoriteCommand = new RelayCommand(
+                x => ArgsAndSettings.FavoritedLocations.Add(EntityPath.Value), 
+                x => !ArgsAndSettings.FavoritedLocations.Contains(EntityPath.Value)
+            );
+
+            UnfavoriteCommand = new RelayCommand(
+                x => ArgsAndSettings.FavoritedLocations.Remove(EntityPath.Value), 
+                x => ArgsAndSettings.FavoritedLocations.Contains(EntityPath.Value)
+            );
         }
 
         public NotifyingProperty<string> EntityPath { get; } = new NotifyingProperty<string>();
@@ -31,6 +42,8 @@ namespace NotepadSharp {
         public NotifyingProperty<bool> IsSelected { get; } = new NotifyingProperty<bool>();
         public DragAndDropHandler DragItem { get; }
         public ICommand InteractCommand { get; protected set; }
+        public ICommand FavoriteCommand { get; }
+        public ICommand UnfavoriteCommand { get; }
 
         protected virtual void SetPath(string path) {
             EntityPath.Value = path;

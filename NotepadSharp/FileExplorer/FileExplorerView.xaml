@@ -11,6 +11,11 @@
              local:CommandBindingBehavior.PreviewKeyUpCommand="{Binding KeyPressHandler.KeyUpCommand}"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
+        <ContextMenu x:Key="FavoriteItem_ContextMenu">
+            <MenuItem Header="Favorite" Command="{Binding FavoriteCommand}"/>
+            <MenuItem Header="Unfavorite" Command="{Binding UnfavoriteCommand}"/>
+        </ContextMenu>
+        
         <Style TargetType="{x:Type TreeViewItem}">
             <Setter Property="IsExpanded" Value="{Binding IsExpanded.Value, Mode=TwoWay}"/>
             <Setter Property="IsSelected" Value="{Binding IsSelected.Value, Mode=TwoWay}"/>
@@ -29,7 +34,7 @@
         </Style>
         
         <HierarchicalDataTemplate DataType="{x:Type local:DirectoryViewModel}" ItemsSource="{Binding Items.Value}">
-            <Grid Height="20">
+            <Grid Height="20" ContextMenu="{StaticResource FavoriteItem_ContextMenu}">
                 <DockPanel local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding DragItem.MouseLeftButtonDownCommand}"
                            local:CommandBindingBehavior.PreviewMouseMoveCommand="{Binding DragItem.MouseMoveCommand}"
                            Visibility="{Binding ErrorMessage.Value, Converter={StaticResource NullOrEmptyToVisibleConverter}}">
@@ -51,7 +56,7 @@
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type local:FileViewModel}">
-            <Grid Height="20">
+            <Grid Height="20" ContextMenu="{StaticResource FavoriteItem_ContextMenu}">
                 <DockPanel local:CommandBindingBehavior.PreviewLeftClickCommand="{Binding DragItem.MouseLeftButtonDownCommand}"
                            local:CommandBindingBehavior.PreviewMouseMoveCommand="{Binding DragItem.MouseMoveCommand}"
                            Visibility="{Binding ErrorMessage.Value, Converter={StaticResource NullOrEmptyToVisibleConverter}}">
@@ -73,26 +78,57 @@
         <Border DockPanel.Dock="Top" 
                 BorderBrush="#AAAAAA"
                 BorderThickness="0,0,0,1">
-            <TextBox Padding="2"
-                     Background="#CCCCCC"
-                     AllowDrop="True"
-                     Text="{Binding RootPath.Value, UpdateSourceTrigger=PropertyChanged}"
-                     local:CommandBindingBehavior.TextChangedCommand="{Binding PathBoxTextChangedCommand}"
-                     local:CommandBindingBehavior.GotFocusCommand="{Binding PathBoxGotFocusCommand}" 
-                     local:CommandBindingBehavior.LostFocusCommand="{Binding PathBoxLostFocusCommand}" 
-                     local:CommandBindingBehavior.PreviewDragOverCommand="{Binding DragDropRootPath.DragOverCommand}"
-                     local:CommandBindingBehavior.PreviewDropCommand="{Binding DragDropRootPath.DropCommand}">
-                <TextBox.Style>
-                    <Style TargetType="TextBox" BasedOn="{StaticResource TextBox_NoBorder}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding PathBoxHasFocus.Value}" Value="True">
-                                <Setter Property="FocusManager.FocusedElement" Value="{Binding RelativeSource={RelativeSource Self}}"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBox.Style>
-            </TextBox>
+            <DockPanel Height="20">
+                <Menu DockPanel.Dock="Right" Background="#BBBBBB">
+                    <MenuItem>
+                        <MenuItem.HeaderTemplate>
+                            <DataTemplate>
+                                <Image Source="pack://application:,,,/Resources/star.png"/>
+                            </DataTemplate>
+                        </MenuItem.HeaderTemplate>
+                        
+                        <MenuItem MaxHeight="300">
+                            <MenuItem.Template>
+                                <ControlTemplate>
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                        <ItemsControl Name="ItemsControl" ItemsSource="{Binding FavoritedLocations}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <MenuItem Header="{Binding}" CommandParameter="{Binding}" Command="{Binding DataContext.FavoriteSelectedCommand, ElementName=ItemsControl}"/>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </ScrollViewer>
+                                </ControlTemplate>
+                            </MenuItem.Template>
+                        </MenuItem>
+                    </MenuItem>
+                </Menu>
+
+                <TextBox Name="PathBox"
+                         DockPanel.Dock="Left"
+                         Padding="2"
+                         Background="#CCCCCC"
+                         AllowDrop="True"
+                         Text="{Binding RootPath.Value, UpdateSourceTrigger=PropertyChanged}"
+                         local:CommandBindingBehavior.TextChangedCommand="{Binding PathBoxTextChangedCommand}"
+                         local:CommandBindingBehavior.GotFocusCommand="{Binding PathBoxGotFocusCommand}" 
+                         local:CommandBindingBehavior.LostFocusCommand="{Binding PathBoxLostFocusCommand}" 
+                         local:CommandBindingBehavior.PreviewDragOverCommand="{Binding DragDropRootPath.DragOverCommand}"
+                         local:CommandBindingBehavior.PreviewDropCommand="{Binding DragDropRootPath.DropCommand}">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBox_NoBorder}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding PathBoxHasFocus.Value}" Value="True">
+                                    <Setter Property="FocusManager.FocusedElement" Value="{Binding RelativeSource={RelativeSource Self}}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </DockPanel>
         </Border>
+        
         <WPFUtility:ExtendedTreeView DockPanel.Dock="Bottom" 
                                      BorderThickness="0" 
                                      Background="Transparent"

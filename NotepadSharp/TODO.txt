@@ -16,7 +16,6 @@
 -Middle mouse click tabs to close them
 -right-click and rename tab (especially for untitled files)
 -drawing canvas (to workout graphs, jot notes, whatever)
--favorited locations in file explorer (quick access)
 
 --In progress
     --Bug fix

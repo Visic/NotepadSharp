@@ -7,6 +7,7 @@ using System.Windows.Threading;
 using WPFUtility;
 using System.Windows.Controls;
 using System.Windows;
+using System.Collections.Specialized;
 
 namespace NotepadSharp {
     public class FileExplorerViewModel : DirectoryViewModel {
@@ -18,7 +19,7 @@ namespace NotepadSharp {
                 (oldS, newS) => { if(newS.Trim() != oldS) SetPath(newS); },
                 initialDirectory
             );
-            DragDropRootPath = new DragAndDropHandler(x => true, DropPath);
+            DragDropRootPath = new DragAndDropHandler(x => true, SetRootPathAndCaretIndex);
             SelectedItem = new NotifyingProperty<FileSystemEntityViewModel>(x => {
                 SelectedIndex = x == null ? -1 : GetItems(this).Select((e, i) => new { I = i, E = e }).First(z => z.E == x).I;
             });
@@ -54,14 +55,20 @@ namespace NotepadSharp {
                 },
                 x => _updatePathBoxCaretIndex
             );
+
+            FavoriteSelectedCommand = new RelayCommand(
+                x => SetRootPathAndCaretIndex((string)x)
+            );
         }
 
+        public INotifyCollectionChanged FavoritedLocations { get { return ArgsAndSettings.FavoritedLocations; } }
         public KeyPressHandler KeyPressHandler { get; }
         public NotifyingProperty<string> RootPath { get; }
         public DragAndDropHandler DragDropRootPath { get; }
         public ICommand PathBoxGotFocusCommand { get; }
         public ICommand PathBoxLostFocusCommand { get; }
         public ICommand PathBoxTextChangedCommand { get; }
+        public ICommand FavoriteSelectedCommand { get; }
         public NotifyingProperty<bool> PathBoxHasFocus { get; } = new NotifyingProperty<bool>();
         public NotifyingProperty<FileSystemEntityViewModel> SelectedItem { get; }
         private int SelectedIndex { get; set; } = -1;
@@ -76,7 +83,7 @@ namespace NotepadSharp {
                 SelectedItem.Value.IsExpanded.Value = !SelectedItem.Value.IsExpanded.Value;
                 return true;
             } else if(arg.SequenceEqual(new[] { Key.LeftCtrl, Key.Enter })) {
-                DropPath(SelectedItem.Value.EntityPath.Value);
+                SetRootPathAndCaretIndex(SelectedItem.Value.EntityPath.Value);
                 return true;
             } else if(arg.SequenceEqual(new[] { Key.Up }) && !PathBoxHasFocus.Value) {
                 if(SelectedItem.Value == Items.Value.FirstOrDefault()) {
@@ -112,7 +119,7 @@ namespace NotepadSharp {
             _refreshTimer.Start();
         }
 
-        private void DropPath(string path) {
+        private void SetRootPathAndCaretIndex(string path) {
             FocusPathBoxCaretAtEnd(() => {
                 _updatePathBoxCaretIndex = true;
                 RootPath.Value = path;

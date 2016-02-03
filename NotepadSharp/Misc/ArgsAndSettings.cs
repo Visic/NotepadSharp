@@ -27,6 +27,7 @@ namespace NotepadSharp {
         public static Setting<WindowState> WindowState { get; private set; }
         public static KeyBindingCollection KeyBindings { get; private set; }
         public static PersistentCollection<SerializableFileInfo> CachedFiles { get; private set; }
+        public static PersistentCollection<string> FavoritedLocations { get; private set; }
 
         public static void SaveSettings() {
             Settings.Default.Save();
@@ -36,6 +37,7 @@ namespace NotepadSharp {
             LogPath = "";
             KeyBindings = new KeyBindingCollection(new PersistentCollection<LuaKeyBinding>(Constants.KeyBindingCollectionSettingName));
             CachedFiles = new PersistentCollection<SerializableFileInfo>(Constants.CachedFileCollectionSettingName);
+            FavoritedLocations = new PersistentCollection<string>(Constants.FavoritedLocationsCollectionSettingName);
         }
 
         private static void LoadSettings() {

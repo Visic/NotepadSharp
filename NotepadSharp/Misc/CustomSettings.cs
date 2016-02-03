@@ -26,5 +26,17 @@ namespace NotepadSharp.Properties {
                 this[Constants.CachedFileCollectionSettingName] = value;
             }
         }
+
+        [System.Configuration.UserScopedSetting()]
+        [System.Diagnostics.DebuggerNonUserCode()]
+        [System.Configuration.SettingsSerializeAs(System.Configuration.SettingsSerializeAs.Binary)]
+        public List<string> FavoritedLocations {
+            get {
+                return ((List<string>)(this[Constants.FavoritedLocationsCollectionSettingName]));
+            }
+            set {
+                this[Constants.FavoritedLocationsCollectionSettingName] = value;
+            }
+        }
     }
 }
