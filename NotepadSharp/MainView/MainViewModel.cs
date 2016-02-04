@@ -52,11 +52,7 @@ namespace NotepadSharp {
 
                 //load previously open files
                 foreach(var fileInfo in ArgsAndSettings.CachedFiles.ToArray()) {
-                    if(fileInfo.OriginalFilePath == null) {
-                        AddOrSelectDocumentButton(fileInfo.CachedFilePath, Path.GetFileName(fileInfo.CachedFilePath));
-                    } else {
-                        AddOrSelectDocumentButton(fileInfo.OriginalFilePath);
-                    }
+                    AddOrSelectDocumentButton(fileInfo.OriginalFilePath ?? fileInfo.CachedFilePath);
                 }
             }
 
@@ -95,25 +91,28 @@ namespace NotepadSharp {
             button.IsSelected.Value = true;
         }
 
-        private void AddOrSelectDocumentButton(string filePath, string buttonId = null) {
-            buttonId = buttonId ?? filePath;
-
+        private void AddOrSelectDocumentButton(string filePath) {
             ISelectableButtonViewModel button;
-            if(!_buttonLookup.TryGetValue(buttonId, out button)) {
-                var vm = new Lazy<DocumentViewModel>(() => NewVm(new DocumentViewModel(filePath, x => button.Text.Value = x)));
+            if(!_buttonLookup.TryGetValue(filePath, out button)) {
+                var vm = new Lazy<DocumentViewModel>(() => NewVm(
+                    new DocumentViewModel(
+                        filePath,
+                        (oldPath, newPath) => {
+                            _buttonLookup.Remove(oldPath);
+                            _buttonLookup[newPath] = button;
+                            filePath = newPath;
+                        }
+                    )
+                ));
 
-                var cmd = new RelayCommand(x => {
-                    ((MaybeDirtySelectableClosableButtonViewModel)button).IsDirty = vm.Value.IsDirty;
-                    TopPanelContent.Value = vm.Value;
-                });
+                var cmd = new RelayCommand(x => TopPanelContent.Value = vm.Value);
 
                 var closeCmd = new RelayCommand(x => {
                     if (_currentViewModels.Count(y => y is DocumentViewModel) == 1) NewDocument();
-                    CloseTopTab(buttonId, vm.Value, vm.Value.Close);
+                    CloseTopTab(filePath, vm.Value, vm.Value.Close);
                 });
 
-                var fileName = Path.GetFileName(filePath);
-                _buttonLookup[buttonId] = button = new MaybeDirtySelectableClosableButtonViewModel(fileName, cmd, closeCmd);
+                _buttonLookup[filePath] = button = new FileTabButtonViewModel(cmd, closeCmd, vm.Value);
                 TopTabs.Add(button);
             }
             button.IsSelected.Value = true;

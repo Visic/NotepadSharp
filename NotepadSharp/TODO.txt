@@ -14,7 +14,6 @@
 -Multi-edit
 -Search in file for text/regex
 -Middle mouse click tabs to close them
--right-click and rename tab (especially for untitled files)
 -drawing canvas (to workout graphs, jot notes, whatever)
 
 --In progress

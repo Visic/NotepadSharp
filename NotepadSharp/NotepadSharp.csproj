@@ -82,10 +82,10 @@
     <Compile Include="Converters\LogicalConverters.cs" />
     <Compile Include="Converters\IdentityConverter.cs" />
     <Compile Include="Converters\NullOrEmptyToNullConverter.cs" />
-    <Compile Include="DataStructures\MaybeDirtySelectableButton\MaybeDirtySelectableClosableButtonView.xaml.cs">
-      <DependentUpon>MaybeDirtySelectableClosableButtonView.xaml</DependentUpon>
+    <Compile Include="DataStructures\FileTabButtonView\FileTabButtonView.xaml.cs">
+      <DependentUpon>FileTabButtonView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DataStructures\MaybeDirtySelectableButton\MaybeDirtySelectableClosableButtonViewModel.cs" />
+    <Compile Include="DataStructures\FileTabButtonView\FileTabButtonViewModel.cs" />
     <Compile Include="DataStructures\SerializableFileInfo.cs" />
     <Compile Include="FileExplorer\DirectoryViewModel.cs" />
     <Compile Include="FileExplorer\ErrorItemViewModel.cs" />
@@ -108,7 +108,11 @@
     <Compile Include="MainView\MainMenu\MainMenuViewModel.cs" />
     <Compile Include="Misc\ApplicationState.cs" />
     <Compile Include="Misc\CustomSettings.cs" />
-    <Page Include="DataStructures\MaybeDirtySelectableButton\MaybeDirtySelectableClosableButtonView.xaml">
+    <Compile Include="RenameView\RenameView.xaml.cs">
+      <DependentUpon>RenameView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="RenameView\RenameViewModel.cs" />
+    <Page Include="DataStructures\FileTabButtonView\FileTabButtonView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -195,6 +199,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="RenameView\RenameView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ViewResources\Resources.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

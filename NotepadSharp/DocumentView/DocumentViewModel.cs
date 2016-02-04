@@ -10,11 +10,9 @@ namespace NotepadSharp {
     //This view model deals with abstracting the persistency away from the content vm
     public class DocumentViewModel : ViewModelBase {
         SerializableFileInfo _fileInfo;
-        Action<string> _updateLabelCallback;
         DispatcherTimer _fileCheckTimer = new DispatcherTimer();
 
-        public DocumentViewModel(string filePath, Action<string> updateLabelCallback) {
-            _updateLabelCallback = updateLabelCallback;
+        public DocumentViewModel(string filePath, Action<string, string> filePathChangingCallback) {
             _fileInfo = ArgsAndSettings.CachedFiles.FirstOrDefault(x => x.OriginalFilePath == filePath || x.CachedFilePath == filePath);
             IsDirty = new NotifyingProperty<bool>(x => SaveFileInfo());
 
@@ -38,6 +36,16 @@ namespace NotepadSharp {
                 ArgsAndSettings.CachedFiles.Add(_fileInfo);
             }
 
+            FileName = new NotifyingProperty<string>(
+                (oldName, newName) => {
+                    UpdateCachedFileName(newName);
+                    filePathChangingCallback(oldName, newName);
+                },
+                Path.GetFileName(_fileInfo.CachedFilePath)
+            );
+
+            FilePath = new NotifyingProperty<string>(_fileInfo.OriginalFilePath);
+
             DocumentContent = new AvalonTextViewModel(_fileInfo.CachedFilePath);
             DocumentContent.Content.PropertyChanged += (s,e) => UpdateHash();
             DocumentContent.ApiProvider.Save = SaveChanges;
@@ -50,6 +58,8 @@ namespace NotepadSharp {
 
         public AvalonTextViewModel DocumentContent { get; }
         public NotifyingProperty<bool> IsDirty { get; }
+        public NotifyingProperty<string> FilePath { get; }
+        public NotifyingProperty<string> FileName { get; }
         
         public void Close() {
             _fileCheckTimer.Stop();
@@ -84,12 +94,15 @@ namespace NotepadSharp {
 
                 if (_fileInfo.OriginalFilePath == null) {
                     var dialog = new SaveFileDialog();
+                    dialog.FileName = FileName.Value;
                     dialog.DefaultExt = ".txt";
                     dialog.Filter = "All Types|*.*";
                     dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
                     if (!dialog.ShowDialog() ?? false) return;
                     _fileInfo.OriginalFilePath = dialog.FileName;
-                    _updateLabelCallback(Path.GetFileName(dialog.FileName));
+
+                    FileName.Value = Path.GetFileName(dialog.FileName);
+                    FilePath.Value = _fileInfo.OriginalFilePath;
                 }
                 
                 File.Copy(_fileInfo.CachedFilePath, _fileInfo.OriginalFilePath, true);
@@ -99,6 +112,13 @@ namespace NotepadSharp {
 
         private void UpdateCachedFile() {
             File.WriteAllText(_fileInfo.CachedFilePath, DocumentContent.Content.Value);
+        }
+
+        private void UpdateCachedFileName(string newName) {
+            var newCachedPath = Path.Combine(Path.GetDirectoryName(_fileInfo.CachedFilePath), newName);
+            File.Move(_fileInfo.CachedFilePath, newCachedPath);
+            _fileInfo.CachedFilePath = newCachedPath;
+            SaveFileInfo();
         }
 
         public override void Dispose() {

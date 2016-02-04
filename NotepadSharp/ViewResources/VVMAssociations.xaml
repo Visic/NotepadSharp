@@ -29,7 +29,11 @@
         <local:MainMenuView/>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type local:MaybeDirtySelectableClosableButtonViewModel}">
-        <local:MaybeDirtySelectableClosableButtonView/>
+    <DataTemplate DataType="{x:Type local:FileTabButtonViewModel}">
+        <local:FileTabButtonView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type local:RenameViewModel}">
+        <local:RenameView/>
     </DataTemplate>
 </ResourceDictionary>
