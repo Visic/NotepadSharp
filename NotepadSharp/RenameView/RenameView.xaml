@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="NotepadSharp.RenameView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             BorderBrush="#666666"
+             BorderThickness="2"
+             xmlns:local="clr-namespace:NotepadSharp"
+             mc:Ignorable="d" 
+             MinHeight="100" MinWidth="350">
+    <DockPanel Margin="10" LastChildFill="False">
+        <TextBlock DockPanel.Dock="Top" Text="Name" Margin="5,0,0,0"/>
+        <TextBox DockPanel.Dock="Top" Margin="0,2,0,5" Text="{Binding Name.Value, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBlock DockPanel.Dock="Top" Text="{Binding ValidationError.Value}" Foreground="Red" />
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="0,0,-5,-5">
+            <Button Margin="3,0" 
+                    Content="Cancel" 
+                    Command="{Binding CancelCommand}"
+                    Style="{StaticResource Button_WithBorder}"/>
+            <Button Content="Ok" 
+                    Command="{Binding OkCommand}"
+                    Style="{StaticResource Button_WithBorder}"/>
+        </StackPanel>
+    </DockPanel>
+</UserControl>
