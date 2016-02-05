@@ -18,7 +18,6 @@
 
         <!--Left Tabs-->
         <local:ButtonBarView DockPanel.Dock="Left" 
-                             Background="#555555"
                              ItemsSource="{Binding LeftTabs}" 
                              FlowDirection="RightToLeft">
             <local:ButtonBarView.LayoutTransform>
@@ -38,7 +37,6 @@
 
         <!--Top Tabs-->
         <local:ButtonBarView DockPanel.Dock="Top" 
-                             Background="#555555"
                              ItemsSource="{Binding TopTabs}"/>
 
         <!--Top Panel Content-->

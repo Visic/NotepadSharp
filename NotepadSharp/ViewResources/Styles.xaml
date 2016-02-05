@@ -5,12 +5,18 @@
         <Setter Property="Template" Value="{StaticResource TextboxNoBorderTemplate}"/>
     </Style>
 
+    <Style TargetType="TextBox">
+        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
+    </Style>
+
     <Style TargetType="{x:Type Button}">
+        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="Template" Value="{StaticResource ButtonTemplate}"/>
     </Style>
 
     <Style x:Key="Button_WithBorder" TargetType="{x:Type Button}">
+        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="Template" Value="{StaticResource ButtonWithBorderTemplate}"/>
     </Style>

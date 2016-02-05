@@ -1,4 +1,5 @@
-﻿using WPFUtility;
+﻿using System;
+using WPFUtility;
 
 namespace NotepadSharp {
     public class NotifyingSetting<T> : NotifyingProperty<T>
@@ -6,6 +7,10 @@ namespace NotepadSharp {
         Setting<T> _setting;
 
         public NotifyingSetting(Setting<T> setting) : base(setting.Value) {
+            _setting = setting;
+        }
+
+        public NotifyingSetting(Action<T> changed, Setting<T> setting) : base(changed, setting.Value) {
             _setting = setting;
         }
 
