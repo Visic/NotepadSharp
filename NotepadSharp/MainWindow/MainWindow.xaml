@@ -7,6 +7,7 @@
         xmlns:local="clr-namespace:NotepadSharp"
         Title="Notepad#"
         MinHeight="600" MinWidth="800"
+        ResizeMode="CanResizeWithGrip"
         Background="#555555"
         KeyboardNavigation.DirectionalNavigation="Once"
         KeyboardNavigation.TabNavigation="None"
@@ -29,8 +30,9 @@
         </Style>
     </Window.Style>
     <WindowChrome.WindowChrome>
+        <!-- Offset the CaptionHeight, otherwise we can't grab the bottom of the screen (or resize grip) -->
         <WindowChrome ResizeBorderThickness="6"
-                      CaptionHeight="{Binding Height, ElementName=Window}"
+                      CaptionHeight="{Binding Height, ElementName=Window, Converter={StaticResource OffsetValueConverter}, ConverterParameter=-20}"
                       CornerRadius="0"
                       GlassFrameThickness="0"/>
     </WindowChrome.WindowChrome>

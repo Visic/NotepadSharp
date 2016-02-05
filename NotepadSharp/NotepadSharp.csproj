@@ -82,6 +82,7 @@
     <Compile Include="Converters\LogicalConverters.cs" />
     <Compile Include="Converters\IdentityConverter.cs" />
     <Compile Include="Converters\NullOrEmptyToNullConverter.cs" />
+    <Compile Include="Converters\OffsetValueConverter.cs" />
     <Compile Include="DataStructures\FileTabButtonView\FileTabButtonView.xaml.cs">
       <DependentUpon>FileTabButtonView.xaml</DependentUpon>
     </Compile>

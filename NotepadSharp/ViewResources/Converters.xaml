@@ -12,6 +12,7 @@
     <local:BoolToPropValueConverter x:Key="FalseToHiddenConverter" ValueForTrue="Visible" ValueForFalse="Hidden"/>
     <local:BoolToPropValueConverter x:Key="TrueToCollapsedConverter" ValueForTrue="Collapsed" ValueForFalse="Visible"/>
     <local:BoolToPropValueConverter x:Key="FalseToCollapsedConverter" ValueForTrue="Visible" ValueForFalse="Collapsed"/>
+    <local:OffsetValueConverter x:Key="OffsetValueConverter"/>
     <local:NotConverter x:Key="NotConveter"/>
     <local:AndConverter x:Key="AndConverter"/>
     <local:OrConverter x:Key="OrConverter"/>
